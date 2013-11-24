@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define STM_WHITE 'w'
+#define STM_BLACK 'b'
 
 typedef unsigned long long u64;
 FILE *fLog;
@@ -10,11 +12,13 @@ FILE *fLog;
 struct cb {
 	u64 wk,wq,wr,wb,wn,wp;
 	u64 bk,bq,br,bb,bn,bp;
+	char sideToMove;
 } gb;
 
 
+#define send_resp_ex(sBuffer,sSize,...) snprintf(sBuffer,sSize,__VA_ARGS__); send_resp(sBuffer);
 
-send_resp(char *sBuf)
+void send_resp(char *sBuf)
 {
 	printf("%s",sBuf);
 	fflush(stdout);
@@ -46,7 +50,7 @@ int cb_print(struct cb *mcb)
 	u64 pos;
 	int r,f;
 
-	fprintf(fLog,"INFO:cb_print:\n");
+	fprintf(fLog,"INFO:cb_print:%c to move\n",mcb->sideToMove);
 	for(r = 7; r >= 0; r--) {
 		for(f = 0; f < 8; f++) {
 			off = r*8+f;
@@ -82,9 +86,69 @@ int cb_print(struct cb *mcb)
 	}
 }
 
+int process_setoption(char *sCmd)
+{
+}
+
+int cb_eval_mat(struct cb *mcb)
+{
+	int val = 0;
+	int valB = 0;
+	int valW = 0;
+
+	valB += __builtin_popcountll(mcb->bp)*100;
+	valB += __builtin_popcountll(mcb->br)*500;
+	valB += __builtin_popcountll(mcb->bn)*300;
+	valB += __builtin_popcountll(mcb->bb)*300;
+	valB += __builtin_popcountll(mcb->bq)*900;
+
+	valW += __builtin_popcountll(mcb->wp)*100;
+	valW += __builtin_popcountll(mcb->wr)*500;
+	valW += __builtin_popcountll(mcb->wn)*300;
+	valW += __builtin_popcountll(mcb->wb)*300;
+	valW += __builtin_popcountll(mcb->wq)*900;
+
+	val = valW-valB;
+	return val;
+}
+
+int cb_eval(struct cb *mcb)
+{
+	int val = 0;
+	val += cb_eval_mat(mcb);
+	// eval_threats
+	// eval_misc
+	return val;
+}
+
+#define CORRECTVALFOR_SIDETOMOVE
+
+int cb_findbest(struct cb *mcb, int curDepth, int maxDepth, int secs)
+{
+	int val;
+	char sBuf[1024];
+
+	val = cb_eval(mcb);
+#ifdef CORRECTVALFOR_SIDETOMOVE
+	if(mcb->sideToMove != STM_WHITE)
+		val = -1*val;
+#endif
+	send_resp_ex(sBuf,1024,"info score cp %d depth %d nodes %d time %d pv %s\n",val,curDepth,0,0,NULL);
+	curDepth += 1;
+	// Find possible moves 
+	return val; // ToThink, all info in above send_resp info to be sent
+}
+
+int process_go(char *sCmd)
+{
+	cb_findbest(&gb,0,50,0);
+	return 0;
+}
+
 int process_position(char *sCmd)
 {
 	char *fenStr;
+	char *fenSTM;
 	int r,f;
 
 	if(strncmp(strtok(sCmd," "),"position",8) != 0)
@@ -94,8 +158,17 @@ int process_position(char *sCmd)
 	fenStr = strtok(NULL," ");
 	if(fenStr == NULL)
 		return -3;
+	if((fenSTM = strtok(NULL," ")) == NULL)
+		return -4;
 
 	bzero(&gb,sizeof(gb));
+
+	if((fenSTM[0] == 'w') || (fenSTM[0] == 'W'))
+		gb.sideToMove=STM_WHITE;
+	else
+		gb.sideToMove=STM_BLACK;
+
+
 	r = 7; f = 0;
 	while(*fenStr != (char)NULL) {
 		fprintf(fLog,"INFO:pp:val[%c]\n",*fenStr);
@@ -200,7 +273,7 @@ int process_uci()
 	fflush(fLog);
 
 	if(strncmp(sCmd,"uci",3) == 0) {
-		send_resp("id name cek1 20131124_2005\n");
+		send_resp("id name cek1 20131125_0136\n");
 		send_resp("id author hkvc\n");
 		send_resp("option name Ponder type check default true\n");
 		send_resp("option name Hash type spin default 1 min 1 max 100\n");
@@ -212,6 +285,12 @@ int process_uci()
 	if(strncmp(sCmd,"position",8) == 0) {
 		process_position(sCmd);
 	}
+	if(strncmp(sCmd,"setoption",9) == 0) {
+		process_setoption(sCmd);
+	}
+	if(strncmp(sCmd,"go",2) == 0) {
+		process_go(sCmd);
+	}
 	if(strncmp(sCmd,"quit",4) == 0) {
 		fprintf(fLog,"QUITING\n");
 		exit(2);
@@ -222,6 +301,8 @@ int process_uci()
 int run()
 {
 	fd_set fdIN;
+
+	setbuf(stdin,NULL);
 
 	FD_ZERO(&fdIN);
 	FD_SET(0,&fdIN);
@@ -238,7 +319,7 @@ int main(int argc, char **argv)
 
 	if((fLog=fopen("/tmp/cek1.log","a+")) == NULL)
 		return 1;
-	puts("CEK1 v20131124_2329\n");
+	puts("CEK1 v20131125_0137\n");
 	run();
 	fclose(fLog);
 	return 0;
