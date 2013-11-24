@@ -92,10 +92,12 @@ int process_position(char *sCmd)
 	if(strncmp(strtok(NULL," "),"fen",3) != 0)
 		return -2;
 	fenStr = strtok(NULL," ");
+	if(fenStr == NULL)
+		return -3;
 
 	bzero(&gb,sizeof(gb));
 	r = 7; f = 0;
-	while(fenStr != NULL) {
+	while(*fenStr != (char)NULL) {
 		fprintf(fLog,"INFO:pp:val[%c]\n",*fenStr);
 		if(fenStr[0] == 'p') {
 			cb_bb_setpos(&(gb.bp),r,f);
