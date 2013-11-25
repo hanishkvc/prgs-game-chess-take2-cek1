@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define PRG_VERSION "CEK1 v20131125_1430\n"
 #define STM_WHITE 'w'
 #define STM_BLACK 'b'
 
@@ -124,7 +125,7 @@ int cb_evalpw_mat(struct cb *mcb)
 	return valPW;
 }
 
-int cb_eval_tANDp_fromknight(struct cb *mcb, char activeSide)
+int cb_eval_tANDp_fromknights(struct cb *mcb, char activeSide)
 {
 
 	int nPos = 0;
@@ -145,7 +146,7 @@ int cb_eval_tANDp_fromknight(struct cb *mcb, char activeSide)
 	}
 	while((nPos = ffsll(cNBB)) != 0) {
 		nPos -= 1;
-		fprintf(fLog,"DEBUG:threats_fromknight:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
+		fprintf(fLog,"DEBUG:tANDp_fromknights:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
 		val1 += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bk) * VALUE_KING;
 		val1 += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bq) * VALUE_QUEEN;
 		val1 += __builtin_popcountl(bbKnightMoves[nPos] & mcb->br) * VALUE_ROOK;
@@ -176,14 +177,66 @@ int cb_eval_tANDp_fromknight(struct cb *mcb, char activeSide)
 	return val;
 }
 
+int cb_eval_tANDp_fromrooks(struct cb *mcb, char activeSide)
+{
+
+	int nPos = 0;
+	int val = 0;
+	int val1 = 0;
+	int val2 = 0;
+	u64 cNBB = 0;
+	int weightage1, weightage2;
+
+	if(activeSide == STM_WHITE) {
+		cNBB = mcb->wr;
+		weightage1 = 10; // threats_given
+		weightage2 = 8; // protection_provided
+	} else {
+		cNBB = mcb->br;
+		weightage1 = 8; // protection_provided
+		weightage2 = 10; // threats_given
+	}
+	while((nPos = ffsll(cNBB)) != 0) {
+		nPos -= 1;
+		fprintf(fLog,"DEBUG:tANDp_fromrooks:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
+		val1 += __builtin_popcountl(bbRookMoves[nPos] & mcb->bk) * VALUE_KING;
+		val1 += __builtin_popcountl(bbRookMoves[nPos] & mcb->bq) * VALUE_QUEEN;
+		val1 += __builtin_popcountl(bbRookMoves[nPos] & mcb->br) * VALUE_ROOK;
+		val1 += __builtin_popcountl(bbRookMoves[nPos] & mcb->bn) * VALUE_KNIGHT;
+		val1 += __builtin_popcountl(bbRookMoves[nPos] & mcb->bb) * VALUE_BISHOP;
+		val1 += __builtin_popcountl(bbRookMoves[nPos] & mcb->bp) * VALUE_PAWN;
+
+		val2 += __builtin_popcountl(bbRookMoves[nPos] & mcb->wk) * VALUE_KING;
+		val2 += __builtin_popcountl(bbRookMoves[nPos] & mcb->wq) * VALUE_QUEEN;
+		val2 += __builtin_popcountl(bbRookMoves[nPos] & mcb->wr) * VALUE_ROOK;
+		val2 += __builtin_popcountl(bbRookMoves[nPos] & mcb->wn) * VALUE_KNIGHT;
+		val2 += __builtin_popcountl(bbRookMoves[nPos] & mcb->wb) * VALUE_BISHOP;
+		val2 += __builtin_popcountl(bbRookMoves[nPos] & mcb->wp) * VALUE_PAWN;
+		cNBB &= ~(1ULL << nPos);			
+	}
+
+	// For White val1 = threats_given; val2 = protection_provided
+	// For Black val2 = threats_given; val1 = protection_provided
+	val = ((val1 * weightage1) + (val2 * weightage2))/10;
+	fprintf(fLog,"INFO:tANDp_fromRooks:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
+			val1,weightage1, val2, weightage2, val);
+	// FIXME: The threat and protection value is bit more complicated than provided above because
+	// If there are intervening pieces in the path, then the effect of threat and protection is 
+	// not the same as if there is a clear path.
+	// FORNOW: Threat and Protection values given same weightage always, irrespective of intervening pieces or not.
+	return val;
+}
+
 int cb_evalpw_threatsANDprotection(struct cb *mcb)
 {
 	int valPW = 0;
 	int valB = 0;
 	int valW = 0;
 
-	valW += cb_eval_tANDp_fromknight(mcb,STM_WHITE);
-	valB += cb_eval_tANDp_fromknight(mcb,STM_BLACK);
+	valW += cb_eval_tANDp_fromknights(mcb,STM_WHITE);
+	valB += cb_eval_tANDp_fromknights(mcb,STM_BLACK);
+	valW += cb_eval_tANDp_fromrooks(mcb,STM_WHITE);
+	valB += cb_eval_tANDp_fromrooks(mcb,STM_BLACK);
 	valPW = valW - valB;
 	return (valPW/10);
 }
@@ -354,13 +407,14 @@ int process_uci()
 
 	char sCmdBuf[1024];
 	char *sCmd;
+	char sTemp[1024];
 
 	sCmd = fgets(sCmdBuf, 1024, stdin);
 	fprintf(fLog,"GOT:%s\n",sCmd);
 	fflush(fLog);
 
 	if(strncmp(sCmd,"uci",3) == 0) {
-		send_resp("id name cek1 20131125_0136\n");
+		send_resp_ex(sTemp,1024,"id name %s",PRG_VERSION);
 		send_resp("id author hkvc\n");
 		send_resp("option name Ponder type check default true\n");
 		send_resp("option name Hash type spin default 1 min 1 max 100\n");
@@ -404,6 +458,7 @@ int run()
 int prepare()
 {
 	generate_bb_knightmoves(bbKnightMoves);
+	generate_bb_rookmoves(bbRookMoves);
 }
 
 int main(int argc, char **argv)
@@ -411,7 +466,7 @@ int main(int argc, char **argv)
 
 	if((fLog=fopen("/tmp/cek1.log","a+")) == NULL)
 		return 1;
-	puts("CEK1 v20131125_0137\n");
+	puts(PRG_VERSION);
 	prepare();
 	run();
 	fclose(fLog);
