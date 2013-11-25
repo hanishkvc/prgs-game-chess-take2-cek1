@@ -161,7 +161,7 @@ void generate_bb_kingmoves(u64 *bbc)
 			cb_bb_setpos(&bbc[curPos], r+0, f-1);
 			cb_bb_setpos(&bbc[curPos], r+1, f-1);
 
-			fprintf(fLog,"INFO:bb_bishopmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbc[curPos]);
+			fprintf(fLog,"INFO:bb_kingmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbc[curPos]);
 			cb_bb_print(bbc[curPos]);
 		}
 	}
