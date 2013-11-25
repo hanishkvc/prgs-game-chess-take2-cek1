@@ -75,40 +75,40 @@ void cb_bb_print(u64 bb)
 	}
 }
 
-int cb_print(struct cb *mcb)
+int cb_print(struct cb *cbC)
 {
 	int off;
 	u64 pos;
 	int r,f;
 
-	fprintf(fLog,"INFO:cb_print:%c to move\n",mcb->sideToMove);
+	fprintf(fLog,"INFO:cb_print:%c to move\n",cbC->sideToMove);
 	for(r = 7; r >= 0; r--) {
 		for(f = 0; f < 8; f++) {
 			off = r*8+f;
 			pos = 0x1; pos <<= off;
-			if(mcb->wk & pos)
+			if(cbC->wk & pos)
 				fprintf(fLog,"K");
-			else if(mcb->wq & pos)
+			else if(cbC->wq & pos)
 				fprintf(fLog,"Q");
-			else if(mcb->wr & pos)
+			else if(cbC->wr & pos)
 				fprintf(fLog,"R");
-			else if(mcb->wn & pos)
+			else if(cbC->wn & pos)
 				fprintf(fLog,"N");
-			else if(mcb->wb & pos)
+			else if(cbC->wb & pos)
 				fprintf(fLog,"B");
-			else if(mcb->wp & pos)
+			else if(cbC->wp & pos)
 				fprintf(fLog,"P");
-			else if(mcb->bk & pos)
+			else if(cbC->bk & pos)
 				fprintf(fLog,"k");
-			else if(mcb->bq & pos)
+			else if(cbC->bq & pos)
 				fprintf(fLog,"q");
-			else if(mcb->br & pos)
+			else if(cbC->br & pos)
 				fprintf(fLog,"r");
-			else if(mcb->bn & pos)
+			else if(cbC->bn & pos)
 				fprintf(fLog,"n");
-			else if(mcb->bb & pos)
+			else if(cbC->bb & pos)
 				fprintf(fLog,"b");
-			else if(mcb->bp & pos)
+			else if(cbC->bp & pos)
 				fprintf(fLog,"p");
 			else
 				fprintf(fLog,"*");
@@ -126,15 +126,16 @@ int process_setoption(char *sCmd)
 
 #define CORRECTVALFOR_SIDETOMOVE
 
-int cb_findbest(struct cb *mcb, int curDepth, int maxDepth, int secs)
+int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs)
 {
 	int valPW;
 	int valPSTM;
 	char sBuf[1024];
+	struct cb cbN;
 
-	valPW = cb_evalpw(mcb);
+	valPW = cb_evalpw(cbC);
 #ifdef CORRECTVALFOR_SIDETOMOVE
-	if(mcb->sideToMove != STM_WHITE)
+	if(cbC->sideToMove != STM_WHITE)
 		valPSTM = -1*valPW;
 	else
 		valPSTM = valPW;
