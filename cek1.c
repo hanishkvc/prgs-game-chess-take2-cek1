@@ -6,6 +6,13 @@
 #define STM_WHITE 'w'
 #define STM_BLACK 'b'
 
+#define VALUE_QUEEN 900
+#define VALUE_ROOK 500
+#define VALUE_BISHOP 300
+#define VALUE_KNIGHT 300
+#define VALUE_PAWN 100
+#define VALUE_KING (VALUE_QUEEN+VALUE_ROOK+VALUE_BISHOP+VALUE_KNIGHT+VALUE_PAWN)
+
 typedef unsigned long long u64;
 FILE *fLog;
 
@@ -33,15 +40,18 @@ int cb_bb_setpos(u64 *bb, int r, int f)
 
 	if((f < 0) || (f > 7)) {
 		fprintf(fLog,"ERROR:cb_bb_setpos: file went beyond a-h :%d\n",f);
-		exit(100);
+		//exit(100);
+		return -1;
 	}
 	if((r < 0) || (r > 7)) {
 		fprintf(fLog,"ERROR:cb_bb_setpos: rank went beyond 1-8 :%d\n",r);
-		exit(100);
+		//exit(100);
+		return -2;
 	}
 	pos <<= off;
 	*bb |= pos;
 	fprintf(fLog,"INFO:cb_bb_setpos: f%d_r%d\n",f,r);
+	return 0;
 }
 
 int cb_print(struct cb *mcb)
@@ -90,33 +100,85 @@ int process_setoption(char *sCmd)
 {
 }
 
+#include "generate_movebbs.c"
+
 int cb_evalpw_mat(struct cb *mcb)
 {
 	int valPW = 0;
 	int valB = 0;
 	int valW = 0;
 
-	valB += __builtin_popcountll(mcb->bp)*100;
-	valB += __builtin_popcountll(mcb->br)*500;
-	valB += __builtin_popcountll(mcb->bn)*300;
-	valB += __builtin_popcountll(mcb->bb)*300;
-	valB += __builtin_popcountll(mcb->bq)*900;
+	valB += __builtin_popcountll(mcb->bp)*VALUE_PAWN;
+	valB += __builtin_popcountll(mcb->br)*VALUE_ROOK;
+	valB += __builtin_popcountll(mcb->bn)*VALUE_KNIGHT;
+	valB += __builtin_popcountll(mcb->bb)*VALUE_BISHOP;
+	valB += __builtin_popcountll(mcb->bq)*VALUE_QUEEN;
 
-	valW += __builtin_popcountll(mcb->wp)*100;
-	valW += __builtin_popcountll(mcb->wr)*500;
-	valW += __builtin_popcountll(mcb->wn)*300;
-	valW += __builtin_popcountll(mcb->wb)*300;
-	valW += __builtin_popcountll(mcb->wq)*900;
+	valW += __builtin_popcountll(mcb->wp)*VALUE_PAWN;
+	valW += __builtin_popcountll(mcb->wr)*VALUE_ROOK;
+	valW += __builtin_popcountll(mcb->wn)*VALUE_KNIGHT;
+	valW += __builtin_popcountll(mcb->wb)*VALUE_BISHOP;
+	valW += __builtin_popcountll(mcb->wq)*VALUE_QUEEN;
 
 	valPW = valW-valB;
 	return valPW;
+}
+
+int cb_eval_threats_fromknight(struct cb *mcb, char activeSide)
+{
+
+	int nPos = 0;
+	int val = 0;
+	u64 cNBB = 0;
+
+	if(activeSide == STM_WHITE) {
+		cNBB = mcb->wn;
+		while((nPos = ffsll(cNBB)) != 0) {
+			nPos -= 1;
+			fprintf(fLog,"DEBUG:threats_fromknight:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
+			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bk) * VALUE_KING;
+			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bq) * VALUE_QUEEN;
+			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->br) * VALUE_ROOK;
+			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bn) * VALUE_KNIGHT;
+			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bb) * VALUE_BISHOP;
+			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bp) * VALUE_PAWN;
+			cNBB &= ~(1ULL << nPos);			
+		}
+	} else {
+		cNBB = mcb->bn;
+		while((nPos = ffsll(cNBB)) != 0) {
+			nPos -= 1;
+			fprintf(fLog,"DEBUG:threats_fromknight:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
+			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wk) * VALUE_KING;
+			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wq) * VALUE_QUEEN;
+			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wr) * VALUE_ROOK;
+			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wn) * VALUE_KNIGHT;
+			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wb) * VALUE_BISHOP;
+			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wp) * VALUE_PAWN;
+			cNBB &= ~(1ULL << nPos);			
+		}
+	}
+
+	return val;
+}
+
+int cb_evalpw_threats(struct cb *mcb)
+{
+	int valPW = 0;
+	int valB = 0;
+	int valW = 0;
+
+	valW += cb_eval_threats_fromknight(mcb,STM_WHITE);
+	valB += cb_eval_threats_fromknight(mcb,STM_BLACK);
+	valPW = valW - valB;
+	return (valPW/10);
 }
 
 int cb_evalpw(struct cb *mcb)
 {
 	int valPW = 0;
 	valPW += cb_evalpw_mat(mcb);
-	// eval_threats
+	valPW += cb_evalpw_threats(mcb);
 	// eval_misc
 	return valPW;
 }
@@ -319,12 +381,18 @@ int run()
 	return 0;
 }
 
+int prepare()
+{
+	generate_bb_knightmoves(bbKnightMoves);
+}
+
 int main(int argc, char **argv)
 {
 
 	if((fLog=fopen("/tmp/cek1.log","a+")) == NULL)
 		return 1;
 	puts("CEK1 v20131125_0137\n");
+	prepare();
 	run();
 	fclose(fLog);
 	return 0;
