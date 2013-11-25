@@ -90,9 +90,9 @@ int process_setoption(char *sCmd)
 {
 }
 
-int cb_eval_mat(struct cb *mcb)
+int cb_evalpw_mat(struct cb *mcb)
 {
-	int val = 0;
+	int valPW = 0;
 	int valB = 0;
 	int valW = 0;
 
@@ -108,35 +108,40 @@ int cb_eval_mat(struct cb *mcb)
 	valW += __builtin_popcountll(mcb->wb)*300;
 	valW += __builtin_popcountll(mcb->wq)*900;
 
-	val = valW-valB;
-	return val;
+	valPW = valW-valB;
+	return valPW;
 }
 
-int cb_eval(struct cb *mcb)
+int cb_evalpw(struct cb *mcb)
 {
-	int val = 0;
-	val += cb_eval_mat(mcb);
+	int valPW = 0;
+	valPW += cb_evalpw_mat(mcb);
 	// eval_threats
 	// eval_misc
-	return val;
+	return valPW;
 }
 
 #define CORRECTVALFOR_SIDETOMOVE
 
 int cb_findbest(struct cb *mcb, int curDepth, int maxDepth, int secs)
 {
-	int val;
+	int valPW;
+	int valPSTM;
 	char sBuf[1024];
 
-	val = cb_eval(mcb);
+	valPW = cb_evalpw(mcb);
 #ifdef CORRECTVALFOR_SIDETOMOVE
 	if(mcb->sideToMove != STM_WHITE)
-		val = -1*val;
+		valPSTM = -1*valPW;
+	else
+		valPSTM = valPW;
+#else
+	valPSTM = valPW;
 #endif
-	send_resp_ex(sBuf,1024,"info score cp %d depth %d nodes %d time %d pv %s\n",val,curDepth,0,0,NULL);
+	send_resp_ex(sBuf,1024,"info score cp %d depth %d nodes %d time %d pv %s\n",valPSTM,curDepth,0,0,NULL);
 	curDepth += 1;
 	// Find possible moves 
-	return val; // ToThink, all info in above send_resp info to be sent
+	return valPW; // ToThink, all info in above send_resp info to be sent
 }
 
 int process_go(char *sCmd)
@@ -170,7 +175,7 @@ int process_position(char *sCmd)
 
 
 	r = 7; f = 0;
-	while(*fenStr != (char)NULL) {
+	while(*fenStr != '\0') {
 		fprintf(fLog,"INFO:pp:val[%c]\n",*fenStr);
 		if(fenStr[0] == 'p') {
 			cb_bb_setpos(&(gb.bp),r,f);
