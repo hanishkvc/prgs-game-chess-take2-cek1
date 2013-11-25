@@ -138,7 +138,88 @@ void generate_bb_queenmoves(u64 *bbq, u64 *bbr, u64 *bbb)
 	}
 }
 
+u64 bbKingMoves[64] = {	// Only few initialized to show concept, it is auto generated at runtime
+};
 
-// Add King moves bb
-// Add Pawn moves and attacks bb
+void generate_bb_kingmoves(u64 *bbc)
+{
+	int r,f;
+	int nr,nf,curPos;
+
+	for(r=0; r<8; r++) {
+		for(f=0; f<8; f++) {
+			curPos = r*8+f;
+			bbc[curPos] = 0;
+			cb_bb_setpos(&bbc[curPos], r-1, f+1);
+			cb_bb_setpos(&bbc[curPos], r+0, f+1);
+			cb_bb_setpos(&bbc[curPos], r+1, f+1);
+
+			cb_bb_setpos(&bbc[curPos], r-1, f+0);
+			cb_bb_setpos(&bbc[curPos], r+1, f+0);
+
+			cb_bb_setpos(&bbc[curPos], r-1, f-1);
+			cb_bb_setpos(&bbc[curPos], r+0, f-1);
+			cb_bb_setpos(&bbc[curPos], r+1, f-1);
+
+			fprintf(fLog,"INFO:bb_bishopmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbc[curPos]);
+			cb_bb_print(bbc[curPos]);
+		}
+	}
+}
+
+
+u64 bbBlackPawnNormalMoves[64] = {	// Only few initialized to show concept, it is auto generated at runtime
+};
+u64 bbBlackPawnAttackMoves[64] = {	// Only few initialized to show concept, it is auto generated at runtime
+};
+u64 bbWhitePawnNormalMoves[64] = {	// Only few initialized to show concept, it is auto generated at runtime
+};
+u64 bbWhitePawnAttackMoves[64] = {	// Only few initialized to show concept, it is auto generated at runtime
+};
+
+void generate_bb_pawnmoves(u64 *bbwn, u64 *bbwa, u64 *bbbn, u64 *bbba)
+{
+	int r,f;
+	int nr,nf,curPos;
+
+	for(r=0; r<8; r++) {
+		for(f=0; f<8; f++) {
+			curPos = r*8+f;
+			bbwn[curPos] = 0;
+			bbwa[curPos] = 0;
+			if(r == 0) {
+			} else {
+				if(r == 1)
+					cb_bb_setpos(&bbwn[curPos], r+2, f+0);
+				cb_bb_setpos(&bbwn[curPos], r+1, f+0);
+
+				cb_bb_setpos(&bbwa[curPos], r+1, f+1);
+				cb_bb_setpos(&bbwa[curPos], r+1, f-1);
+			}
+			fprintf(fLog,"INFO:bb_pawnmoves:White:pos[%d] movesquares[%0llx] attacksquares[%0llx]\n",curPos,bbwn[curPos],bbwa[curPos]);
+			cb_bb_print(bbwn[curPos]);
+			cb_bb_print(bbwa[curPos]);
+		}
+	}
+
+	for(r=7; r>=0; r--) {
+		for(f=0; f<8; f++) {
+			curPos = r*8+f;
+			bbbn[curPos] = 0;
+			bbba[curPos] = 0;
+			if(r == 7) {
+			} else {
+				if(r == 6)
+					cb_bb_setpos(&bbbn[curPos], r-2, f+0);
+				cb_bb_setpos(&bbbn[curPos], r-1, f+0);
+
+				cb_bb_setpos(&bbba[curPos], r-1, f+1);
+				cb_bb_setpos(&bbba[curPos], r-1, f-1);
+			}
+			fprintf(fLog,"INFO:bb_pawnmoves:Black:pos[%d] movesquares[%0llx] attacksquares[%0llx]\n",curPos,bbbn[curPos],bbba[curPos]);
+			cb_bb_print(bbbn[curPos]);
+			cb_bb_print(bbba[curPos]);
+		}
+	}
+}
 
