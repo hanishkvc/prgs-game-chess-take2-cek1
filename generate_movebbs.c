@@ -42,6 +42,7 @@ void generate_bb_knightmoves(u64 *bbc)
 			cb_bb_setpos(&bbc[curPos],nr,nf);
 			
 			fprintf(fLog,"INFO:bb_knightmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbc[curPos]);
+			cb_bb_print(bbc[curPos]);
 		}
 	}
 }
@@ -79,6 +80,7 @@ void generate_bb_rookmoves(u64 *bbc)
 			}
 			
 			fprintf(fLog,"INFO:bb_rookmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbc[curPos]);
+			cb_bb_print(bbc[curPos]);
 		}
 	}
 }
@@ -89,30 +91,31 @@ u64 bbBishopMoves[64] = {	// Only few initialized to show concept, it is auto ge
 void generate_bb_bishopmoves(u64 *bbc)
 {
 	int r,f;
-	int nr,nf,curPos;
+	int nr,nf1,nf2,curPos;
 
 	for(r=0; r<8; r++) {
 		for(f=0; f<8; f++) {
 			curPos = r*8+f;
 			bbc[curPos] = 0;
+			nf1 = f + 1;
+			nf2 = f - 1;
 			for(nr = r+1; nr <8; nr++) {
-			for(nf = f+1; nf <8; nf++) {
-				cb_bb_setpos(&bbc[curPos],nr,nf);
-			} }
+				cb_bb_setpos(&bbc[curPos],nr,nf1);
+				cb_bb_setpos(&bbc[curPos],nr,nf2);
+				nf1 = nf1 + 1;
+				nf2 = nf2 - 1;
+			}
+			nf1 = f + 1;
+			nf2 = f - 1;
 			for(nr = r-1; nr >= 0; nr--) {
-			for(nf = f+1; nf <8; nf++) {
-				cb_bb_setpos(&bbc[curPos],nr,nf);
-			} }
-			for(nr = r+1; nr <8; nr++) {
-			for(nf = f-1; nf >= 0; nf--) {
-				cb_bb_setpos(&bbc[curPos],nr,nf);
-			} }
-			for(nr = r-1; nr >= 0; nr--) {
-			for(nf = f-1; nf >= 0; nf--) {
-				cb_bb_setpos(&bbc[curPos],nr,nf);
-			} }
+				cb_bb_setpos(&bbc[curPos],nr,nf1);
+				cb_bb_setpos(&bbc[curPos],nr,nf2);
+				nf1 = nf1 + 1;
+				nf2 = nf2 - 1;
+			}
 
 			fprintf(fLog,"INFO:bb_bishopmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbc[curPos]);
+			cb_bb_print(bbc[curPos]);
 		}
 	}
 }
@@ -130,6 +133,7 @@ void generate_bb_queenmoves(u64 *bbq, u64 *bbr, u64 *bbb)
 			curPos = r*8+f;
 			bbq[curPos] = bbr[curPos] | bbb[curPos];
 			fprintf(fLog,"INFO:bb_queenmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbq[curPos]);
+			cb_bb_print(bbq[curPos]);
 		}
 	}
 }

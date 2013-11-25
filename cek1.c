@@ -55,6 +55,26 @@ int cb_bb_setpos(u64 *bb, int r, int f)
 	return 0;
 }
 
+void cb_bb_print(u64 bb)
+{
+	int off;
+	u64 pos;
+	int r,f;
+
+	fprintf(fLog,"INFO:cb_bb_print:\n");
+	for(r = 7; r >= 0; r--) {
+		for(f = 0; f < 8; f++) {
+			off = r*8+f;
+			pos = 0x1; pos <<= off;
+			if(bb & pos)
+				fprintf(fLog,"*");
+			else
+				fprintf(fLog,"-");
+		}
+		fprintf(fLog,"\n");
+	}
+}
+
 int cb_print(struct cb *mcb)
 {
 	int off;
