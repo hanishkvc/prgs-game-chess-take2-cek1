@@ -124,52 +124,66 @@ int cb_evalpw_mat(struct cb *mcb)
 	return valPW;
 }
 
-int cb_eval_threats_fromknight(struct cb *mcb, char activeSide)
+int cb_eval_tANDp_fromknight(struct cb *mcb, char activeSide)
 {
 
 	int nPos = 0;
 	int val = 0;
+	int val1 = 0;
+	int val2 = 0;
 	u64 cNBB = 0;
+	int weightage1, weightage2;
 
 	if(activeSide == STM_WHITE) {
 		cNBB = mcb->wn;
-		while((nPos = ffsll(cNBB)) != 0) {
-			nPos -= 1;
-			fprintf(fLog,"DEBUG:threats_fromknight:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
-			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bk) * VALUE_KING;
-			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bq) * VALUE_QUEEN;
-			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->br) * VALUE_ROOK;
-			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bn) * VALUE_KNIGHT;
-			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bb) * VALUE_BISHOP;
-			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bp) * VALUE_PAWN;
-			cNBB &= ~(1ULL << nPos);			
-		}
+		weightage1 = 10; // threats_given
+		weightage2 = 8; // protection_provided
 	} else {
 		cNBB = mcb->bn;
-		while((nPos = ffsll(cNBB)) != 0) {
-			nPos -= 1;
-			fprintf(fLog,"DEBUG:threats_fromknight:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
-			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wk) * VALUE_KING;
-			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wq) * VALUE_QUEEN;
-			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wr) * VALUE_ROOK;
-			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wn) * VALUE_KNIGHT;
-			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wb) * VALUE_BISHOP;
-			val += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wp) * VALUE_PAWN;
-			cNBB &= ~(1ULL << nPos);			
-		}
+		weightage1 = 8; // protection_provided
+		weightage2 = 10; // threats_given
+	}
+	while((nPos = ffsll(cNBB)) != 0) {
+		nPos -= 1;
+		fprintf(fLog,"DEBUG:threats_fromknight:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
+		val1 += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bk) * VALUE_KING;
+		val1 += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bq) * VALUE_QUEEN;
+		val1 += __builtin_popcountl(bbKnightMoves[nPos] & mcb->br) * VALUE_ROOK;
+		val1 += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bn) * VALUE_KNIGHT;
+		val1 += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bb) * VALUE_BISHOP;
+		val1 += __builtin_popcountl(bbKnightMoves[nPos] & mcb->bp) * VALUE_PAWN;
+
+		val2 += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wk) * VALUE_KING;
+		val2 += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wq) * VALUE_QUEEN;
+		val2 += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wr) * VALUE_ROOK;
+		val2 += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wn) * VALUE_KNIGHT;
+		val2 += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wb) * VALUE_BISHOP;
+		val2 += __builtin_popcountl(bbKnightMoves[nPos] & mcb->wp) * VALUE_PAWN;
+		cNBB &= ~(1ULL << nPos);			
 	}
 
+	// For White val1 = threats_given; val2 = protection_provided
+	// For Black val2 = threats_given; val1 = protection_provided
+	val = ((val1 * weightage1) + (val2 * weightage2))/10;
+	fprintf(fLog,"INFO:tANDp_fromKnights:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
+			val1,weightage1, val2, weightage2, val);
+	// FIXME: The protection value is bit more complicated in that it is dependent on whether
+	// the threat from the opposite side is coming from a knight or other pieces.
+	// Because if threat from knight, then the protection is full and needs to be fully accounted
+	// However if threat from other pieces, then the protection needs to be fully or partially accounted
+	// depending on whether other peices are in the path which block the threat in the first place or not.
+	// FORNOW: Protection value is given same weihtage always.
 	return val;
 }
 
-int cb_evalpw_threats(struct cb *mcb)
+int cb_evalpw_threatsANDprotection(struct cb *mcb)
 {
 	int valPW = 0;
 	int valB = 0;
 	int valW = 0;
 
-	valW += cb_eval_threats_fromknight(mcb,STM_WHITE);
-	valB += cb_eval_threats_fromknight(mcb,STM_BLACK);
+	valW += cb_eval_tANDp_fromknight(mcb,STM_WHITE);
+	valB += cb_eval_tANDp_fromknight(mcb,STM_BLACK);
 	valPW = valW - valB;
 	return (valPW/10);
 }
@@ -177,9 +191,15 @@ int cb_evalpw_threats(struct cb *mcb)
 int cb_evalpw(struct cb *mcb)
 {
 	int valPW = 0;
-	valPW += cb_evalpw_mat(mcb);
-	valPW += cb_evalpw_threats(mcb);
+	int valMat = 0;
+	int valTandP = 0;
+
+	valMat = cb_evalpw_mat(mcb);
+	valTandP = cb_evalpw_threatsANDprotection(mcb);
 	// eval_misc
+
+	valPW = valMat + valTandP;
+	fprintf(fLog,"valMat[%d] + valTandP[%d] = valPW[%d]\n", valMat, valTandP, valPW);
 	return valPW;
 }
 
