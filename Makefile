@@ -15,6 +15,7 @@ install: cek1.c
 clean:
 	rm __MAKE__*
 	rm ./cek1
+	rm ./cek1_pw
 	rm ~/cek1.log
 
 clean-all: clean

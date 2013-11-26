@@ -25,6 +25,11 @@ int cb_evalpw_king_underattack(struct cb *cbC)
 		valW += __builtin_popcountl(bbWhitePawnAttackMoves[posP] & bbK) * VALUE_KING_ATTACKED;
 		bbP &= ~(1ULL << posP);			
 	}
+
+	if(valW >= VALUE_KING_ATTACKED)
+		cbC->bk_underattack += 1;
+	else
+		cbC->bk_underattack = 0;
 	
 	// White king being attacked
 	valB = 0;
@@ -43,6 +48,11 @@ int cb_evalpw_king_underattack(struct cb *cbC)
 		valB += __builtin_popcountl(bbBlackPawnAttackMoves[posP] & bbK) * VALUE_KING_ATTACKED;
 		bbP &= ~(1ULL << posP);			
 	}
+
+	if(valB >= VALUE_KING_ATTACKED)
+		cbC->wk_underattack += 1;
+	else
+		cbC->wk_underattack = 0;
 
 	// Result
 	fprintf(fLog,"INFO:kingunderattack: valW[%d] - valB[%d]\n", valW, valB);
