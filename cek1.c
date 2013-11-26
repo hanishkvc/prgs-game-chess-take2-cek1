@@ -177,7 +177,7 @@ char *cb_2longnot(char *sIMov)
 	char *gDest = gNOTSBUF;
 
 	for(i=0;i<strlen(sIMov);i++) {
-		if(sIMov[i] != '-') {
+		if((sIMov[i] != '-') && (sIMov[i] != 'P')) {
 			*gDest=sIMov[i];
 			gDest++;
 		}
@@ -265,6 +265,12 @@ void mvhlpr_domove(struct cb *cbC, char mPiece, int mSPos, int mDPos)
 			cbC->wp &= ~(1ULL << mSPos);
 			cbC->wp |= (1ULL << mDPos);
 		}
+		cbC->bk &= ~(1ULL << mDPos);
+		cbC->bq &= ~(1ULL << mDPos);
+		cbC->br &= ~(1ULL << mDPos);
+		cbC->bn &= ~(1ULL << mDPos);
+		cbC->bb &= ~(1ULL << mDPos);
+		cbC->bp &= ~(1ULL << mDPos);
 	} else {
 		if(mPiece == 'K') {
 			cbC->bk &= ~(1ULL << mSPos);
@@ -285,6 +291,12 @@ void mvhlpr_domove(struct cb *cbC, char mPiece, int mSPos, int mDPos)
 			cbC->bp &= ~(1ULL << mSPos);
 			cbC->bp |= (1ULL << mDPos);
 		}
+		cbC->wk &= ~(1ULL << mDPos);
+		cbC->wq &= ~(1ULL << mDPos);
+		cbC->wr &= ~(1ULL << mDPos);
+		cbC->wn &= ~(1ULL << mDPos);
+		cbC->wb &= ~(1ULL << mDPos);
+		cbC->wp &= ~(1ULL << mDPos);
 	}
 
 }
