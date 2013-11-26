@@ -1,4 +1,54 @@
 
+#define VALUE_KING_ATTACKED (VALUE_KING*4)
+
+int cb_evalpw_king_underattack(struct cb *cbC)
+{
+	int posP;
+	u64 bbK;
+	u64 bbP;
+	int valW,valB;
+
+	// Black king being attacked
+	valW = 0;
+	bbK = cbC->bk;
+
+	bbP = cbC->wn;
+	while((posP = ffsll(bbP)) != 0) {
+		posP -= 1;
+		valW += __builtin_popcountl(bbKnightMoves[posP] & bbK) * VALUE_KING_ATTACKED;
+		bbP &= ~(1ULL << posP);			
+	}
+	
+	bbP = cbC->wp;
+	while((posP = ffsll(bbP)) != 0) {
+		posP -= 1;
+		valW += __builtin_popcountl(bbWhitePawnAttackMoves[posP] & bbK) * VALUE_KING_ATTACKED;
+		bbP &= ~(1ULL << posP);			
+	}
+	
+	// White king being attacked
+	valB = 0;
+	bbK = cbC->wk;
+
+	bbP = cbC->bn;
+	while((posP = ffsll(bbP)) != 0) {
+		posP -= 1;
+		valB += __builtin_popcountl(bbKnightMoves[posP] & bbK) * VALUE_KING_ATTACKED;
+		bbP &= ~(1ULL << posP);			
+	}
+	
+	bbP = cbC->bp;
+	while((posP = ffsll(bbP)) != 0) {
+		posP -= 1;
+		valB += __builtin_popcountl(bbBlackPawnAttackMoves[posP] & bbK) * VALUE_KING_ATTACKED;
+		bbP &= ~(1ULL << posP);			
+	}
+
+	// Result
+	fprintf(fLog,"INFO:kingunderattack: valW[%d] - valB[%d]\n", valW, valB);
+	return (valW-valB);
+}
+
 int cb_evalpw_mat(struct cb *cbC)
 {
 	int valPW = 0;
@@ -354,13 +404,17 @@ int cb_evalpw(struct cb *cbC)
 	int valPW = 0;
 	int valMat = 0;
 	int valTandP = 0;
+	int valKingAttacked = 0;
 
 	valMat = cb_evalpw_mat(cbC);
 	valTandP = cb_evalpw_threatsANDprotection(cbC);
+	valKingAttacked = cb_evalpw_king_underattack(cbC);
 	// eval_misc
 
-	valPW = valMat + valTandP;
-	fprintf(fLog,"valMat[%d] + valTandP[%d] = valPW[%d]\n", valMat, valTandP, valPW);
+	valPW = valMat + valTandP + valKingAttacked;
+
+	fprintf(fLog,"valMat[%d] + valTandP[%d] + valKingAttacked[%d] = valPW[%d] <=> Moves[%s]\n",
+				valMat, valTandP, valKingAttacked, valPW, cbC->sMoves);
 	return valPW;
 }
 

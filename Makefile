@@ -4,7 +4,8 @@ cek1: cek1.c moves.c evals.c generate_movebbs.c
 	echo -n "#define PRG_VERSION \"CEK1 v" > __MAKE__PREFIX.h
 	date +%Y%m%d_%H%M\" > __MAKE__DT.h
 	cat __MAKE__PREFIX.h __MAKE__DT.h > makeheader.h
-	gcc -g -o cek1 cek1.c
+	gcc -g -o cek1_pw cek1.c
+	gcc -g -o cek1 cek1.c -DCORRECTVALFOR_SIDETOMOVE
 
 install: cek1.c
 	cp cek1 ~/local/bin/

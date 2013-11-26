@@ -108,6 +108,35 @@ int moves_forknight(struct cb *cbC, char movs[512][32], int iCur)
 	return iCur;
 }
 
+int moves_forking(struct cb *cbC, char movs[512][32], int iCur)
+{
+	u64 bbS, bbD;
+	char sTemp[8];
+	int posS,posD;
+
+	if(cbC->sideToMove == STM_WHITE)
+		bbS = cbC->wk;
+	else
+		bbS = cbC->bk;
+
+	while((posS = ffsll(bbS)) != 0) {
+		posS -= 1;
+		bbD = bbKingMoves[posS];
+		while((posD = ffsll(bbD)) != 0) {
+			posD -= 1;
+			strncpy(movs[iCur],"K",32);
+			strcat(movs[iCur],cb_bbpos2strloc(posS,sTemp));
+			strcat(movs[iCur],"-");
+			strcat(movs[iCur],cb_bbpos2strloc(posD,sTemp));
+			//check_iskingattacked(posD);
+			iCur += 1;
+			bbD &= ~(1ULL << posD);
+		}
+		bbS &= ~(1ULL << posS);			
+	}
+	return iCur;
+}
+
 int moves_get(struct cb *cbC, char movs[512][32], int iCur)
 {
 	int iNew;
@@ -115,6 +144,7 @@ int moves_get(struct cb *cbC, char movs[512][32], int iCur)
 	iNew = moves_forknight(cbC, movs, iCur);
 	iNew = moves_forpawnattacks(cbC, movs, iNew);
 	iNew = moves_forpawnnormal(cbC, movs, iNew);
+	iNew = moves_forking(cbC, movs, iNew);
 	if(iNew >=512)
 		exit(200);
 	gMovesCnt += (iNew-iCur);

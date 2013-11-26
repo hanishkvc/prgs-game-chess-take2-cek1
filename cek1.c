@@ -1,3 +1,10 @@
+/*
+ * cek1 - My 2nd chess engine (first in recent years). It is based on bitboards concept.
+ * FIXME:
+ *   1. Have to identify moves which attack the king and increase the value greatly.
+ *      So that A given side gives high priority to attack the king.
+ *      AND the side whose king is under attack can take actions to escape if possible.
+ */
 #include <stdio.h>
 #include <sys/select.h>
 #include <string.h>
@@ -341,8 +348,8 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	return iRes;
 }
 
-#undef CORRECTVALFOR_SIDETOMOVE
-#define CORRECTVALFOR_SIDETOMOVE
+//#undef CORRECTVALFOR_SIDETOMOVE
+//#define CORRECTVALFOR_SIDETOMOVE
 
 int cb_valpw2valpstm(char sideToMove, int valPW)
 {
