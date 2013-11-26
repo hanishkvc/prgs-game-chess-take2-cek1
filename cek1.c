@@ -3,9 +3,16 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define PRG_VERSION "CEK1 v20131125_1430\n"
+#include "makeheader.h"
+
+//#define PRG_VERSION "CEK1 v20131125_1430\n"
 #define STM_WHITE 'w'
 #define STM_BLACK 'b'
+
+#define MOVES_BUFSIZE 8196
+#define NUMOFPARALLELMOVES 512
+#define S1KTEMPBUFSIZE 1024
+#define S32TEMPBUFSIZE 32
 
 #define VALUE_QUEEN 900
 #define VALUE_ROOK 500
@@ -21,7 +28,7 @@ struct cb {
 	u64 wk,wq,wr,wb,wn,wp;
 	u64 bk,bq,br,bb,bn,bp;
 	char sideToMove;
-	char sMoves[8196];
+	char sMoves[MOVES_BUFSIZE];
 } gb;
 
 // Has this is a multiline macro, always use it inside braces
@@ -249,13 +256,16 @@ void mvhlpr_domove(struct cb *cbC, char mPiece, int mSPos, int mDPos)
 
 }
 
-int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int secs, int movNum, int altMovNum)
+int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int secs, int movNum, int altMovNum,char *sNextBestMoves)
 {
 	struct cb cbN;
 	int iRes;
 	char mPiece;
 	int mSPos, mDPos;
-	char sBuf[1024];
+	char sBuf[S1KTEMPBUFSIZE];
+	char sNBMoves[MOVES_BUFSIZE];
+
+	bzero(sNBMoves,8);
 
 	iRes = move_validate(cbC, sMov);
 	if(iRes == DO_ERROR)
@@ -266,7 +276,7 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	mSPos = cb_strloc2bbpos(&sMov[1]);
 	mDPos = cb_strloc2bbpos(&sMov[4]);
 	
-	//send_resp_ex(sBuf,1024,"info depth %d currmove %s currmovenumber %d\n", curDepth, sMov, altMovNum);
+	//send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info depth %d currmove %s currmovenumber %d\n", curDepth, sMov, altMovNum);
 	mvhlpr_domove(&cbN,mPiece,mSPos,mDPos);
 	if(cbC->sideToMove == STM_WHITE) {
 		movNum += 1;
@@ -279,7 +289,9 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	}
 	strcat(cbN.sMoves,sMov);
 	strcat(cbN.sMoves," ");
-	return cb_findbest(&cbN,curDepth,maxDepth,secs,movNum);
+	iRes = cb_findbest(&cbN,curDepth,maxDepth,secs,movNum,sNBMoves);
+	strcat(sNextBestMoves,sNBMoves); // FIXME: CAN BE REMOVED, CROSSVERIFY
+	return iRes;
 }
 
 #define CORRECTVALFOR_SIDETOMOVE
@@ -293,16 +305,18 @@ int cb_valpw2valpstm(char sideToMove, int valPW)
 		return valPW;
 }
 
-int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum)
+int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves)
 {
 	int valPW;
 	int val;
-	char sBuf[1024];
-	char movs[512][32];
-	int movsEval[512];
+	char sBuf[S1KTEMPBUFSIZE];
+	char movs[NUMOFPARALLELMOVES][32];
+	int movsEval[NUMOFPARALLELMOVES];
 	int iMCnt, iCur;
 	int iMaxPosVal,iMaxPosInd,iMaxNegVal,iMaxNegInd;
 	int iMaxVal, iMaxInd;
+	char sNBMoves[MOVES_BUFSIZE];
+	char sMaxPosNBMoves[MOVES_BUFSIZE],sMaxNegNBMoves[MOVES_BUFSIZE];
 
 	valPW = cb_evalpw(cbC);
 #ifdef CORRECTVALFOR_SIDETOMOVE
@@ -314,7 +328,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 #endif
 
 	if(curDepth == maxDepth) {
-		send_resp_ex(sBuf,1024,"DEBUG:info score cp %d depth %d nodes %d time %d pv %s\n",val,curDepth,0,0,cbC->sMoves);
+		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"DEBUG:info score cp %d depth %d nodes %d time %d pv %s\n",val,curDepth,0,0,cbC->sMoves);
 		return valPW;
 	}
 
@@ -322,8 +336,9 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	iMaxPosVal = 0; iMaxNegVal = 0; iMaxPosInd = -1; iMaxNegInd = -1;
 	iMCnt = moves_get(cbC,movs,0);
 	for(iCur = 0; iCur < iMCnt; iCur++) {
-		//send_resp_ex(sBuf,1024,"info currmove %s currmovenumber %d\n", movs[iCur], iCur);
-		movsEval[iCur] = move_process(cbC, movs[iCur], curDepth, maxDepth, secs, movNum, iCur);
+		//send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info currmove %s currmovenumber %d\n", movs[iCur], iCur);
+		strcpy(sNBMoves,"");
+		movsEval[iCur] = move_process(cbC, movs[iCur], curDepth, maxDepth, secs, movNum, iCur,sNBMoves); 
 		if(movsEval[iCur] == DO_ERROR)
 			continue;
 		if(iMaxPosInd == -1) {
@@ -335,10 +350,12 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		if(movsEval[iCur] > iMaxPosVal) {
 			iMaxPosVal = movsEval[iCur];
 			iMaxPosInd = iCur;
+			strcpy(sMaxPosNBMoves,sNBMoves);
 		}
 		if(movsEval[iCur] < iMaxNegVal) {
 			iMaxNegVal = movsEval[iCur];
 			iMaxNegInd = iCur;
+			strcpy(sMaxNegNBMoves,sNBMoves);
 		}
 	}
 	// Maybe (to think) Send best value from the moves above 
@@ -353,6 +370,9 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			fprintf(fLog,"INFO:findbest:curDepth[%d] mov[%s]\n",curDepth,movs[iMaxPosInd]);
 			iMaxVal = iMaxPosVal;
 			iMaxInd = iMaxPosInd;
+			strcpy(sNextBestMoves,movs[iMaxInd]);
+			strcat(sNextBestMoves," ");
+			strcat(sNextBestMoves,sMaxNegNBMoves);
 		}
 	} else {
 		if(iMaxNegInd == -1) {
@@ -363,6 +383,9 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			fprintf(fLog,"INFO:findbest:curDepth[%d] mov[%s]\n",curDepth,movs[iMaxNegInd]);
 			iMaxVal = iMaxNegVal;
 			iMaxInd = iMaxNegInd;
+			strcpy(sNextBestMoves,movs[iMaxInd]);
+			strcat(sNextBestMoves," ");
+			strcat(sNextBestMoves,sMaxNegNBMoves);
 		}
 	}
 #ifdef CORRECTVALFOR_SIDETOMOVE
@@ -373,10 +396,12 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	//AVOIDED if(curDepth == 1) // FIXME: Have to think, may avoid this check
 	{
 	if(iMaxInd == -1) {
-		send_resp_ex(sBuf,1024,"info score cp %d depth %d nodes %d time %d pv %s %s\n",val,curDepth,0,0,cbC->sMoves,"NO VALID MOVE");
+		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %d spv %s pv %s %s\n",
+				val,curDepth,0,0,sNextBestMoves,cbC->sMoves,"NO VALID MOVE");
 	}
 	else {
-		send_resp_ex(sBuf,1024,"info score cp %d depth %d nodes %d time %d pv %s %s\n",val,curDepth,0,0,cbC->sMoves,movs[iMaxInd]);
+		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %d spv %s pv %s %s\n",
+				val,curDepth,0,0,sNextBestMoves,cbC->sMoves,movs[iMaxInd]);
 	}
 	}
 	return iMaxVal; 
@@ -384,7 +409,9 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 
 int process_go(char *sCmd)
 {
-	cb_findbest(&gb,0,3,0,0);
+	char sNextBestMoves[MOVES_BUFSIZE];
+	bzero(sNextBestMoves,MOVES_BUFSIZE);
+	cb_findbest(&gb,0,3,0,0,sNextBestMoves);
 	return 0;
 }
 
@@ -508,16 +535,16 @@ int process_position(char *sCmd)
 int process_uci()
 {
 
-	char sCmdBuf[1024];
+	char sCmdBuf[S1KTEMPBUFSIZE];
 	char *sCmd;
-	char sTemp[1024];
+	char sTemp[S1KTEMPBUFSIZE];
 
-	sCmd = fgets(sCmdBuf, 1024, stdin);
+	sCmd = fgets(sCmdBuf, S1KTEMPBUFSIZE, stdin);
 	fprintf(fLog,"GOT:%s\n",sCmd);
 	fflush(fLog);
 
 	if(strncmp(sCmd,"uci",3) == 0) {
-		send_resp_ex(sTemp,1024,"id name %s",PRG_VERSION);
+		send_resp_ex(sTemp,S1KTEMPBUFSIZE,"id name %s\n",PRG_VERSION);
 		send_resp("id author hkvc\n");
 		send_resp("option name Ponder type check default true\n");
 		send_resp("option name Hash type spin default 1 min 1 max 100\n");
@@ -570,10 +597,11 @@ int prepare()
 
 int main(int argc, char **argv)
 {
+	char sTemp[S32TEMPBUFSIZE];
 
 	if((fLog=fopen("/tmp/cek1.log","a+")) == NULL)
 		return 1;
-	send_resp(PRG_VERSION);
+	send_resp_ex(sTemp,S32TEMPBUFSIZE,"%s\n",PRG_VERSION);
 	prepare();
 	run();
 	fclose(fLog);
