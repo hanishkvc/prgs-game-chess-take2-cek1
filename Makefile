@@ -1,6 +1,6 @@
 
 
-cek1: cek1.c
+cek1: cek1.c moves.c evals.c generate_movebbs.c
 	gcc -g -o cek1 cek1.c
 
 install: cek1.c

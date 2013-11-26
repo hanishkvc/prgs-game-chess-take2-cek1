@@ -21,9 +21,10 @@ struct cb {
 	u64 wk,wq,wr,wb,wn,wp;
 	u64 bk,bq,br,bb,bn,bp;
 	char sideToMove;
+	char sMoves[8196];
 } gb;
 
-
+// Has this is a multiline macro, always use it inside braces
 #define send_resp_ex(sBuffer,sSize,...) snprintf(sBuffer,sSize,__VA_ARGS__); send_resp(sBuffer);
 
 void send_resp(char *sBuf)
@@ -32,6 +33,35 @@ void send_resp(char *sBuf)
 	fflush(stdout);
 	fprintf(fLog,"SENT:%s",sBuf);
 	fflush(fLog);
+}
+
+int cb_strloc2bbpos(char *sMov)
+{
+	int r,f;
+
+	f=(int)sMov[0]-'a';
+	r=(int)sMov[1]-'1';
+	if(((r < 0) || (r > 7)) || ((f < 0) || (f > 7)))
+		return -1;
+	return(r*8+f);	
+}
+
+char bbpos2strloc_array[64][4] = {
+	"a1","b1","c1","d1","e1","f1","g1","h1",
+	"a2","b2","c2","d2","e2","f2","g2","h2",
+	"a3","b3","c3","d3","e3","f3","g3","h3",
+	"a4","b4","c4","d4","e4","f4","g4","h4",
+	"a5","b5","c5","d5","e5","f5","g5","h5",
+	"a6","b6","c6","d6","e6","f6","g6","h6",
+	"a7","b7","c7","d7","e7","f7","g7","h7",
+	"a8","b8","c8","d8","e8","f8","g8","h8" };
+
+char *cb_bbpos2strloc(int iPos, char *sBuf)
+{
+	if(iPos > 63)
+		return NULL;
+	strncpy(sBuf,bbpos2strloc_array[iPos],4);
+	return sBuf;
 }
 
 int cb_bb_setpos(u64 *bb, int r, int f)
@@ -53,6 +83,12 @@ int cb_bb_setpos(u64 *bb, int r, int f)
 	*bb |= pos;
 	fprintf(fLog,"INFO:cb_bb_setpos: f%d_r%d\n",f,r);
 	return 0;
+}
+
+#define dbg_cb_bb_print dummy
+
+void dummy() 
+{
 }
 
 void cb_bb_print(u64 bb)
@@ -123,34 +159,232 @@ int process_setoption(char *sCmd)
 
 #include "generate_movebbs.c"
 #include "evals.c"
+#include "moves.c"
+
+#define DO_FREE 0
+#define DO_SAMESIDE 1
+#define DO_ENEMYSIDE 2
+#define DO_ERROR 0x0FFFFFFF
+#define VAL_ERROR DO_ERROR
+
+int mv_dest_occupied(struct cb *cbC, char *sMov)
+{
+	int iPos;
+
+	u64 bbSOcc = 0;
+	u64 bbEOcc = 0;
+
+	if(cbC->sideToMove == STM_WHITE) {
+		bbSOcc = cbC->wk | cbC->wq | cbC->wr | cbC->wn | cbC->wb | cbC->wp;
+		bbEOcc = cbC->bk | cbC->bq | cbC->br | cbC->bn | cbC->bb | cbC->bp;
+	} else {
+		bbSOcc = cbC->bk | cbC->bq | cbC->br | cbC->bn | cbC->bb | cbC->bp;
+		bbEOcc = cbC->wk | cbC->wq | cbC->wr | cbC->wn | cbC->wb | cbC->wp;
+	}
+	iPos = cb_strloc2bbpos(&sMov[4]);
+	if(iPos == -1)
+		return DO_ERROR;
+	if(bbSOcc & (1ULL<<iPos))
+		return DO_SAMESIDE;
+	else if(bbEOcc & (1ULL<<iPos))
+		return DO_ENEMYSIDE;
+	else
+		return DO_FREE;
+}
+
+int move_validate(struct cb *cbC, char *sMov)
+{
+	int iRes;
+
+	iRes = mv_dest_occupied(cbC,sMov);
+	if((iRes == DO_ERROR) || (iRes == DO_SAMESIDE))
+		return DO_ERROR;
+	return iRes;
+}
+
+void mvhlpr_domove(struct cb *cbC, char mPiece, int mSPos, int mDPos)
+{
+	
+	if(cbC->sideToMove == STM_WHITE) {
+		if(mPiece == 'K') {
+			cbC->wk &= ~(1ULL << mSPos);
+			cbC->wk |= (1ULL << mDPos);
+		} else if(mPiece == 'Q') {
+			cbC->wq &= ~(1ULL << mSPos);
+			cbC->wq |= (1ULL << mDPos);
+		} else if(mPiece == 'R') {
+			cbC->wr &= ~(1ULL << mSPos);
+			cbC->wr |= (1ULL << mDPos);
+		} else if(mPiece == 'N') {
+			cbC->wn &= ~(1ULL << mSPos);
+			cbC->wn |= (1ULL << mDPos);
+		} else if(mPiece == 'B') {
+			cbC->wb &= ~(1ULL << mSPos);
+			cbC->wb |= (1ULL << mDPos);
+		} else if(mPiece == 'P') {
+			cbC->wp &= ~(1ULL << mSPos);
+			cbC->wp |= (1ULL << mDPos);
+		}
+	} else {
+		if(mPiece == 'K') {
+			cbC->bk &= ~(1ULL << mSPos);
+			cbC->bk |= (1ULL << mDPos);
+		} else if(mPiece == 'Q') {
+			cbC->bq &= ~(1ULL << mSPos);
+			cbC->bq |= (1ULL << mDPos);
+		} else if(mPiece == 'R') {
+			cbC->br &= ~(1ULL << mSPos);
+			cbC->br |= (1ULL << mDPos);
+		} else if(mPiece == 'N') {
+			cbC->bn &= ~(1ULL << mSPos);
+			cbC->bn |= (1ULL << mDPos);
+		} else if(mPiece == 'B') {
+			cbC->bb &= ~(1ULL << mSPos);
+			cbC->bb |= (1ULL << mDPos);
+		} else if(mPiece == 'P') {
+			cbC->bp &= ~(1ULL << mSPos);
+			cbC->bp |= (1ULL << mDPos);
+		}
+	}
+
+}
+
+int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int secs, int movNum, int altMovNum)
+{
+	struct cb cbN;
+	int iRes;
+	char mPiece;
+	int mSPos, mDPos;
+	char sBuf[1024];
+
+	iRes = move_validate(cbC, sMov);
+	if(iRes == DO_ERROR)
+		return DO_ERROR;
+	memcpy(&cbN,cbC,sizeof(struct cb));
+
+	mPiece = sMov[0];
+	mSPos = cb_strloc2bbpos(&sMov[1]);
+	mDPos = cb_strloc2bbpos(&sMov[4]);
+	
+	//send_resp_ex(sBuf,1024,"info depth %d currmove %s currmovenumber %d\n", curDepth, sMov, altMovNum);
+	mvhlpr_domove(&cbN,mPiece,mSPos,mDPos);
+	if(cbC->sideToMove == STM_WHITE) {
+		movNum += 1;
+		sprintf(sBuf,"%d.",movNum);
+		strcat(cbN.sMoves,sBuf);
+		cbN.sideToMove = STM_BLACK;
+	}
+	else {
+		cbN.sideToMove = STM_WHITE;
+	}
+	strcat(cbN.sMoves,sMov);
+	strcat(cbN.sMoves," ");
+	return cb_findbest(&cbN,curDepth,maxDepth,secs,movNum);
+}
 
 #define CORRECTVALFOR_SIDETOMOVE
+#undef CORRECTVALFOR_SIDETOMOVE
 
-int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs)
+int cb_valpw2valpstm(char sideToMove, int valPW)
+{
+	if(sideToMove != STM_WHITE)
+		return (-1*valPW);
+	else
+		return valPW;
+}
+
+int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum)
 {
 	int valPW;
-	int valPSTM;
+	int val;
 	char sBuf[1024];
-	struct cb cbN;
+	char movs[512][32];
+	int movsEval[512];
+	int iMCnt, iCur;
+	int iMaxPosVal,iMaxPosInd,iMaxNegVal,iMaxNegInd;
+	int iMaxVal, iMaxInd;
 
 	valPW = cb_evalpw(cbC);
 #ifdef CORRECTVALFOR_SIDETOMOVE
-	if(cbC->sideToMove != STM_WHITE)
-		valPSTM = -1*valPW;
-	else
-		valPSTM = valPW;
+	// FIXME: Should use the original sideToMove (i.e curDepth = 0) info and not the current sideToMove (curDepth > 0)
+	// Have to add a variable to struct cb to store the sideToMoveORIG
+	val = cb_valpw2valpstm(cbC->sideToMove,valPW); 
 #else
-	valPSTM = valPW;
+	val = valPW;
 #endif
-	send_resp_ex(sBuf,1024,"info score cp %d depth %d nodes %d time %d pv %s\n",valPSTM,curDepth,0,0,NULL);
+
+	if(curDepth == maxDepth) {
+		send_resp_ex(sBuf,1024,"DEBUG:info score cp %d depth %d nodes %d time %d pv %s\n",val,curDepth,0,0,cbC->sMoves);
+		return valPW;
+	}
+
 	curDepth += 1;
-	// Find possible moves 
-	return valPW; // ToThink, all info in above send_resp info to be sent
+	iMaxPosVal = 0; iMaxNegVal = 0; iMaxPosInd = -1; iMaxNegInd = -1;
+	iMCnt = moves_get(cbC,movs,0);
+	for(iCur = 0; iCur < iMCnt; iCur++) {
+		//send_resp_ex(sBuf,1024,"info currmove %s currmovenumber %d\n", movs[iCur], iCur);
+		movsEval[iCur] = move_process(cbC, movs[iCur], curDepth, maxDepth, secs, movNum, iCur);
+		if(movsEval[iCur] == DO_ERROR)
+			continue;
+		if(iMaxPosInd == -1) {
+			iMaxPosInd = iCur;
+			iMaxPosVal = movsEval[iCur];
+			iMaxNegInd = iCur;
+			iMaxNegVal = movsEval[iCur];
+		}
+		if(movsEval[iCur] > iMaxPosVal) {
+			iMaxPosVal = movsEval[iCur];
+			iMaxPosInd = iCur;
+		}
+		if(movsEval[iCur] < iMaxNegVal) {
+			iMaxNegVal = movsEval[iCur];
+			iMaxNegInd = iCur;
+		}
+	}
+	// Maybe (to think) Send best value from the moves above 
+	// ToThink, all info in above send_resp info to be sent
+
+	if(cbC->sideToMove == STM_WHITE) {
+		if(iMaxPosInd == -1) {
+			fprintf(fLog,"DEBUG:findbest:curDepth[%d]\n",curDepth);
+			iMaxVal = VAL_ERROR;
+			iMaxInd = -1;
+		} else {
+			fprintf(fLog,"INFO:findbest:curDepth[%d] mov[%s]\n",curDepth,movs[iMaxPosInd]);
+			iMaxVal = iMaxPosVal;
+			iMaxInd = iMaxPosInd;
+		}
+	} else {
+		if(iMaxNegInd == -1) {
+			fprintf(fLog,"DEBUG:findbest:curDepth[%d]\n",curDepth);
+			iMaxVal = VAL_ERROR;
+			iMaxInd = -1;
+		} else {
+			fprintf(fLog,"INFO:findbest:curDepth[%d] mov[%s]\n",curDepth,movs[iMaxNegInd]);
+			iMaxVal = iMaxNegVal;
+			iMaxInd = iMaxNegInd;
+		}
+	}
+#ifdef CORRECTVALFOR_SIDETOMOVE
+	val = cb_valpw2valpstm(cbC->sideToMove,iMaxVal); // FIXME: Orig sideToMove
+#else
+	val = iMaxVal;
+#endif
+	//AVOIDED if(curDepth == 1) // FIXME: Have to think, may avoid this check
+	{
+	if(iMaxInd == -1) {
+		send_resp_ex(sBuf,1024,"info score cp %d depth %d nodes %d time %d pv %s %s\n",val,curDepth,0,0,cbC->sMoves,"NO VALID MOVE");
+	}
+	else {
+		send_resp_ex(sBuf,1024,"info score cp %d depth %d nodes %d time %d pv %s %s\n",val,curDepth,0,0,cbC->sMoves,movs[iMaxInd]);
+	}
+	}
+	return iMaxVal; 
 }
 
 int process_go(char *sCmd)
 {
-	cb_findbest(&gb,0,50,0);
+	cb_findbest(&gb,0,3,0,0);
 	return 0;
 }
 
@@ -339,7 +573,7 @@ int main(int argc, char **argv)
 
 	if((fLog=fopen("/tmp/cek1.log","a+")) == NULL)
 		return 1;
-	puts(PRG_VERSION);
+	send_resp(PRG_VERSION);
 	prepare();
 	run();
 	fclose(fLog);
