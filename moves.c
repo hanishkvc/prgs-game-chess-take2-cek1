@@ -32,5 +32,7 @@ int moves_get(struct cb *cbC, char movs[512][32], int iCur)
 	int iNew;
 
 	iNew = moves_forknight(cbC, movs, iCur);
+	gMovesCnt += (iNew-iCur);
 	return iNew;
 }
+
