@@ -309,8 +309,9 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	mSPos = cb_strloc2bbpos(&sMov[1]);
 	mDPos = cb_strloc2bbpos(&sMov[4]);
 	
-	if(gUCIOption & UCIOPTION_CUSTOM_SHOWCURRMOVE)
+	if(gUCIOption & UCIOPTION_CUSTOM_SHOWCURRMOVE) {
 		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info depth %d currmove %s currmovenumber %d\n", curDepth, sMov, altMovNum);
+	}
 	mvhlpr_domove(&cbN,mPiece,mSPos,mDPos);
 	if(cbC->sideToMove == STM_WHITE) {
 		sprintf(sBuf,"%d.",movNum);
@@ -445,8 +446,9 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			// Nodes simply mapped to total Moves generated for now, which may be correct or wrong, to check
 			send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %d multipv 1 pv %s\n",
 				val,maxDepth-curDepth+1,gMovesCnt,2,sNextBestMoves); //FIXME: Change to maxDepth
-			if(curDepth == 1)
+			if(curDepth == 1) {
 				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"bestmove %s\n",cb_2longnot(movs[iMaxInd]));
+			}
 		}
 	}
 	return iMaxVal; 
