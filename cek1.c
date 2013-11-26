@@ -327,6 +327,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	val = valPW;
 #endif
 
+	//*depthReached = curDepth;
 	if(curDepth == maxDepth) {
 		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"DEBUG:info score cp %d depth %d nodes %d time %d pv %s\n",val,curDepth,0,0,cbC->sMoves);
 		return valPW;
@@ -370,9 +371,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			fprintf(fLog,"INFO:findbest:curDepth[%d] mov[%s]\n",curDepth,movs[iMaxPosInd]);
 			iMaxVal = iMaxPosVal;
 			iMaxInd = iMaxPosInd;
-			strcpy(sNextBestMoves,movs[iMaxInd]);
-			strcat(sNextBestMoves," ");
-			strcat(sNextBestMoves,sMaxNegNBMoves);
+			sprintf(sNextBestMoves,"%d. %s %s", movNum+1, movs[iMaxInd], sMaxPosNBMoves);
 		}
 	} else {
 		if(iMaxNegInd == -1) {
@@ -383,9 +382,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			fprintf(fLog,"INFO:findbest:curDepth[%d] mov[%s]\n",curDepth,movs[iMaxNegInd]);
 			iMaxVal = iMaxNegVal;
 			iMaxInd = iMaxNegInd;
-			strcpy(sNextBestMoves,movs[iMaxInd]);
-			strcat(sNextBestMoves," ");
-			strcat(sNextBestMoves,sMaxNegNBMoves);
+			sprintf(sNextBestMoves,"%d... %s %s", movNum, movs[iMaxInd], sMaxNegNBMoves);
 		}
 	}
 #ifdef CORRECTVALFOR_SIDETOMOVE
