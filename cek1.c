@@ -177,7 +177,7 @@ char *cb_2longnot(char *sIMov)
 	char *gDest = gNOTSBUF;
 
 	for(i=0;i<strlen(sIMov);i++) {
-		if((sIMov[i] != '-') && (sIMov[i] != 'P')) {
+		if((sIMov[i] != '-') && (sIMov[i] != 'P') && (sIMov[i] != 'x')) {
 			*gDest=sIMov[i];
 			gDest++;
 		}

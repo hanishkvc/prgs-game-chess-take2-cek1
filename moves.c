@@ -44,9 +44,13 @@ int moves_forpawnnormal(struct cb *cbC, char movs[512][32], int iCur)
 	u64 bbS, bbD;
 	char sTemp[8];
 	int posS,posD;
-	u64 bbEOcc = 0;
-	u64 bbTOcc = 0;
+	u64 bbWOcc = 0;
+	u64 bbBOcc = 0;
+	u64 bbOcc = 0;
 
+	bbBOcc = cbC->bk | cbC->bq | cbC->br | cbC->bn | cbC->bb | cbC->bp;
+	bbWOcc = cbC->wk | cbC->wq | cbC->wr | cbC->wn | cbC->wb | cbC->wp;
+	bbOcc = bbBOcc | bbWOcc;
 	if(cbC->sideToMove == STM_WHITE) {
 		bbS = cbC->wp;
 	}
@@ -61,6 +65,7 @@ int moves_forpawnnormal(struct cb *cbC, char movs[512][32], int iCur)
 		} else {
 			bbD = bbBlackPawnNormalMoves[posS];
 		}
+		bbD = bbD & ~bbOcc;
 		while((posD = ffsll(bbD)) != 0) {
 			posD -= 1;
 			strncpy(movs[iCur],"P",32);
