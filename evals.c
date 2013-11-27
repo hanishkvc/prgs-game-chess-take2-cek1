@@ -40,11 +40,11 @@ int evalhlpr_lineattack(struct cb *cbC, int sPos, int dPos, int hint)
 		iLarge = dPos;
 	}
 	iDiff = abs(sPos - dPos);
-	if(iDiff <= 7) { // Attacker and Attacked in a Rank
+	if( (iDiff <= 7) && ((iSmall/8) == (iLarge/8)) ) { // Attacker and Attacked in a Rank
 
-		// Should be able to mask out every bit before the higher/larger number 
-		// and everything after the smaller number (i.e pos)
-		uMask = (1ULL << (iSmall+1));
+		// Should be able to mask out every bit before the higher/larger number towards msb 
+		// and everything after the smaller number (i.e pos) towards the lsb
+		uMask = (1ULL << (iSmall));
 		uMask -= 1;
 		uMask = ~uMask;
 		bbOcc = bbOcc & uMask;
@@ -59,6 +59,7 @@ int evalhlpr_lineattack(struct cb *cbC, int sPos, int dPos, int hint)
 		} else if(iCnt == 2) {
 			return ATTACK_YES; // Yes no piece inbetween, so Positive attack
 		} else {
+			fprintf(fLog,"FIXME:lineattack: BUG in code ????\n");
 			exit(300); // FIXME: BUG IN CODE/Logic, if this is hit
 		}
 		

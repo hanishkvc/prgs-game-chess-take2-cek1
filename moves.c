@@ -144,8 +144,10 @@ int moves_get(struct cb *cbC, char movs[512][32], int iCur)
 	iNew = moves_forpawnattacks(cbC, movs, iNew);
 	iNew = moves_forpawnnormal(cbC, movs, iNew);
 	iNew = moves_forking(cbC, movs, iNew);
-	if(iNew >=512)
+	if(iNew >= NUMOFPARALLELMOVES) {
+		fprintf(fLog,"FIXME:moves_get: List overflow ????\n");
 		exit(200);
+	}
 	gMovesCnt += (iNew-iCur);
 	return iNew;
 }

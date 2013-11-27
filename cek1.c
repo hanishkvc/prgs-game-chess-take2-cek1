@@ -369,14 +369,28 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	//The check for king underattack has to be thought thro and updated if required.
 	if((curDepth == maxDepth) || (cbC->wk_underattack > 1) || (cbC->bk_underattack > 1)) {
 		char sTemp[64];
-		if((cbC->wk_underattack > 1) || (cbC->bk_underattack)) 
-			strcpy(sTemp,"string UnderCheckInvalidMove");
+		if((cbC->wk_underattack > 1) || (cbC->bk_underattack > 1)) 
+			strcpy(sTemp,"string UnderCheckINVALIDMOVE");
 		else
 			strcpy(sTemp,"");
-		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %d pv %s %s\n",val,curDepth,gMovesCnt,0,cbC->sMoves,sTemp);
-		if((cbC->wk_underattack > 1) || (cbC->bk_underattack))
+		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %d pv %s %s\n",
+				val,curDepth,gMovesCnt,0,cbC->sMoves,sTemp);
+		if((cbC->wk_underattack > 1) || (cbC->bk_underattack > 1))
 			return DO_ERROR;
 		return valPW;
+	}
+
+	// sideToMove is actually nextSideToMove from symantic perspective
+	// No point of checking what is the best move for the next side to move,
+	// when the previous side is already under check and its move hasn't moved
+	// it out of that check. OR the previous sides move has put itself
+	// under check, as that is a invalid move which is not legally allowed
+	// by chess rules.
+	if( ((cbC->sideToMove == STM_BLACK) && (cbC->wk_underattack)) ||
+			((cbC->sideToMove == STM_WHITE) && (cbC->bk_underattack)) ) {
+		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %d pv %s string EntersCheckINVALIDMOVE\n",
+				val,curDepth,gMovesCnt,0,cbC->sMoves);
+		return DO_ERROR;
 	}
 
 	curDepth += 1;

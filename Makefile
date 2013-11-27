@@ -10,14 +10,14 @@ cek1: cek1.c moves.c evals.c generate_movebbs.c
 install: cek1.c
 	cp cek1 ~/local/bin/
 	touch ~/cek1.log
-	ln -s ~/cek1.log /tmp/cek1.log || /bin/true
+	ln -s ~/cek1.log /tmp/cek1.log	|| /bin/true
 
 clean:
-	rm __MAKE__*
-	rm ./cek1
-	rm ./cek1_pw
-	rm ~/cek1.log
+	rm __MAKE__*	|| /bin/true
+	rm ./cek1	|| /bin/true
+	rm ./cek1_pw	|| /bin/true
+	rm ~/cek1.log	|| /bin/true
 
 clean-all: clean
-	rm /tmp/cek1.log
+	rm /tmp/cek1.log	|| /bin/true
 	
