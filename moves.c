@@ -5,7 +5,6 @@ int moves_forpawnattacks(struct cb *cbC, char movs[512][32], int iCur)
 	char sTemp[8];
 	int posS,posD;
 	u64 bbEOcc = 0;
-	u64 bbTOcc = 0;
 
 	if(cbC->sideToMove == STM_WHITE) {
 		bbS = cbC->wp;

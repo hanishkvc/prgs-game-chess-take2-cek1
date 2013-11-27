@@ -7,40 +7,19 @@
  */
 #include <stdio.h>
 #include <sys/select.h>
+#include <strings.h>
 #include <string.h>
 #include <stdlib.h>
 
+
+#define DEBUG_UNWIND_SELECTION
+
 #include "makeheader.h"
+#include "cek1.h"
 
-//#define PRG_VERSION "CEK1 v20131125_1430\n"
-#define STM_WHITE 'w'
-#define STM_BLACK 'b'
-
-#define MOVES_BUFSIZE 8196
-#define NUMOFPARALLELMOVES 512
-#define S1KTEMPBUFSIZE 1024
-#define S32TEMPBUFSIZE 32
-
-#define VALUE_QUEEN 900
-#define VALUE_ROOK 500
-#define VALUE_BISHOP 300
-#define VALUE_KNIGHT 300
-#define VALUE_PAWN 100
-#define VALUE_KING ((VALUE_QUEEN+VALUE_ROOK+VALUE_BISHOP+VALUE_KNIGHT+VALUE_PAWN)/2)
-
-
-#define UCIOPTION_CUSTOM_SHOWCURRMOVE 0x0080ULL
-
-typedef unsigned long long u64;
 FILE *fLog;
 
-struct cb {
-	u64 wk,wq,wr,wb,wn,wp;
-	u64 bk,bq,br,bb,bn,bp;
-	char sideToMove;
-	int bk_underattack,wk_underattack;
-	char sMoves[MOVES_BUFSIZE];
-} gb;
+struct cb gb;
 
 int gMovesCnt = 0;
 int gStartMoveNum = 0;
@@ -133,7 +112,7 @@ void cb_bb_print(u64 bb)
 	}
 }
 
-int cb_print(struct cb *cbC)
+void cb_print(struct cb *cbC)
 {
 	int off;
 	u64 pos;
@@ -330,7 +309,7 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	mDPos = cb_strloc2bbpos(&sMov[4]);
 	
 	if(gUCIOption & UCIOPTION_CUSTOM_SHOWCURRMOVE) {
-		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info depth %d currmove %s currmovenumber %d\n", curDepth, sMov, altMovNum);
+		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info depth %d currmove %s currmovenumber %d\n", curDepth, cb_2longnot(sMov), altMovNum);
 	}
 	mvhlpr_domove(&cbN,mPiece,mSPos,mDPos);
 	if(cbC->sideToMove == STM_WHITE) {
@@ -373,6 +352,10 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	char sNBMoves[MOVES_BUFSIZE];
 	char sMaxPosNBMoves[MOVES_BUFSIZE],sMaxNegNBMoves[MOVES_BUFSIZE];
 
+#ifdef DEBUG_UNWIND_SELECTION
+	char movsNBMovesDBG[NUMOFPARALLELMOVES][2048];
+#endif
+
 	valPW = cb_evalpw(cbC);
 #ifdef CORRECTVALFOR_SIDETOMOVE
 	// FIXME: Should use the original sideToMove (i.e curDepth = 0) info and not the current sideToMove (curDepth > 0)
@@ -385,7 +368,14 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	//*depthReached = curDepth;
 	//The check for king underattack has to be thought thro and updated if required.
 	if((curDepth == maxDepth) || (cbC->wk_underattack > 1) || (cbC->bk_underattack > 1)) {
-		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %d pv %s\n",val,curDepth,gMovesCnt,0,cbC->sMoves);
+		char sTemp[64];
+		if((cbC->wk_underattack > 1) || (cbC->bk_underattack)) 
+			strcpy(sTemp,"string UnderCheckInvalidMove");
+		else
+			strcpy(sTemp,"");
+		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %d pv %s %s\n",val,curDepth,gMovesCnt,0,cbC->sMoves,sTemp);
+		if((cbC->wk_underattack > 1) || (cbC->bk_underattack))
+			return DO_ERROR;
 		return valPW;
 	}
 
@@ -396,6 +386,9 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		//send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info currmove %s currmovenumber %d\n", movs[iCur], iCur);
 		strcpy(sNBMoves,"");
 		movsEval[iCur] = move_process(cbC, movs[iCur], curDepth, maxDepth, secs, movNum, iCur,sNBMoves); 
+#ifdef DEBUG_UNWIND_SELECTION
+		strcpy(movsNBMovesDBG[iCur],sNBMoves);
+#endif
 		if(movsEval[iCur] == DO_ERROR)
 			continue;
 		if(iMaxPosInd == -1) {
@@ -417,16 +410,23 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			strcpy(sMaxNegNBMoves,sNBMoves);
 		}
 	}
-	// Maybe (to think) Send best value from the moves above 
-	// ToThink, all info in above send_resp info to be sent
 
+	// FIXME:TODO:LATER:Maybe (to think) Send best value from the moves above or best N in multipv case
+
+#ifdef DEBUG_UNWIND_SELECTION
+	fprintf(fLog,"DEBUG:findbest:curDepth[%d] unwind *** SelectFROM ***\n",curDepth);
+	for(iCur = 0; iCur < iMCnt; iCur++) {
+		fprintf(fLog,"DEBUG:%d:Move[%s],eval[%d],NBMoves[%s]\n",iCur,movs[iCur],movsEval[iCur],movsNBMovesDBG[iCur]);
+	}
+#endif
 	if(cbC->sideToMove == STM_WHITE) {
 		if(iMaxPosInd == -1) {
-			fprintf(fLog,"DEBUG:findbest:curDepth[%d]\n",curDepth);
+			fprintf(fLog,"DEBUG:findbest:curDepth[%d] sideToMove[%c] NO VALID MOVE\n",curDepth,cbC->sideToMove);
 			iMaxVal = VAL_ERROR;
 			iMaxInd = -1;
 		} else {
-			fprintf(fLog,"INFO:findbest:curDepth[%d] mov[%s]\n",curDepth,movs[iMaxPosInd]);
+			fprintf(fLog,"INFO:findbest:curDepth[%d] sideToMove[%c] PMoves[%s] mov[%s] eval[%d] NBMoves[%s]\n",
+						curDepth,cbC->sideToMove,cbC->sMoves,movs[iMaxPosInd],movsEval[iMaxPosInd],sMaxPosNBMoves);
 			iMaxVal = iMaxPosVal;
 			iMaxInd = iMaxPosInd;
 #ifdef MOVELIST_ADDMOVENUM
@@ -437,11 +437,12 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		}
 	} else {
 		if(iMaxNegInd == -1) {
-			fprintf(fLog,"DEBUG:findbest:curDepth[%d]\n",curDepth);
+			fprintf(fLog,"DEBUG:findbest:curDepth[%d] sideToMove[%c] NO VALID MOVE\n",curDepth,cbC->sideToMove);
 			iMaxVal = VAL_ERROR;
 			iMaxInd = -1;
 		} else {
-			fprintf(fLog,"INFO:findbest:curDepth[%d] mov[%s]\n",curDepth,movs[iMaxNegInd]);
+			fprintf(fLog,"INFO:findbest:curDepth[%d] sideToMove[%c] PMoves[%s] mov[%s] eval[%d] NBMoves[%s]\n",
+						curDepth,cbC->sideToMove,cbC->sMoves,movs[iMaxNegInd],movsEval[iMaxNegInd],sMaxNegNBMoves);
 			iMaxVal = iMaxNegVal;
 			iMaxInd = iMaxNegInd;
 #ifdef MOVELIST_ADDMOVENUM
@@ -456,7 +457,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 #else
 	val = iMaxVal;
 #endif
-	if(curDepth == 1) // FIXME: Have to think, may avoid this check
+	//if(curDepth == 1) // FIXME: Have to think, may avoid this check
 	{
 		if(iMaxInd == -1) {
 			send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %d spv %s pv %s %s\n",
@@ -465,10 +466,13 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		else {
 			// Dummy time sent
 			// Nodes simply mapped to total Moves generated for now, which may be correct or wrong, to check
-			send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %d multipv 1 pv %s\n",
-				val,maxDepth-curDepth+1,gMovesCnt,2,sNextBestMoves); //FIXME: Change to maxDepth
 			if(curDepth == 1) {
+				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %d multipv 1 pv %s\n",
+					val,maxDepth-curDepth+1,gMovesCnt,2,sNextBestMoves); //FIXME: Change to maxDepth
 				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"bestmove %s\n",cb_2longnot(movs[iMaxInd]));
+			} else {
+				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info string unwinddepth cp %d depth %d nodes %d time %d pv %s\n",
+					val,curDepth,gMovesCnt,2,sNextBestMoves);
 			}
 		}
 	}
@@ -651,6 +655,7 @@ int process_uci()
 		exit(2);
 	}
 	fflush(fLog);
+	return 0;
 }
 
 int run()
@@ -679,6 +684,8 @@ int prepare()
 	generate_bb_pawnmoves(bbWhitePawnNormalMoves, bbWhitePawnAttackMoves, bbBlackPawnNormalMoves, bbBlackPawnAttackMoves);
 
 	gUCIOption = 0;
+
+	return 0;
 }
 
 int main(int argc, char **argv)

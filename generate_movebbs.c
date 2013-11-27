@@ -126,7 +126,7 @@ u64 bbQueenMoves[64] = {	// Only few initialized to show concept, it is auto gen
 void generate_bb_queenmoves(u64 *bbq, u64 *bbr, u64 *bbb)
 {
 	int r,f;
-	int nr,nf,curPos;
+	int curPos;
 
 	for(r=0; r<8; r++) {
 		for(f=0; f<8; f++) {
@@ -144,7 +144,7 @@ u64 bbKingMoves[64] = {	// Only few initialized to show concept, it is auto gene
 void generate_bb_kingmoves(u64 *bbc)
 {
 	int r,f;
-	int nr,nf,curPos;
+	int curPos;
 
 	for(r=0; r<8; r++) {
 		for(f=0; f<8; f++) {
@@ -180,7 +180,7 @@ u64 bbWhitePawnAttackMoves[64] = {	// Only few initialized to show concept, it i
 void generate_bb_pawnmoves(u64 *bbwn, u64 *bbwa, u64 *bbbn, u64 *bbba)
 {
 	int r,f;
-	int nr,nf,curPos;
+	int curPos;
 
 	for(r=0; r<8; r++) {
 		for(f=0; f<8; f++) {

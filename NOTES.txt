@@ -1,0 +1,34 @@
+
+*************** 20131127_2206
+
+If already Under CHECK
+1.0 cb_findbest
+1.1. initially evaluates current position/situation
+1.2. If check identified flag is set(thro increment).
+1.3. List of moves is generated.
+1.4. moves_process is called
+2.0. moves_process
+2.1. Creates a new chessboard with the currently evaluatin move executed.
+2.2. cb_findbest called.
+3.0. cb_findbest
+3.1. evaluates current position
+3.2. if still in check flag is incremented
+3.3. return telling Error, because the king is still in check.
+
+If entering CHECK, on a new move 
+1.0 cb_findbest
+1.1. initially evaluates current position/situation
+1.2. As no check - flag is Not set (or rather cleared)
+1.3. List of moves is generated.
+1.4. moves_process is called
+2.0. moves_process
+2.1. Creates a new chessboard with the currently evaluatin move executed.
+2.2. cb_findbest called.
+3.0. cb_findbest
+3.1. evaluates current position
+3.2. As check identified flag is set (thro increment)
+3.3. HOWTO IDENTIFY this situation and return with error.
+
+To differentiate between both, may be use curDepth field to return immidiately in 2nd case at 3.0
+OR check who is supposed to move next and who is already undercheck and then decide whether to
+continue or not.

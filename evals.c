@@ -1,12 +1,99 @@
 
 #define VALUE_KING_ATTACKED (VALUE_KING*4)
 
+
+u64 CBFILEMASK[8] = { 
+	0x0101010101010101ULL,
+	0x0202020202020202ULL,
+	0x0404040404040404ULL,
+	0x0808080808080808ULL,
+	0x1010101010101010ULL,
+	0x2020202020202020ULL,
+	0x4040404040404040ULL,
+	0x8080808080808080ULL,
+};
+
+#define ATTACK_YES 1
+#define ATTACK_NO 0
+
+// xPos = 0 - 63
+// Check how many bits set inbetween the attacker and attacked
+// this will help identify if there is a positive attack or
+// if there are other pieces inbetween which block the attack
+// sPos = Position of Rook which is attacking
+// dPos = Position of the piece being attacked
+int evalhlpr_lineattack(struct cb *cbC, int sPos, int dPos, int hint)
+{
+	int iDiff;
+	u64 bbOcc;
+	int iCnt,iSmall,iLarge;
+	u64 uMask, cPos;
+
+	bbOcc = cbC->wk | cbC->wq | cbC->wr | cbC->wn | cbC->wb | cbC-> wp
+		 | cbC->bk | cbC->bq | cbC->br | cbC->bn | cbC->bb | cbC-> bp;
+	
+	if(sPos > dPos) {
+		iSmall = dPos;
+		iLarge = sPos;
+	} else {
+		iSmall = sPos;
+		iLarge = dPos;
+	}
+	iDiff = abs(sPos - dPos);
+	if(iDiff <= 7) { // Attacker and Attacked in a Rank
+
+		// Should be able to mask out every bit before the higher/larger number 
+		// and everything after the smaller number (i.e pos)
+		uMask = (1ULL << (iSmall+1));
+		uMask -= 1;
+		uMask = ~uMask;
+		bbOcc = bbOcc & uMask;
+
+		uMask = (1ULL << (iLarge+1));
+		uMask = uMask-1;
+		bbOcc = bbOcc & uMask;
+
+		iCnt = __builtin_popcountll(bbOcc);
+		if(iCnt > 2) {
+			return ATTACK_NO; // Some other piece inbetween
+		} else if(iCnt == 2) {
+			return ATTACK_YES; // Yes no piece inbetween, so Positive attack
+		} else {
+			exit(300); // FIXME: BUG IN CODE/Logic, if this is hit
+		}
+		
+	} else { // Attacker and Attacked in a File
+		uMask = 0x0101010101010101ULL;
+
+		uMask <<= (sPos%8);
+		bbOcc = bbOcc & uMask;
+		while((cPos = ffsll(bbOcc)) != 0) {
+			cPos -= 1;
+			bbOcc &= ~(1ULL << cPos);
+			if(cPos == iSmall) {
+				if((cPos = ffsll(bbOcc)) == 0) {
+					return ATTACK_NO; // Not on same line and No other pieces in the file
+				} else {
+					cPos -= 1;
+					if(cPos == iLarge) {
+						return ATTACK_YES; // Yes no piece inbetween, so positive attack
+					} else {
+						return ATTACK_NO; // Some other piece inbetween.
+					}
+				}
+			}
+		}
+	}
+	return ATTACK_NO; // Not on same line, other pieces in file
+}
+
 int cb_evalpw_king_underattack(struct cb *cbC)
 {
 	int posP;
-	u64 bbK;
+	u64 bbK, bbTK;
 	u64 bbP;
 	int valW,valB;
+	int posK;
 
 	// Black king being attacked
 	valW = 0;
@@ -23,6 +110,34 @@ int cb_evalpw_king_underattack(struct cb *cbC)
 	while((posP = ffsll(bbP)) != 0) {
 		posP -= 1;
 		valW += __builtin_popcountl(bbWhitePawnAttackMoves[posP] & bbK) * VALUE_KING_ATTACKED;
+		bbP &= ~(1ULL << posP);			
+	}
+
+	bbP = cbC->wr;
+	bbTK = bbK;
+	while((posP = ffsll(bbP)) != 0) {
+		posP -= 1;
+		while((posK = ffsll(bbTK)) != 0) {
+			posK -= 1;
+			if(evalhlpr_lineattack(cbC,posP,posK,-1) == ATTACK_YES) {
+				valW += VALUE_KING_ATTACKED;
+			}
+			bbTK &= ~(1ULL << posK);
+		}
+		bbP &= ~(1ULL << posP);			
+	}
+
+	bbP = cbC->wq;
+	bbTK = bbK;
+	while((posP = ffsll(bbP)) != 0) {
+		posP -= 1;
+		while((posK = ffsll(bbTK)) != 0) {
+			posK -= 1;
+			if(evalhlpr_lineattack(cbC,posP,posK,-1) == ATTACK_YES) {
+				valW += VALUE_KING_ATTACKED;
+			}
+			bbTK &= ~(1ULL << posK);
+		}
 		bbP &= ~(1ULL << posP);			
 	}
 
@@ -46,6 +161,34 @@ int cb_evalpw_king_underattack(struct cb *cbC)
 	while((posP = ffsll(bbP)) != 0) {
 		posP -= 1;
 		valB += __builtin_popcountl(bbBlackPawnAttackMoves[posP] & bbK) * VALUE_KING_ATTACKED;
+		bbP &= ~(1ULL << posP);			
+	}
+
+	bbP = cbC->br;
+	bbTK = bbK;
+	while((posP = ffsll(bbP)) != 0) {
+		posP -= 1;
+		while((posK = ffsll(bbTK)) != 0) {
+			posK -= 1;
+			if(evalhlpr_lineattack(cbC,posP,posK,-1) == ATTACK_YES) {
+				valB += VALUE_KING_ATTACKED;
+			}
+			bbTK &= ~(1ULL << posK);
+		}
+		bbP &= ~(1ULL << posP);			
+	}
+
+	bbP = cbC->bq;
+	bbTK = bbK;
+	while((posP = ffsll(bbP)) != 0) {
+		posP -= 1;
+		while((posK = ffsll(bbTK)) != 0) {
+			posK -= 1;
+			if(evalhlpr_lineattack(cbC,posP,posK,-1) == ATTACK_YES) {
+				valB += VALUE_KING_ATTACKED;
+			}
+			bbTK &= ~(1ULL << posK);
+		}
 		bbP &= ~(1ULL << posP);			
 	}
 
