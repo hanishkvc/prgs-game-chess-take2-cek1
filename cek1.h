@@ -21,6 +21,8 @@ typedef unsigned long long u64;
 
 #define UCIOPTION_CUSTOM_SHOWCURRMOVE 0x0080ULL
 
+#define LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN 100
+
 struct cb {
 	u64 wk,wq,wr,wb,wn,wp;
 	u64 bk,bq,br,bb,bn,bp;

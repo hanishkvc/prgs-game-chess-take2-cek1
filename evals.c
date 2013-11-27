@@ -31,6 +31,11 @@ int evalhlpr_lineattack(struct cb *cbC, int sPos, int dPos, int hint)
 
 	bbOcc = cbC->wk | cbC->wq | cbC->wr | cbC->wn | cbC->wb | cbC-> wp
 		 | cbC->bk | cbC->bq | cbC->br | cbC->bn | cbC->bb | cbC-> bp;
+
+	if(hint == LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) {
+		bbOcc |= (1ULL << sPos);
+		bbOcc |= (1ULL << dPos);
+	}
 	
 	if(sPos > dPos) {
 		iSmall = dPos;

@@ -67,12 +67,22 @@ int moves_forpawnnormal(struct cb *cbC, char movs[512][32], int iCur)
 		bbD = bbD & ~bbOcc;
 		while((posD = ffsll(bbD)) != 0) {
 			posD -= 1;
+			bbD &= ~(1ULL << posD);			
+
 			strncpy(movs[iCur],"P",32);
 			strcat(movs[iCur],cb_bbpos2strloc(posS,sTemp));
 			strcat(movs[iCur],"-");
 			strcat(movs[iCur],cb_bbpos2strloc(posD,sTemp));
+
+			if(abs(posS-posD) > 8) {
+				if(evalhlpr_lineattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
+					fprintf(fLog,"INFO:moves_forpawnnormal: DROPPING mov[%s] as others inbetween\n",movs[iCur]);
+					strncpy(movs[iCur],"",32);
+					continue;
+				}
+			}
+
 			iCur += 1;
-			bbD &= ~(1ULL << posD);			
 		}
 		bbS &= ~(1ULL << posS);			
 	}
