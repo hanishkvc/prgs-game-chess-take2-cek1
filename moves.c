@@ -89,6 +89,113 @@ int moves_forpawnnormal(struct cb *cbC, char movs[512][32], int iCur)
 	return iCur;
 }
 
+int moves_forrook(struct cb *cbC, char movs[512][32], int iCur)
+{
+	u64 bbS, bbD;
+	char sTemp[8];
+	int posS,posD;
+	u64 bbFOcc = 0;
+
+	cb_print(cbC);
+
+	if(cbC->sideToMove == STM_WHITE) {
+		bbS = cbC->wr;
+		bbFOcc = cbC->wk | cbC->wq | cbC->wr | cbC->wn | cbC->wb | cbC->wp;
+	} else {
+		bbS = cbC->br;
+		bbFOcc = cbC->bk | cbC->bq | cbC->br | cbC->bn | cbC->bb | cbC->bp;
+	}
+
+	while((posS = ffsll(bbS)) != 0) {
+		posS -= 1;
+		bbD = bbRookMoves[posS];
+		bbD = bbD & ~bbFOcc;
+		while((posD = ffsll(bbD)) != 0) {
+			posD -= 1;
+			bbD &= ~(1ULL << posD);			
+
+			strncpy(movs[iCur],"R",32);
+			strcat(movs[iCur],cb_bbpos2strloc(posS,sTemp));
+			strcat(movs[iCur],"-");
+			strcat(movs[iCur],cb_bbpos2strloc(posD,sTemp));
+
+			if(evalhlpr_lineattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
+				dbg_log(fLog,"INFO:moves_forrook: DROPPING mov[%s] as others inbetween\n",movs[iCur]);
+				strncpy(movs[iCur],"",32);
+				continue;
+			}
+
+			iCur += 1;
+		}
+		bbS &= ~(1ULL << posS);			
+	}
+	return iCur;
+}
+
+int moves_forqueen(struct cb *cbC, char movs[512][32], int iCur)
+{
+	u64 bbS, bbD, bbQ;
+	char sTemp[8];
+	int posS,posD;
+	u64 bbFOcc = 0;
+
+	cb_print(cbC);
+
+	if(cbC->sideToMove == STM_WHITE) {
+		bbQ = cbC->wq;
+		bbFOcc = cbC->wk | cbC->wq | cbC->wr | cbC->wn | cbC->wb | cbC->wp;
+	} else {
+		bbQ = cbC->bq;
+		bbFOcc = cbC->bk | cbC->bq | cbC->br | cbC->bn | cbC->bb | cbC->bp;
+	}
+
+	// Rook equivalent moves
+	bbS = bbQ;
+	while((posS = ffsll(bbS)) != 0) {
+		posS -= 1;
+		bbD = bbRookMoves[posS];
+		bbD = bbD & ~bbFOcc;
+		while((posD = ffsll(bbD)) != 0) {
+			posD -= 1;
+			bbD &= ~(1ULL << posD);			
+
+			strncpy(movs[iCur],"Q",32);
+			strcat(movs[iCur],cb_bbpos2strloc(posS,sTemp));
+			strcat(movs[iCur],"-");
+			strcat(movs[iCur],cb_bbpos2strloc(posD,sTemp));
+
+			if(evalhlpr_lineattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
+				dbg_log(fLog,"INFO:moves_forqueen: DROPPING mov[%s] as others inbetween\n",movs[iCur]);
+				strncpy(movs[iCur],"",32);
+				continue;
+			}
+
+			iCur += 1;
+		}
+		bbS &= ~(1ULL << posS);			
+	}
+
+	// King equivalent moves
+	bbS = bbQ;
+	while((posS = ffsll(bbS)) != 0) {
+		posS -= 1;
+		bbD = bbKingMoves[posS];
+		bbD = bbD & ~bbFOcc;
+		while((posD = ffsll(bbD)) != 0) {
+			posD -= 1;
+			strncpy(movs[iCur],"Q",32);
+			strcat(movs[iCur],cb_bbpos2strloc(posS,sTemp));
+			strcat(movs[iCur],"-");
+			strcat(movs[iCur],cb_bbpos2strloc(posD,sTemp));
+			iCur += 1;
+			bbD &= ~(1ULL << posD);
+		}
+		bbS &= ~(1ULL << posS);			
+	}
+
+	return iCur;
+}
+
 int moves_forknight(struct cb *cbC, char movs[512][32], int iCur)
 {
 	u64 bbS, bbD;
@@ -154,6 +261,9 @@ int moves_get(struct cb *cbC, char movs[512][32], int iCur)
 	iNew = moves_forpawnattacks(cbC, movs, iNew);
 	iNew = moves_forpawnnormal(cbC, movs, iNew);
 	iNew = moves_forking(cbC, movs, iNew);
+	iNew = moves_forrook(cbC, movs, iNew);
+	iNew = moves_forqueen(cbC, movs, iNew);
+	
 	if(iNew >= NUMOFPARALLELMOVES) {
 		dbg_log(fLog,"FIXME:moves_get: List overflow ????\n");
 		exit(200);

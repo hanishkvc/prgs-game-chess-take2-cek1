@@ -29,8 +29,8 @@ int gUCIOption = 0;
 // Has this is a multiline macro, always use it inside braces
 #define send_resp_ex(sBuffer,sSize,...) snprintf(sBuffer,sSize,__VA_ARGS__); send_resp(sBuffer);
 #define dbg_cb_bb_print dummy
-//#define dbg_log(file,...) fprintf(file,__VA_ARGS__)
-#define dbg_log(file,...) dummy()
+#define dbg_log(file,...) fprintf(file,__VA_ARGS__)
+//#define dbg_log(file,...) dummy()
 
 void dummy() 
 {

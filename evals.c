@@ -54,8 +54,8 @@ int evalhlpr_lineattack(struct cb *cbC, int sPos, int dPos, int hint)
 		uMask = ~uMask;
 		bbOcc = bbOcc & uMask;
 
-		uMask = (1ULL << (iLarge+1));
-		uMask = uMask-1;
+		uMask = (1ULL << (iLarge));
+		uMask = ((uMask-1) | (1ULL << iLarge));
 		bbOcc = bbOcc & uMask;
 
 		iCnt = __builtin_popcountll(bbOcc);

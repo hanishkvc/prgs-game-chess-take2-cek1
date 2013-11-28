@@ -41,7 +41,39 @@ continue or not.
 * Add other missing piece moves.
 * Add logic for diagonal attack cross check.
 * May be reduce the points given to indirect attack and protection
+  i.e those attacks which are currently blocked, but can get
+  activated due to movement of inbetween pieces.
   OR NOT, still not decided. TAKE A CALL after all other features
   have been added and the emergent behaviour checked.
+* Update the Eval logics such that they identify true attack
+  and protection situations and give more points to them 
+  compared to indirect attacks and protections.
+* Create a structure for individual moves. ANd use it instead
+  of the current string based notation for all engine internal
+  purposes.
+* Wrt findbest, may be maintain the best and worst move for a given
+  position rather than the current best only logic.
+  Also may be update the selection logic such that, it selects a
+  move which in turn leads to a almost equal best/good move,
+  which at the same time keeps the worst score for the selected
+  move minimal, if possible.
+  i.e let us say if M1 can give best score of 800 and worst of
+  200 (depending on what move the opponent plays), while M2 can
+  give a best score of 750 and worst of 700, then may be M2 is
+  better than M1. (However current logic will select M1 over
+  M2 - So this may require to change).
+  * May be later add logic to maintain more than 1 best and worst
+    moves.
+* once the findbest has selected a move, if it is a pawn promotion
+  move then may be call findbest again with the choices of the
+  pawn becoming a queen,rook,knight,bishop and see which gives
+  the best result with a decent search depth. And use this info
+  to decide what pawn promotion to use.
+* Have to cross check how the findbest depth search and its unwinding 
+  is actually playing out. And then may be update the eval returned
+  logic for current position such that it gives weightage to the
+  standalone eval value of the current position has well as the
+  values returned by depth search from that position. -- TOTHINK
 
+  value of NextBestMoves  
 
