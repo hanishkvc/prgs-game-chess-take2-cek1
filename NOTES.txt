@@ -75,5 +75,14 @@ continue or not.
   standalone eval value of the current position has well as the
   values returned by depth search from that position. -- TOTHINK
 
-  value of NextBestMoves  
+  i.e returned eval value of findbest =>
+    StandAloneEval+DepthSearchEval.
+    OR
+    StandAloneEval*0.5+DepthSearchEval
+    OR
+   
+  OR is this redundant and doesn't matter (TOTHINK TOTHINK)
+ 
+* Have to check all eval return values to see it properly matchs
+  the WhitePerspective or the SideToMove perspective as required.
 

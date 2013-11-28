@@ -89,6 +89,51 @@ int moves_forpawnnormal(struct cb *cbC, char movs[512][32], int iCur)
 	return iCur;
 }
 
+int moves_forbishop(struct cb *cbC, char movs[512][32], int iCur)
+{
+	u64 bbS, bbD;
+	char sTemp[8];
+	int posS,posD;
+	u64 bbFOcc = 0;
+
+	cb_print(cbC);
+
+	if(cbC->sideToMove == STM_WHITE) {
+		bbS = cbC->wb;
+		bbFOcc = cbC->wk | cbC->wq | cbC->wr | cbC->wn | cbC->wb | cbC->wp;
+	} else {
+		bbS = cbC->bb;
+		bbFOcc = cbC->bk | cbC->bq | cbC->br | cbC->bn | cbC->bb | cbC->bp;
+	}
+
+	while((posS = ffsll(bbS)) != 0) {
+		posS -= 1;
+		bbD = bbBishopMoves[posS];
+		bbD = bbD & ~bbFOcc;
+		while((posD = ffsll(bbD)) != 0) {
+			posD -= 1;
+			bbD &= ~(1ULL << posD);			
+
+			strncpy(movs[iCur],"B",32);
+			strcat(movs[iCur],cb_bbpos2strloc(posS,sTemp));
+			strcat(movs[iCur],"-");
+			strcat(movs[iCur],cb_bbpos2strloc(posD,sTemp));
+
+			if(evalhlpr_diagattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
+				dbg_log(fLog,"INFO:moves_forbishop: DROPPING mov[%s] as others inbetween\n",movs[iCur]);
+				strncpy(movs[iCur],"",32);
+				continue;
+			} else {
+				dbg_log(fLog,"INFO:moves_forbishop: DOING mov[%s] no blockage inbetween\n",movs[iCur]);
+			}
+
+			iCur += 1;
+		}
+		bbS &= ~(1ULL << posS);			
+	}
+	return iCur;
+}
+
 int moves_forrook(struct cb *cbC, char movs[512][32], int iCur)
 {
 	u64 bbS, bbD;
@@ -261,6 +306,7 @@ int moves_get(struct cb *cbC, char movs[512][32], int iCur)
 	iNew = moves_forpawnattacks(cbC, movs, iNew);
 	iNew = moves_forpawnnormal(cbC, movs, iNew);
 	iNew = moves_forking(cbC, movs, iNew);
+	iNew = moves_forbishop(cbC, movs, iNew);
 	iNew = moves_forrook(cbC, movs, iNew);
 	iNew = moves_forqueen(cbC, movs, iNew);
 	

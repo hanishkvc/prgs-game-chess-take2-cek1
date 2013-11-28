@@ -20,6 +20,110 @@ u64 CBFILEMASK[8] = {
 // Check how many bits set inbetween the attacker and attacked
 // this will help identify if there is a positive attack or
 // if there are other pieces inbetween which block the attack
+// sPos = Position of Bishop/Queen which is attacking
+// dPos = Position of the piece being attacked
+// It should work even if sPos and dPos are swapped wrt attack
+// but not wrt checking wrt the hint for Move generation.
+int evalhlpr_diagattack(struct cb *cbC, int sPos, int dPos, int hint)
+{
+	int iRank,iFile,iDiff;
+	u64 bbOcc,bbTOcc;
+	int iSmall,iLarge;
+	u64 uLRMask, uRLMask, cPos;
+	int res1 = ATTACK_NO;
+	int res2 = ATTACK_NO;
+
+	bbOcc = cbC->wk | cbC->wq | cbC->wr | cbC->wn | cbC->wb | cbC-> wp
+		 | cbC->bk | cbC->bq | cbC->br | cbC->bn | cbC->bb | cbC-> bp;
+
+	if(hint == LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) {
+		bbOcc |= (1ULL << sPos);
+		bbOcc |= (1ULL << dPos);
+	}
+
+	if(sPos > dPos) {
+		iSmall = dPos;
+		iLarge = sPos;
+	} else {
+		iSmall = sPos;
+		iLarge = dPos;
+	}
+
+	iRank = sPos/8;
+	iFile = sPos%8;
+
+	// Attacker and Attacked in a Diag 
+	// BottomRight2TopLeft
+	// BottomLeft2TopRight
+	uRLMask = 0x0102040810204080ULL;
+	uLRMask = 0x8040201008040201ULL;
+
+	iDiff = iRank - iFile;
+	if(iDiff < 0) { 
+		uLRMask <<= abs(iDiff);
+	} else if(iDiff > 0) {
+		uLRMask >>= iDiff;
+	}
+
+	iDiff = 7 - iRank - iFile;
+	if(iDiff < 0) {
+		uRLMask <<= abs(iDiff);
+	} else if(iDiff > 0) {
+		uRLMask >>= iDiff;
+	}
+
+	bbTOcc = bbOcc & uRLMask;
+	while((cPos = ffsll(bbTOcc)) != 0) {
+		cPos -= 1;
+		bbTOcc &= ~(1ULL << cPos);
+		if(cPos == iSmall) {
+			if((cPos = ffsll(bbTOcc)) == 0) {
+				res1 = ATTACK_NO; // Not on same line and No other pieces in the file
+				break;
+			} else {
+				cPos -= 1;
+				if(cPos == iLarge) {
+					res1 = ATTACK_YES; // Yes no piece inbetween, so positive attack
+					break;
+				} else {
+					res1 = ATTACK_NO; // Some other piece inbetween.
+					break;
+				}
+			}
+		}
+	}
+
+	bbTOcc = bbOcc & uLRMask;
+	while((cPos = ffsll(bbTOcc)) != 0) {
+		cPos -= 1;
+		bbTOcc &= ~(1ULL << cPos);
+		if(cPos == iSmall) {
+			if((cPos = ffsll(bbTOcc)) == 0) {
+				res2 = ATTACK_NO; // Not on same line and No other pieces in the file
+				break;
+			} else {
+				cPos -= 1;
+				if(cPos == iLarge) {
+					res2 = ATTACK_YES; // Yes no piece inbetween, so positive attack
+					break;
+				} else {
+					res2 = ATTACK_NO; // Some other piece inbetween.
+					break;
+				}
+			}
+		}
+	}
+
+	if( (res1 == ATTACK_YES) || (res2 == ATTACK_YES) )
+		return ATTACK_YES;
+
+	return ATTACK_NO; // Not on same line OR other pieces in Diag
+}
+
+// xPos = 0 - 63
+// Check how many bits set inbetween the attacker and attacked
+// this will help identify if there is a positive attack or
+// if there are other pieces inbetween which block the attack
 // sPos = Position of Rook which is attacking
 // dPos = Position of the piece being attacked
 int evalhlpr_lineattack(struct cb *cbC, int sPos, int dPos, int hint)

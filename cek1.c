@@ -210,6 +210,8 @@ int process_setoption(char *sCmd)
 #define DO_ENEMYSIDE 2
 #define DO_ERROR 0x0FFFFFFF
 #define VAL_ERROR DO_ERROR
+#define VALPW_BLACKSTUCK_GOODFORWHITE  32000
+#define VALPW_WHITESTUCK_GOODFORBLACK -32000
 
 int mv_dest_occupied(struct cb *cbC, char *sMov)
 {
@@ -454,8 +456,9 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	if(cbC->sideToMove == STM_WHITE) {
 		if(iMaxPosInd == -1) {
 			dbg_log(fLog,"DEBUG:findbest:curDepth[%d] sideToMove[%c] NO VALID MOVE\n",curDepth,cbC->sideToMove);
-			iMaxVal = VAL_ERROR;
+			iMaxVal = VALPW_WHITESTUCK_GOODFORBLACK;
 			iMaxInd = -1;
+			strcpy(sNextBestMoves,"WHITE_NOP");
 		} else {
 			dbg_log(fLog,"INFO:findbest:curDepth[%d] sideToMove[%c] PMoves[%s] mov[%s] eval[%d] NBMoves[%s]\n",
 						curDepth,cbC->sideToMove,cbC->sMoves,movs[iMaxPosInd],movsEval[iMaxPosInd],sMaxPosNBMoves);
@@ -470,8 +473,9 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	} else {
 		if(iMaxNegInd == -1) {
 			dbg_log(fLog,"DEBUG:findbest:curDepth[%d] sideToMove[%c] NO VALID MOVE\n",curDepth,cbC->sideToMove);
-			iMaxVal = VAL_ERROR;
+			iMaxVal = VALPW_BLACKSTUCK_GOODFORWHITE;
 			iMaxInd = -1;
+			strcpy(sNextBestMoves,"BLACK_NOP");
 		} else {
 			dbg_log(fLog,"INFO:findbest:curDepth[%d] sideToMove[%c] PMoves[%s] mov[%s] eval[%d] NBMoves[%s]\n",
 						curDepth,cbC->sideToMove,cbC->sMoves,movs[iMaxNegInd],movsEval[iMaxNegInd],sMaxNegNBMoves);
