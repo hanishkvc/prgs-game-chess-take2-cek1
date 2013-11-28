@@ -237,6 +237,20 @@ int cb_evalpw_king_underattack(struct cb *cbC)
 		bbP &= ~(1ULL << posP);			
 	}
 
+	bbP = cbC->wb;
+	bbTK = bbK;
+	while((posP = ffsll(bbP)) != 0) {
+		posP -= 1;
+		while((posK = ffsll(bbTK)) != 0) {
+			posK -= 1;
+			if(evalhlpr_diagattack(cbC,posP,posK,-1) == ATTACK_YES) {
+				valW += VALUE_KING_ATTACKED;
+			}
+			bbTK &= ~(1ULL << posK);
+		}
+		bbP &= ~(1ULL << posP);			
+	}
+
 	bbP = cbC->wq;
 	bbTK = bbK;
 	while((posP = ffsll(bbP)) != 0) {
@@ -244,6 +258,8 @@ int cb_evalpw_king_underattack(struct cb *cbC)
 		while((posK = ffsll(bbTK)) != 0) {
 			posK -= 1;
 			if(evalhlpr_lineattack(cbC,posP,posK,-1) == ATTACK_YES) {
+				valW += VALUE_KING_ATTACKED;
+			} else if(evalhlpr_diagattack(cbC,posP,posK,-1) == ATTACK_YES) {
 				valW += VALUE_KING_ATTACKED;
 			}
 			bbTK &= ~(1ULL << posK);
@@ -288,6 +304,20 @@ int cb_evalpw_king_underattack(struct cb *cbC)
 		bbP &= ~(1ULL << posP);			
 	}
 
+	bbP = cbC->bb;
+	bbTK = bbK;
+	while((posP = ffsll(bbP)) != 0) {
+		posP -= 1;
+		while((posK = ffsll(bbTK)) != 0) {
+			posK -= 1;
+			if(evalhlpr_diagattack(cbC,posP,posK,-1) == ATTACK_YES) {
+				valB += VALUE_KING_ATTACKED;
+			}
+			bbTK &= ~(1ULL << posK);
+		}
+		bbP &= ~(1ULL << posP);			
+	}
+
 	bbP = cbC->bq;
 	bbTK = bbK;
 	while((posP = ffsll(bbP)) != 0) {
@@ -295,6 +325,8 @@ int cb_evalpw_king_underattack(struct cb *cbC)
 		while((posK = ffsll(bbTK)) != 0) {
 			posK -= 1;
 			if(evalhlpr_lineattack(cbC,posP,posK,-1) == ATTACK_YES) {
+				valB += VALUE_KING_ATTACKED;
+			} else if(evalhlpr_diagattack(cbC,posP,posK,-1) == ATTACK_YES) {
 				valB += VALUE_KING_ATTACKED;
 			}
 			bbTK &= ~(1ULL << posK);

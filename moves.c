@@ -219,7 +219,35 @@ int moves_forqueen(struct cb *cbC, char movs[512][32], int iCur)
 		}
 		bbS &= ~(1ULL << posS);			
 	}
+	
+	// Bishop equivalent moves
+	bbS = bbQ;
+	while((posS = ffsll(bbS)) != 0) {
+		posS -= 1;
+		bbD = bbBishopMoves[posS];
+		bbD = bbD & ~bbFOcc;
+		while((posD = ffsll(bbD)) != 0) {
+			posD -= 1;
+			bbD &= ~(1ULL << posD);			
 
+			strncpy(movs[iCur],"Q",32);
+			strcat(movs[iCur],cb_bbpos2strloc(posS,sTemp));
+			strcat(movs[iCur],"-");
+			strcat(movs[iCur],cb_bbpos2strloc(posD,sTemp));
+
+			if(evalhlpr_diagattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
+				dbg_log(fLog,"INFO:moves_forqueen: DROPPING mov[%s] as others inbetween\n",movs[iCur]);
+				strncpy(movs[iCur],"",32);
+				continue;
+			}
+
+			iCur += 1;
+		}
+		bbS &= ~(1ULL << posS);			
+	}
+
+	/* Has both Rook and Bishop equivalent moves have been added now. The king moves is not needed.
+         * King moves was providing a minimal movement and attack to Queen, when Rook and Bishop moves where not there.
 	// King equivalent moves
 	bbS = bbQ;
 	while((posS = ffsll(bbS)) != 0) {
@@ -237,6 +265,7 @@ int moves_forqueen(struct cb *cbC, char movs[512][32], int iCur)
 		}
 		bbS &= ~(1ULL << posS);			
 	}
+	*/
 
 	return iCur;
 }
