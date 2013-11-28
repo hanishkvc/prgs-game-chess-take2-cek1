@@ -64,7 +64,7 @@ int evalhlpr_lineattack(struct cb *cbC, int sPos, int dPos, int hint)
 		} else if(iCnt == 2) {
 			return ATTACK_YES; // Yes no piece inbetween, so Positive attack
 		} else {
-			fprintf(fLog,"FIXME:lineattack: BUG in code ????\n");
+			dbg_log(fLog,"FIXME:lineattack: BUG in code ????\n");
 			exit(300); // FIXME: BUG IN CODE/Logic, if this is hit
 		}
 		
@@ -204,7 +204,7 @@ int cb_evalpw_king_underattack(struct cb *cbC)
 		cbC->wk_underattack = 0;
 
 	// Result
-	fprintf(fLog,"INFO:kingunderattack: valW[%d] - valB[%d]\n", valW, valB);
+	dbg_log(fLog,"INFO:kingunderattack: valW[%d] - valB[%d]\n", valW, valB);
 	return (valW-valB);
 }
 
@@ -251,7 +251,7 @@ int cb_eval_tANDp_fromknights(struct cb *cbC, char activeSide)
 	}
 	while((nPos = ffsll(cNBB)) != 0) {
 		nPos -= 1;
-		//fprintf(fLog,"DEBUG:tANDp_fromknights:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
+		//dbg_log(fLog,"DEBUG:tANDp_fromknights:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
 		val1 += __builtin_popcountl(bbKnightMoves[nPos] & cbC->bk) * VALUE_KING;
 		val1 += __builtin_popcountl(bbKnightMoves[nPos] & cbC->bq) * VALUE_QUEEN;
 		val1 += __builtin_popcountl(bbKnightMoves[nPos] & cbC->br) * VALUE_ROOK;
@@ -271,7 +271,7 @@ int cb_eval_tANDp_fromknights(struct cb *cbC, char activeSide)
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
 	val = ((val1 * weightage1) + (val2 * weightage2))/10;
-	fprintf(fLog,"INFO:tANDp_fromKnights:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
+	dbg_log(fLog,"INFO:tANDp_fromKnights:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
 	// FIXME: The protection value is bit more complicated in that it is dependent on whether
 	// the threat from the opposite side is coming from a knight or other pieces.
@@ -303,7 +303,7 @@ int cb_eval_tANDp_fromrooks(struct cb *cbC, char activeSide)
 	}
 	while((nPos = ffsll(cNBB)) != 0) {
 		nPos -= 1;
-		//fprintf(fLog,"DEBUG:tANDp_fromrooks:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
+		//dbg_log(fLog,"DEBUG:tANDp_fromrooks:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
 		val1 += __builtin_popcountl(bbRookMoves[nPos] & cbC->bk) * VALUE_KING;
 		val1 += __builtin_popcountl(bbRookMoves[nPos] & cbC->bq) * VALUE_QUEEN;
 		val1 += __builtin_popcountl(bbRookMoves[nPos] & cbC->br) * VALUE_ROOK;
@@ -323,7 +323,7 @@ int cb_eval_tANDp_fromrooks(struct cb *cbC, char activeSide)
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
 	val = ((val1 * weightage1) + (val2 * weightage2))/10;
-	fprintf(fLog,"INFO:tANDp_fromRooks:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
+	dbg_log(fLog,"INFO:tANDp_fromRooks:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
 	// FIXME: The threat and protection value is bit more complicated than provided above because
 	// If there are intervening pieces in the path, then the effect of threat and protection is 
@@ -353,7 +353,7 @@ int cb_eval_tANDp_frombishops(struct cb *cbC, char activeSide)
 	}
 	while((nPos = ffsll(cNBB)) != 0) {
 		nPos -= 1;
-		//fprintf(fLog,"DEBUG:tANDp_frombishops:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
+		//dbg_log(fLog,"DEBUG:tANDp_frombishops:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
 		val1 += __builtin_popcountl(bbBishopMoves[nPos] & cbC->bk) * VALUE_KING;
 		val1 += __builtin_popcountl(bbBishopMoves[nPos] & cbC->bq) * VALUE_QUEEN;
 		val1 += __builtin_popcountl(bbBishopMoves[nPos] & cbC->br) * VALUE_ROOK;
@@ -373,7 +373,7 @@ int cb_eval_tANDp_frombishops(struct cb *cbC, char activeSide)
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
 	val = ((val1 * weightage1) + (val2 * weightage2))/10;
-	fprintf(fLog,"INFO:tANDp_fromBishops:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
+	dbg_log(fLog,"INFO:tANDp_fromBishops:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
 	// FIXME: The threat and protection value is bit more complicated than provided above because
 	// If there are intervening pieces in the path, then the effect of threat and protection is 
@@ -403,7 +403,7 @@ int cb_eval_tANDp_fromqueens(struct cb *cbC, char activeSide)
 	}
 	while((nPos = ffsll(cNBB)) != 0) {
 		nPos -= 1;
-		//fprintf(fLog,"DEBUG:tANDp_fromqueens:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
+		//dbg_log(fLog,"DEBUG:tANDp_fromqueens:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
 		val1 += __builtin_popcountl(bbQueenMoves[nPos] & cbC->bk) * VALUE_KING;
 		val1 += __builtin_popcountl(bbQueenMoves[nPos] & cbC->bq) * VALUE_QUEEN;
 		val1 += __builtin_popcountl(bbQueenMoves[nPos] & cbC->br) * VALUE_ROOK;
@@ -423,7 +423,7 @@ int cb_eval_tANDp_fromqueens(struct cb *cbC, char activeSide)
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
 	val = ((val1 * weightage1) + (val2 * weightage2))/10;
-	fprintf(fLog,"INFO:tANDp_fromQueens:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
+	dbg_log(fLog,"INFO:tANDp_fromQueens:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
 	// FIXME: The threat and protection value is bit more complicated than provided above because
 	// If there are intervening pieces in the path, then the effect of threat and protection is 
@@ -454,7 +454,7 @@ int cb_eval_tANDp_fromkings(struct cb *cbC, char activeSide)
 	// King cann't directly attack the other side king, but keeping for now, have to think bit more
 	while((nPos = ffsll(cNBB)) != 0) {
 		nPos -= 1;
-		//fprintf(fLog,"DEBUG:tANDp_fromkings:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
+		//dbg_log(fLog,"DEBUG:tANDp_fromkings:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
 		val1 += __builtin_popcountl(bbKingMoves[nPos] & cbC->bk) * VALUE_KING;
 		val1 += __builtin_popcountl(bbKingMoves[nPos] & cbC->bq) * VALUE_QUEEN;
 		val1 += __builtin_popcountl(bbKingMoves[nPos] & cbC->br) * VALUE_ROOK;
@@ -474,7 +474,7 @@ int cb_eval_tANDp_fromkings(struct cb *cbC, char activeSide)
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
 	val = ((val1 * weightage1) + (val2 * weightage2))/10;
-	fprintf(fLog,"INFO:tANDp_fromKings:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
+	dbg_log(fLog,"INFO:tANDp_fromKings:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
 	// FIXME: The threat and protection value is bit more complicated than provided above because
 	// If there are intervening pieces in the path, then the effect of threat and protection is 
@@ -507,7 +507,7 @@ int cb_eval_tANDp_frompawns(struct cb *cbC, char activeSide)
 	}
 	while((nPos = ffsll(cNBB)) != 0) {
 		nPos -= 1;
-		//fprintf(fLog,"DEBUG:tANDp_frompawns:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
+		//dbg_log(fLog,"DEBUG:tANDp_frompawns:STM[%c]:cNBB[%0llx]:nPos[%d]\n",activeSide,cNBB,nPos);
 		val1 += __builtin_popcountl(bbPawnAttackMoves[nPos] & cbC->bk) * VALUE_KING;
 		val1 += __builtin_popcountl(bbPawnAttackMoves[nPos] & cbC->bq) * VALUE_QUEEN;
 		val1 += __builtin_popcountl(bbPawnAttackMoves[nPos] & cbC->br) * VALUE_ROOK;
@@ -527,7 +527,7 @@ int cb_eval_tANDp_frompawns(struct cb *cbC, char activeSide)
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
 	val = ((val1 * weightage1) + (val2 * weightage2))/10;
-	fprintf(fLog,"INFO:tANDp_fromPawns:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
+	dbg_log(fLog,"INFO:tANDp_fromPawns:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
 	// FIXME: The threat and protection value is bit more complicated than provided above because
 	// If there are intervening pieces in the path, then the effect of threat and protection is 
@@ -572,7 +572,7 @@ int cb_evalpw(struct cb *cbC)
 
 	valPW = valMat + valTandP + valKingAttacked;
 
-	fprintf(fLog,"valMat[%d] + valTandP[%d] + valKingAttacked[%d] = valPW[%d] <=> Moves[%s]\n",
+	dbg_log(fLog,"valMat[%d] + valTandP[%d] + valKingAttacked[%d] = valPW[%d] <=> Moves[%s]\n",
 				valMat, valTandP, valKingAttacked, valPW, cbC->sMoves);
 	return valPW;
 }

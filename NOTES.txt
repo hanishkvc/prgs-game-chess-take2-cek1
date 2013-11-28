@@ -32,3 +32,16 @@ If entering CHECK, on a new move
 To differentiate between both, may be use curDepth field to return immidiately in 2nd case at 3.0
 OR check who is supposed to move next and who is already undercheck and then decide whether to
 continue or not.
+
+
+****** 20131128_0211
+
+* Convert the moves being added to sMoves using 2longnot
+* Have to add a hash table of seen chess position and evaluation.
+* Add other missing piece moves.
+* Add logic for diagonal attack cross check.
+* May be reduce the points given to indirect attack and protection
+  OR NOT, still not decided. TAKE A CALL after all other features
+  have been added and the emergent behaviour checked.
+
+

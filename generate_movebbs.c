@@ -41,7 +41,7 @@ void generate_bb_knightmoves(u64 *bbc)
 			nf = f - 2;
 			cb_bb_setpos(&bbc[curPos],nr,nf);
 			
-			fprintf(fLog,"INFO:bb_knightmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbc[curPos]);
+			dbg_log(fLog,"INFO:bb_knightmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbc[curPos]);
 			dbg_cb_bb_print(bbc[curPos]);
 		}
 	}
@@ -79,7 +79,7 @@ void generate_bb_rookmoves(u64 *bbc)
 				cb_bb_setpos(&bbc[curPos],nr,nf);
 			}
 			
-			fprintf(fLog,"INFO:bb_rookmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbc[curPos]);
+			dbg_log(fLog,"INFO:bb_rookmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbc[curPos]);
 			dbg_cb_bb_print(bbc[curPos]);
 		}
 	}
@@ -114,7 +114,7 @@ void generate_bb_bishopmoves(u64 *bbc)
 				nf2 = nf2 - 1;
 			}
 
-			fprintf(fLog,"INFO:bb_bishopmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbc[curPos]);
+			dbg_log(fLog,"INFO:bb_bishopmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbc[curPos]);
 			dbg_cb_bb_print(bbc[curPos]);
 		}
 	}
@@ -132,7 +132,7 @@ void generate_bb_queenmoves(u64 *bbq, u64 *bbr, u64 *bbb)
 		for(f=0; f<8; f++) {
 			curPos = r*8+f;
 			bbq[curPos] = bbr[curPos] | bbb[curPos];
-			fprintf(fLog,"INFO:bb_queenmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbq[curPos]);
+			dbg_log(fLog,"INFO:bb_queenmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbq[curPos]);
 			dbg_cb_bb_print(bbq[curPos]);
 		}
 	}
@@ -161,7 +161,7 @@ void generate_bb_kingmoves(u64 *bbc)
 			cb_bb_setpos(&bbc[curPos], r+0, f-1);
 			cb_bb_setpos(&bbc[curPos], r+1, f-1);
 
-			fprintf(fLog,"INFO:bb_kingmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbc[curPos]);
+			dbg_log(fLog,"INFO:bb_kingmoves:pos[%d] attacksquares[%0llx]\n",curPos,bbc[curPos]);
 			dbg_cb_bb_print(bbc[curPos]);
 		}
 	}
@@ -196,7 +196,7 @@ void generate_bb_pawnmoves(u64 *bbwn, u64 *bbwa, u64 *bbbn, u64 *bbba)
 				cb_bb_setpos(&bbwa[curPos], r+1, f+1);
 				cb_bb_setpos(&bbwa[curPos], r+1, f-1);
 			}
-			fprintf(fLog,"INFO:bb_pawnmoves:White:pos[%d] movesquares[%0llx] attacksquares[%0llx]\n",curPos,bbwn[curPos],bbwa[curPos]);
+			dbg_log(fLog,"INFO:bb_pawnmoves:White:pos[%d] movesquares[%0llx] attacksquares[%0llx]\n",curPos,bbwn[curPos],bbwa[curPos]);
 			dbg_cb_bb_print(bbwn[curPos]);
 			dbg_cb_bb_print(bbwa[curPos]);
 		}
@@ -216,7 +216,7 @@ void generate_bb_pawnmoves(u64 *bbwn, u64 *bbwa, u64 *bbbn, u64 *bbba)
 				cb_bb_setpos(&bbba[curPos], r-1, f+1);
 				cb_bb_setpos(&bbba[curPos], r-1, f-1);
 			}
-			fprintf(fLog,"INFO:bb_pawnmoves:Black:pos[%d] movesquares[%0llx] attacksquares[%0llx]\n",curPos,bbbn[curPos],bbba[curPos]);
+			dbg_log(fLog,"INFO:bb_pawnmoves:Black:pos[%d] movesquares[%0llx] attacksquares[%0llx]\n",curPos,bbbn[curPos],bbba[curPos]);
 			dbg_cb_bb_print(bbbn[curPos]);
 			dbg_cb_bb_print(bbba[curPos]);
 		}

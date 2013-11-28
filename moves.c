@@ -76,7 +76,7 @@ int moves_forpawnnormal(struct cb *cbC, char movs[512][32], int iCur)
 
 			if(abs(posS-posD) > 8) {
 				if(evalhlpr_lineattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
-					fprintf(fLog,"INFO:moves_forpawnnormal: DROPPING mov[%s] as others inbetween\n",movs[iCur]);
+					dbg_log(fLog,"INFO:moves_forpawnnormal: DROPPING mov[%s] as others inbetween\n",movs[iCur]);
 					strncpy(movs[iCur],"",32);
 					continue;
 				}
@@ -155,7 +155,7 @@ int moves_get(struct cb *cbC, char movs[512][32], int iCur)
 	iNew = moves_forpawnnormal(cbC, movs, iNew);
 	iNew = moves_forking(cbC, movs, iNew);
 	if(iNew >= NUMOFPARALLELMOVES) {
-		fprintf(fLog,"FIXME:moves_get: List overflow ????\n");
+		dbg_log(fLog,"FIXME:moves_get: List overflow ????\n");
 		exit(200);
 	}
 	gMovesCnt += (iNew-iCur);

@@ -10,7 +10,7 @@
 #include <strings.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <time.h>
 
 #define DEBUG_UNWIND_SELECTION
 
@@ -20,19 +20,42 @@
 FILE *fLog;
 
 struct cb gb;
-
+struct timespec gtsStart, gtsDiff;
+long gDTime = 0;
 int gMovesCnt = 0;
 int gStartMoveNum = 0;
 int gUCIOption = 0;
 
 // Has this is a multiline macro, always use it inside braces
 #define send_resp_ex(sBuffer,sSize,...) snprintf(sBuffer,sSize,__VA_ARGS__); send_resp(sBuffer);
+#define dbg_cb_bb_print dummy
+//#define dbg_log(file,...) fprintf(file,__VA_ARGS__)
+#define dbg_log(file,...) dummy()
+
+void dummy() 
+{
+}
+
+long diff_clocktime(struct timespec *tsStart)
+{
+	long diffS,diffNS,msDiff;
+
+	struct timespec tsCur;
+	if(clock_gettime(CLOCK_REALTIME_COARSE,&tsCur) != 0) {
+		dbg_log(fLog,"FIXME:diff_clocktime:clock_gettime failed\n");
+		exit(50);
+	}
+	diffS = tsCur.tv_sec - tsStart->tv_sec;
+	diffNS = abs(tsCur.tv_nsec - tsStart->tv_nsec);
+	msDiff = diffS*1000 + (diffNS/1000000);
+	return msDiff;
+}
 
 void send_resp(char *sBuf)
 {
 	printf("%s",sBuf);
 	fflush(stdout);
-	fprintf(fLog,"SENT:%s",sBuf);
+	dbg_log(fLog,"SENT:%s",sBuf);
 	fflush(fLog);
 }
 
@@ -71,25 +94,19 @@ int cb_bb_setpos(u64 *bb, int r, int f)
 	u64 pos = 0x1;
 
 	if((f < 0) || (f > 7)) {
-		fprintf(fLog,"ERROR:cb_bb_setpos: file went beyond a-h :%d\n",f);
+		dbg_log(fLog,"ERROR:cb_bb_setpos: file went beyond a-h :%d\n",f);
 		//exit(100);
 		return -1;
 	}
 	if((r < 0) || (r > 7)) {
-		fprintf(fLog,"ERROR:cb_bb_setpos: rank went beyond 1-8 :%d\n",r);
+		dbg_log(fLog,"ERROR:cb_bb_setpos: rank went beyond 1-8 :%d\n",r);
 		//exit(100);
 		return -2;
 	}
 	pos <<= off;
 	*bb |= pos;
-	fprintf(fLog,"INFO:cb_bb_setpos: f%d_r%d\n",f,r);
+	dbg_log(fLog,"INFO:cb_bb_setpos: f%d_r%d\n",f,r);
 	return 0;
-}
-
-#define dbg_cb_bb_print dummy
-
-void dummy() 
-{
 }
 
 void cb_bb_print(u64 bb)
@@ -98,17 +115,17 @@ void cb_bb_print(u64 bb)
 	u64 pos;
 	int r,f;
 
-	fprintf(fLog,"INFO:cb_bb_print:\n");
+	dbg_log(fLog,"INFO:cb_bb_print:\n");
 	for(r = 7; r >= 0; r--) {
 		for(f = 0; f < 8; f++) {
 			off = r*8+f;
 			pos = 0x1; pos <<= off;
 			if(bb & pos)
-				fprintf(fLog,"*");
+				dbg_log(fLog,"*");
 			else
-				fprintf(fLog,"-");
+				dbg_log(fLog,"-");
 		}
-		fprintf(fLog,"\n");
+		dbg_log(fLog,"\n");
 	}
 }
 
@@ -118,39 +135,39 @@ void cb_print(struct cb *cbC)
 	u64 pos;
 	int r,f;
 
-	fprintf(fLog,"INFO:cb_print:%c to move\n",cbC->sideToMove);
+	dbg_log(fLog,"INFO:cb_print:%c to move\n",cbC->sideToMove);
 	for(r = 7; r >= 0; r--) {
 		for(f = 0; f < 8; f++) {
 			off = r*8+f;
 			pos = 0x1; pos <<= off;
 			if(cbC->wk & pos)
-				fprintf(fLog,"K");
+				dbg_log(fLog,"K");
 			else if(cbC->wq & pos)
-				fprintf(fLog,"Q");
+				dbg_log(fLog,"Q");
 			else if(cbC->wr & pos)
-				fprintf(fLog,"R");
+				dbg_log(fLog,"R");
 			else if(cbC->wn & pos)
-				fprintf(fLog,"N");
+				dbg_log(fLog,"N");
 			else if(cbC->wb & pos)
-				fprintf(fLog,"B");
+				dbg_log(fLog,"B");
 			else if(cbC->wp & pos)
-				fprintf(fLog,"P");
+				dbg_log(fLog,"P");
 			else if(cbC->bk & pos)
-				fprintf(fLog,"k");
+				dbg_log(fLog,"k");
 			else if(cbC->bq & pos)
-				fprintf(fLog,"q");
+				dbg_log(fLog,"q");
 			else if(cbC->br & pos)
-				fprintf(fLog,"r");
+				dbg_log(fLog,"r");
 			else if(cbC->bn & pos)
-				fprintf(fLog,"n");
+				dbg_log(fLog,"n");
 			else if(cbC->bb & pos)
-				fprintf(fLog,"b");
+				dbg_log(fLog,"b");
 			else if(cbC->bp & pos)
-				fprintf(fLog,"p");
+				dbg_log(fLog,"p");
 			else
-				fprintf(fLog,"*");
+				dbg_log(fLog,"*");
 		}
-		fprintf(fLog,"\n");
+		dbg_log(fLog,"\n");
 	}
 }
 
@@ -365,6 +382,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	val = valPW;
 #endif
 
+	gDTime = diff_clocktime(&gtsStart);
 	//*depthReached = curDepth;
 	//The check for king underattack has to be thought thro and updated if required.
 	if((curDepth == maxDepth) || (cbC->wk_underattack > 1) || (cbC->bk_underattack > 1)) {
@@ -373,8 +391,8 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			strcpy(sTemp,"string UnderCheckINVALIDMOVE");
 		else
 			strcpy(sTemp,"");
-		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %d pv %s %s\n",
-				val,curDepth,gMovesCnt,0,cbC->sMoves,sTemp);
+		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %ld pv %s %s\n",
+				val,curDepth,gMovesCnt,gDTime,cbC->sMoves,sTemp);
 		if((cbC->wk_underattack > 1) || (cbC->bk_underattack > 1))
 			return DO_ERROR;
 		return valPW;
@@ -388,8 +406,8 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	// by chess rules.
 	if( ((cbC->sideToMove == STM_BLACK) && (cbC->wk_underattack)) ||
 			((cbC->sideToMove == STM_WHITE) && (cbC->bk_underattack)) ) {
-		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %d pv %s string EntersCheckINVALIDMOVE\n",
-				val,curDepth,gMovesCnt,0,cbC->sMoves);
+		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %ld pv %s string EntersCheckINVALIDMOVE\n",
+				val,curDepth,gMovesCnt,gDTime,cbC->sMoves);
 		return DO_ERROR;
 	}
 
@@ -428,18 +446,18 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	// FIXME:TODO:LATER:Maybe (to think) Send best value from the moves above or best N in multipv case
 
 #ifdef DEBUG_UNWIND_SELECTION
-	fprintf(fLog,"DEBUG:findbest:curDepth[%d] unwind *** SelectFROM ***\n",curDepth);
+	dbg_log(fLog,"DEBUG:findbest:curDepth[%d] unwind *** SelectFROM ***\n",curDepth);
 	for(iCur = 0; iCur < iMCnt; iCur++) {
-		fprintf(fLog,"DEBUG:%d:Move[%s],eval[%d],NBMoves[%s]\n",iCur,movs[iCur],movsEval[iCur],movsNBMovesDBG[iCur]);
+		dbg_log(fLog,"DEBUG:%d:Move[%s],eval[%d],NBMoves[%s]\n",iCur,movs[iCur],movsEval[iCur],movsNBMovesDBG[iCur]);
 	}
 #endif
 	if(cbC->sideToMove == STM_WHITE) {
 		if(iMaxPosInd == -1) {
-			fprintf(fLog,"DEBUG:findbest:curDepth[%d] sideToMove[%c] NO VALID MOVE\n",curDepth,cbC->sideToMove);
+			dbg_log(fLog,"DEBUG:findbest:curDepth[%d] sideToMove[%c] NO VALID MOVE\n",curDepth,cbC->sideToMove);
 			iMaxVal = VAL_ERROR;
 			iMaxInd = -1;
 		} else {
-			fprintf(fLog,"INFO:findbest:curDepth[%d] sideToMove[%c] PMoves[%s] mov[%s] eval[%d] NBMoves[%s]\n",
+			dbg_log(fLog,"INFO:findbest:curDepth[%d] sideToMove[%c] PMoves[%s] mov[%s] eval[%d] NBMoves[%s]\n",
 						curDepth,cbC->sideToMove,cbC->sMoves,movs[iMaxPosInd],movsEval[iMaxPosInd],sMaxPosNBMoves);
 			iMaxVal = iMaxPosVal;
 			iMaxInd = iMaxPosInd;
@@ -451,11 +469,11 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		}
 	} else {
 		if(iMaxNegInd == -1) {
-			fprintf(fLog,"DEBUG:findbest:curDepth[%d] sideToMove[%c] NO VALID MOVE\n",curDepth,cbC->sideToMove);
+			dbg_log(fLog,"DEBUG:findbest:curDepth[%d] sideToMove[%c] NO VALID MOVE\n",curDepth,cbC->sideToMove);
 			iMaxVal = VAL_ERROR;
 			iMaxInd = -1;
 		} else {
-			fprintf(fLog,"INFO:findbest:curDepth[%d] sideToMove[%c] PMoves[%s] mov[%s] eval[%d] NBMoves[%s]\n",
+			dbg_log(fLog,"INFO:findbest:curDepth[%d] sideToMove[%c] PMoves[%s] mov[%s] eval[%d] NBMoves[%s]\n",
 						curDepth,cbC->sideToMove,cbC->sMoves,movs[iMaxNegInd],movsEval[iMaxNegInd],sMaxNegNBMoves);
 			iMaxVal = iMaxNegVal;
 			iMaxInd = iMaxNegInd;
@@ -471,22 +489,23 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 #else
 	val = iMaxVal;
 #endif
+	gDTime = diff_clocktime(&gtsStart);
 	//if(curDepth == 1) // FIXME: Have to think, may avoid this check
 	{
 		if(iMaxInd == -1) {
-			send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %d spv %s pv %s %s\n",
-				val,curDepth,0,0,sNextBestMoves,cbC->sMoves,"NO VALID MOVE");
+			send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %ld spv %s pv %s %s\n",
+				val,curDepth,0,gDTime,sNextBestMoves,cbC->sMoves,"NO VALID MOVE");
 		}
 		else {
 			// Dummy time sent
 			// Nodes simply mapped to total Moves generated for now, which may be correct or wrong, to check
 			if(curDepth == 1) {
-				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %d multipv 1 pv %s\n",
-					val,maxDepth-curDepth+1,gMovesCnt,2,sNextBestMoves); //FIXME: Change to maxDepth
+				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %ld multipv 1 pv %s\n",
+					val,maxDepth-curDepth+1,gMovesCnt,gDTime,sNextBestMoves); //FIXME: Change to maxDepth
 				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"bestmove %s\n",cb_2longnot(movs[iMaxInd]));
 			} else {
-				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info string unwinddepth cp %d depth %d nodes %d time %d pv %s\n",
-					val,curDepth,gMovesCnt,2,sNextBestMoves);
+				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info string unwinddepth cp %d depth %d nodes %d time %ld pv %s\n",
+					val,curDepth,gMovesCnt,gDTime,sNextBestMoves);
 			}
 		}
 	}
@@ -500,6 +519,10 @@ int process_go(char *sCmd)
 {
 	char sNextBestMoves[MOVES_BUFSIZE];
 
+	if(clock_gettime(CLOCK_REALTIME_COARSE,&gtsStart) != 0) {
+		dbg_log(fLog,"FIXME:process_go:clock_gettime failed\n");
+		exit(50);
+	}
 	bzero(sNextBestMoves,MOVES_BUFSIZE);
 	gMovesCnt = 0;
 	cb_findbest(&gb,0,3,0,gStartMoveNum,sNextBestMoves);
@@ -542,7 +565,7 @@ int process_position(char *sCmd)
 
 	r = 7; f = 0;
 	while(*fenStr != '\0') {
-		fprintf(fLog,"INFO:pp:val[%c]\n",*fenStr);
+		dbg_log(fLog,"INFO:pp:val[%c]\n",*fenStr);
 		if(fenStr[0] == 'p') {
 			cb_bb_setpos(&(gb.bp),r,f);
 			f += 1; 
@@ -592,7 +615,7 @@ int process_position(char *sCmd)
 			f += 1; 
 		}
 		if(fenStr[0] == '/') {
-			fprintf(fLog,"INFO:pp:Next Row\n");
+			dbg_log(fLog,"INFO:pp:Next Row\n");
 			r -= 1;
 			f = 0;
 		}
@@ -618,14 +641,14 @@ int process_position(char *sCmd)
 			f += 7; 
 		}
 		if(fenStr[0] == ' ') {
-			fprintf(fLog,"DEBUG:pp: strtok strange\n");
+			dbg_log(fLog,"DEBUG:pp: strtok strange\n");
 			break;
 		}
 		if((f < 0) || (f > 8)) {	// f checked against 8 instead of 7, as f increment can occur to 8
-			fprintf(fLog,"WARN:pp: file went beyond a-h\n");
+			dbg_log(fLog,"WARN:pp: file went beyond a-h\n");
 		}
 		if((r < 0) || (r > 7)) {
-			fprintf(fLog,"WARN:pp: rank went beyond 1-8\n");
+			dbg_log(fLog,"WARN:pp: rank went beyond 1-8\n");
 		}
 		fenStr++;
 	}
@@ -641,7 +664,7 @@ int process_uci()
 	char sTemp[S1KTEMPBUFSIZE];
 
 	sCmd = fgets(sCmdBuf, S1KTEMPBUFSIZE, stdin);
-	fprintf(fLog,"GOT:%s\n",sCmd);
+	dbg_log(fLog,"GOT:%s\n",sCmd);
 	fflush(fLog);
 
 	if(strncmp(sCmd,"uci",3) == 0) {
@@ -665,7 +688,7 @@ int process_uci()
 		process_go(sCmd);
 	}
 	if(strncmp(sCmd,"quit",4) == 0) {
-		fprintf(fLog,"QUITING\n");
+		dbg_log(fLog,"QUITING\n");
 		exit(2);
 	}
 	fflush(fLog);
