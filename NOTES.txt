@@ -34,12 +34,13 @@ OR check who is supposed to move next and who is already undercheck and then dec
 continue or not.
 
 
-****** 20131128_0211
+****** 20131128_0211, 20131129_0243
 
 * Convert the moves being added to sMoves using 2longnot
 * Have to add a hash table of seen chess position and evaluation.
-* Add other missing piece moves.
-* Add logic for diagonal attack cross check.
+* DONE: Add other missing piece moves.
+  TODO: Add Special moves like Pawn promotion, Castling and EnPassant.
+* DONE: Add logic for diagonal attack cross check.
 * May be reduce the points given to indirect attack and protection
   i.e those attacks which are currently blocked, but can get
   activated due to movement of inbetween pieces.
@@ -85,4 +86,16 @@ continue or not.
  
 * Have to check all eval return values to see it properly matchs
   the WhitePerspective or the SideToMove perspective as required.
+
+* move_process may be a good candidate for multithreading. i.e
+  multiple threads can be started which parallely process a
+  different possible move for the current board position/situation.
+
+* Increase the depth of search from the current 3 to 4 or 5 and
+  see the change in behaviour if any (ideally there should be)
+  as well as when the depth is changed to say 10 or 20 or 30 or 50.
+  However deeper the depth, lot lot more time the engine will
+  take as of now, as there is no Hash based logic to identify
+  already seen positions and short circuit the remaining
+  depth search.
 
