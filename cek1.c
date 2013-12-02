@@ -557,7 +557,7 @@ int process_uci()
 		send_resp("readyok\n");
 	}
 	if(strncmp(sCmd,"position",8) == 0) {
-		if(process_position(sCmd) != 0)
+		if(process_position(&gb,sCmd) != 0)
 			send_resp("info string error parsing fen");
 	}
 	if(strncmp(sCmd,"setoption",9) == 0) {

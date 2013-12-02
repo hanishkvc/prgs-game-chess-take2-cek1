@@ -1,5 +1,5 @@
 
-int process_position(char *sCmd)
+int process_position(struct cb *cbC, char *sCmd)
 {
 	char *fenStr;
 	char *fenSTM;
@@ -25,63 +25,63 @@ int process_position(char *sCmd)
 
 	gStartMoveNum = strtol(fenMoveNum,NULL,10);
 
-	bzero(&gb,sizeof(gb));
+	bzero(cbC,sizeof(struct cb));
 
 	if((fenSTM[0] == 'w') || (fenSTM[0] == 'W'))
-		gb.sideToMove=STM_WHITE;
+		cbC->sideToMove=STM_WHITE;
 	else
-		gb.sideToMove=STM_BLACK;
+		cbC->sideToMove=STM_BLACK;
 
 
 	r = 7; f = 0;
 	while(*fenStr != '\0') {
 		dbg_log(fLog,"INFO:pp:val[%c]\n",*fenStr);
 		if(fenStr[0] == 'p') {
-			cb_bb_setpos(&(gb.bp),r,f);
+			cb_bb_setpos(&(cbC->bp),r,f);
 			f += 1; 
 		}
 		if(fenStr[0] == 'P') {
-			cb_bb_setpos(&(gb.wp),r,f);
+			cb_bb_setpos(&(cbC->wp),r,f);
 			f += 1; 
 		}
 		if(fenStr[0] == 'r') {
-			cb_bb_setpos(&(gb.br),r,f);
+			cb_bb_setpos(&(cbC->br),r,f);
 			f += 1; 
 		}
 		if(fenStr[0] == 'R') {
-			cb_bb_setpos(&(gb.wr),r,f);
+			cb_bb_setpos(&(cbC->wr),r,f);
 			f += 1; 
 		}
 		if(fenStr[0] == 'n') {
-			cb_bb_setpos(&(gb.bn),r,f);
+			cb_bb_setpos(&(cbC->bn),r,f);
 			f += 1; 
 		}
 		if(fenStr[0] == 'N') {
-			cb_bb_setpos(&(gb.wn),r,f);
+			cb_bb_setpos(&(cbC->wn),r,f);
 			f += 1; 
 		}
 		if(fenStr[0] == 'b') {
-			cb_bb_setpos(&(gb.bb),r,f);
+			cb_bb_setpos(&(cbC->bb),r,f);
 			f += 1; 
 		}
 		if(fenStr[0] == 'B') {
-			cb_bb_setpos(&(gb.wb),r,f);
+			cb_bb_setpos(&(cbC->wb),r,f);
 			f += 1; 
 		}
 		if(fenStr[0] == 'k') {
-			cb_bb_setpos(&(gb.bk),r,f);
+			cb_bb_setpos(&(cbC->bk),r,f);
 			f += 1; 
 		}
 		if(fenStr[0] == 'K') {
-			cb_bb_setpos(&(gb.wk),r,f);
+			cb_bb_setpos(&(cbC->wk),r,f);
 			f += 1; 
 		}
 		if(fenStr[0] == 'q') {
-			cb_bb_setpos(&(gb.bq),r,f);
+			cb_bb_setpos(&(cbC->bq),r,f);
 			f += 1; 
 		}
 		if(fenStr[0] == 'Q') {
-			cb_bb_setpos(&(gb.wq),r,f);
+			cb_bb_setpos(&(cbC->wq),r,f);
 			f += 1; 
 		}
 		if(fenStr[0] == '/') {
@@ -122,7 +122,7 @@ int process_position(char *sCmd)
 		}
 		fenStr++;
 	}
-	cb_print(&gb);
+	cb_print(cbC);
 	return 0;
 }
 
