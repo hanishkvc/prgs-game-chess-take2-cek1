@@ -248,7 +248,7 @@ int move_validate(struct cb *cbC, char *sMov)
 	return iRes;
 }
 
-void mvhlpr_domove(struct cb *cbC, char mPiece, int mSPos, int mDPos)
+void mvhlpr_domovel_oncb(struct cb *cbC, char mPiece, int mSPos, int mDPos)
 {
 	
 	if(cbC->sideToMove == STM_WHITE) {
@@ -307,6 +307,92 @@ void mvhlpr_domove(struct cb *cbC, char mPiece, int mSPos, int mDPos)
 
 }
 
+int mvhlpr_domoveh_oncb(struct cb *cbC, char *sMov)
+{
+	int sPos = 0;
+	int dPos = 0;
+
+	sPos = cb_strloc2bbpos(sMov);
+	dPos = cb_strloc2bbpos(&sMov[2]);
+
+	if((cbC->wk & (1ULL << sPos)) != 0) {
+		if(cbC->sideToMove == 'w')
+			mvhlpr_domovel_oncb(cbC,'K',sPos,dPos);
+		else {
+			return -1;
+		}
+	} else if((cbC->wq & (1ULL << sPos)) != 0) {
+		if(cbC->sideToMove == 'w')
+			mvhlpr_domovel_oncb(cbC,'Q',sPos,dPos);
+		else {
+			return -1;
+		}
+	} else if((cbC->wr & (1ULL << sPos)) != 0) {
+		if(cbC->sideToMove == 'w')
+			mvhlpr_domovel_oncb(cbC,'R',sPos,dPos);
+		else {
+			return -1;
+		}
+	} else if((cbC->wn & (1ULL << sPos)) != 0) {
+		if(cbC->sideToMove == 'w')
+			mvhlpr_domovel_oncb(cbC,'N',sPos,dPos);
+		else {
+			return -1;
+		}
+	} else if((cbC->wb & (1ULL << sPos)) != 0) {
+		if(cbC->sideToMove == 'w')
+			mvhlpr_domovel_oncb(cbC,'B',sPos,dPos);
+		else {
+			return -1;
+		}
+	} else if((cbC->wp & (1ULL << sPos)) != 0) {
+		if(cbC->sideToMove == 'w')
+			mvhlpr_domovel_oncb(cbC,'P',sPos,dPos);
+		else {
+			return -1;
+		}
+	}
+
+	if((cbC->bk & (1ULL << sPos)) != 0) {
+		if(cbC->sideToMove == 'b')
+			mvhlpr_domovel_oncb(cbC,'K',sPos,dPos);
+		else {
+			return -1;
+		}
+	} else if((cbC->bq & (1ULL << sPos)) != 0) {
+		if(cbC->sideToMove == 'b')
+			mvhlpr_domovel_oncb(cbC,'Q',sPos,dPos);
+		else {
+			return -1;
+		}
+	} else if((cbC->br & (1ULL << sPos)) != 0) {
+		if(cbC->sideToMove == 'b')
+			mvhlpr_domovel_oncb(cbC,'R',sPos,dPos);
+		else {
+			return -1;
+		}
+	} else if((cbC->bn & (1ULL << sPos)) != 0) {
+		if(cbC->sideToMove == 'b')
+			mvhlpr_domovel_oncb(cbC,'N',sPos,dPos);
+		else {
+			return -1;
+		}
+	} else if((cbC->bb & (1ULL << sPos)) != 0) {
+		if(cbC->sideToMove == 'b')
+			mvhlpr_domovel_oncb(cbC,'B',sPos,dPos);
+		else {
+			return -1;
+		}
+	} else if((cbC->bp & (1ULL << sPos)) != 0) {
+		if(cbC->sideToMove == 'b')
+			mvhlpr_domovel_oncb(cbC,'P',sPos,dPos);
+		else {
+			return -1;
+		}
+	}
+	return 0;
+}
+
 int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int secs, int movNum, int altMovNum,char *sNextBestMoves)
 {
 	struct cb cbN;
@@ -330,7 +416,7 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	if(gUCIOption & UCIOPTION_CUSTOM_SHOWCURRMOVE) {
 		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info depth %d currmove %s currmovenumber %d\n", curDepth, cb_2longnot(sMov), altMovNum);
 	}
-	mvhlpr_domove(&cbN,mPiece,mSPos,mDPos);
+	mvhlpr_domovel_oncb(&cbN,mPiece,mSPos,mDPos);
 	if(cbC->sideToMove == STM_WHITE) {
 		sprintf(sBuf,"%d.",movNum);
 		strcat(cbN.sMoves,sBuf);
@@ -538,7 +624,7 @@ int process_go(char *sCmd)
 int process_uci()
 {
 
-	char sCmdBuf[S1KTEMPBUFSIZE];
+	char sCmdBuf[UCICMDBUFSIZE];
 	char *sCmd;
 	char sTemp[S1KTEMPBUFSIZE];
 
