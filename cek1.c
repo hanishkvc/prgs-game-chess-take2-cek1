@@ -620,6 +620,7 @@ int process_go(char *sCmd)
 }
 
 #include "positioncmd.c"
+#include "debugcmd.c"
 
 int process_uci()
 {
@@ -651,6 +652,9 @@ int process_uci()
 	}
 	if(strncmp(sCmd,"go",2) == 0) {
 		process_go(sCmd);
+	}
+	if(strncmp(sCmd,"debug",5) == 0) {
+		process_debug(sCmd);
 	}
 	if(strncmp(sCmd,"quit",4) == 0) {
 		dbg_log(fLog,"QUITING\n");

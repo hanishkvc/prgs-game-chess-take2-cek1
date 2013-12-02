@@ -32,6 +32,7 @@ int evalhlpr_diagattack(struct cb *cbC, int sPos, int dPos, int hint)
 	u64 uLRMask, uRLMask, cPos;
 	int res1 = ATTACK_NO;
 	int res2 = ATTACK_NO;
+	u64 uTemp = 0;
 
 	bbOcc = cbC->wk | cbC->wq | cbC->wr | cbC->wn | cbC->wb | cbC-> wp
 		 | cbC->bk | cbC->bq | cbC->br | cbC->bn | cbC->bb | cbC-> bp;
@@ -61,16 +62,32 @@ int evalhlpr_diagattack(struct cb *cbC, int sPos, int dPos, int hint)
 	iDiff = iRank - iFile;
 	if(iDiff < 0) { 
 		uLRMask <<= abs(iDiff);
+		uTemp = ((1ULL << (7+iDiff+1)*8) - 1);
+		uLRMask = uLRMask & uTemp;
 	} else if(iDiff > 0) {
 		uLRMask >>= iDiff;
+		uTemp = ~((1ULL << (iDiff)*8) - 1);
+		uLRMask = uLRMask & uTemp;
 	}
+#ifdef DEBUG_DIAGATTACK
+	dbg_log(fLog,"CHECK:DiagAttack:uLRMask (iDiff[%d])\n",iDiff);
+#endif
 
 	iDiff = 7 - iRank - iFile;
 	if(iDiff < 0) {
 		uRLMask <<= abs(iDiff);
+		uTemp = ~((1ULL << ((abs(iDiff)*8)+1)) - 1);
+		uRLMask = uRLMask & uTemp;
 	} else if(iDiff > 0) {
 		uRLMask >>= iDiff;
+		uTemp = ((1ULL << (((7-iDiff)*8)+1)) - 1);
+		uRLMask = uRLMask & uTemp;
 	}
+
+#ifdef DEBUG_DIAGATTACK
+	dbg_log(fLog,"CHECK:DiagAttack:uRLMask (iDiff[%d])\n",iDiff);
+	cb_bb_print(uRLMask | uLRMask);
+#endif
 
 	bbTOcc = bbOcc & uRLMask;
 	while((cPos = ffsll(bbTOcc)) != 0) {

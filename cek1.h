@@ -1,6 +1,8 @@
 #ifndef _cek1_
 #define _cek1_
 
+//#define DEBUG_DIAGATTACK 1
+
 typedef unsigned long long u64;
 
 //#define PRG_VERSION "CEK1 v20131125_1430\n"

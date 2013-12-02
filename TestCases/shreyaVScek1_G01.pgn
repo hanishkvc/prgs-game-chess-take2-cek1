@@ -1,0 +1,15 @@
+[Event "UCI Game"]
+[Site "?"]
+[Date "2013.12.02"]
+[Round "?"]
+[White "?"]
+[Black "cek1"]
+[Result "1/2-1/2"]
+
+1.Nf3 Nc6 2.Nc3 Nb4 3.Na4 Nf6 4.Nh4 Rg8 5.Nf5 g6 6.Nh6 Bxh6 7.Nc5 Nxc2+ 8.
+Qxc2 b6 9.Qd1 bxc5 10.g4 Bb7 11.Rg1 Bf3 12.exf3 Bf4 13.h3 Rf8 14.d3 Qb8 
+15.a3 Bxc1 16.Qxc1 Qb3 17.Ke2 Rd8 18.Qe1 Qe6+ 19.Kd1 Qb3+ 20.Kd2 Qxb2+ 21.
+Ke3 
+    ( 21.Kd1 Qxa1+ )
+21...Qe5+ 22.Kd2 Qb2+ 23.Ke3 Qe5+ 24.Kd2 Qb2+ 25.Ke3 1/2-1/2
+
