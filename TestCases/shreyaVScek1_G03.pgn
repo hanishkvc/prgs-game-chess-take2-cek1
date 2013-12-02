@@ -1,0 +1,16 @@
+[Event "MyChessEngineTestGames"]
+[Site "Home, INDIA"]
+[Date "2013.12.02"]
+[Round "G03"]
+[White "Shreya"]
+[Black "cek1"]
+[Result "0-1"]
+[EventDate "2013.12.02"]
+[Annotator "HKVC"]
+[SPECIAL_T1 "HKVC TestingMyEngine"]
+
+1.Nf3 Nc6 2.Nh4 Nd4 3.Nf5 Nxf5 4.Nc3 Nd4 5.Ne4 h6 6.Ng5 hxg5 7.e3 Rh6 8.
+exd4 Re6+ 9.Be2 Nf6 10.O-O g4 11.g3 a6 12.Kh1 b6 13.Bxg4 Re1 14.Rxe1 Nxg4 
+15.Rf1 Nxf2+ 16.Rxf2 e6 17.Re2 Qf6 18.Re1 Bb7+ 19.Kg1 Qxd4+ 20.Kf1 Qf6+ 
+21.Ke2 Qf3# 0-1
+
