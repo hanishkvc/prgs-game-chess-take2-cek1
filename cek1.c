@@ -25,6 +25,8 @@ long gDTime = 0;
 int gMovesCnt = 0;
 int gStartMoveNum = 0;
 int gUCIOption = 0;
+int gGameDepth = 3;
+int gGameHash = 32;
 
 // Has this is a multiline macro, always use it inside braces
 #define send_resp_ex(sBuffer,sSize,...) snprintf(sBuffer,sSize,__VA_ARGS__); send_resp(sBuffer);
@@ -193,12 +195,6 @@ char *cb_2longnot(char *sIMov)
 char *cb_2simpnot(char *sIMov)
 {
 	return sIMov;
-}
-
-int process_setoption(char *sCmd)
-{
-	//if(gUCIOption | UCIOPTION_CUSTOM_SHOWCURRMOVE)
-	return 0;
 }
 
 #include "generate_movebbs.c"
@@ -615,10 +611,11 @@ int process_go(char *sCmd)
 	}
 	bzero(sNextBestMoves,MOVES_BUFSIZE);
 	gMovesCnt = 0;
-	cb_findbest(&gb,0,3,0,gStartMoveNum,sNextBestMoves);
+	cb_findbest(&gb,0,gGameDepth,0,gStartMoveNum,sNextBestMoves);
 	return 0;
 }
 
+#include "setoptioncmd.c"
 #include "positioncmd.c"
 #include "debugcmd.c"
 
@@ -638,6 +635,7 @@ int process_uci()
 		send_resp("id author hkvc\n");
 		send_resp("option name Ponder type check default true\n");
 		send_resp("option name Hash type spin default 1 min 1 max 100\n");
+		send_resp("option name depth type spin default 3 min 3 max 100\n");
 		send_resp("uciok\n");
 	}
 	if(strncmp(sCmd,"isready",7) == 0) {
