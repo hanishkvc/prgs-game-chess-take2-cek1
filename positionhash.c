@@ -137,9 +137,11 @@ int phash_find(struct phashtable *phtC, struct cb *cbC, struct phash *phT)
 			phtC->HashHitCnt++;
 			return i;
 		} else {
+#ifdef DEBUG_HTPRINT
 			dbg_log(fLog,"INFO:phash_find:HTCLASH:HTPos[%d]:\n",i);
 			phash_print(&(phtC->phashArr[i]),"FromTable");
 			phash_print(phT,"NewBeingChecked");
+#endif
 			phtC->HashClashCnt++;
 		}
 	}
@@ -165,7 +167,9 @@ void phash_add(struct phashtable *phtC, struct cb *cbC, int val, char *sMoves, c
 			phtC->phashNext = 0;
 		}
 	} else if(phtC->phashArr[iPos].val != val) {
+#ifdef DEBUG_HTPRINT
 		dbg_log(fLog,"DEBUG:phash_add:HTVALMISMATCH:Position in table, but Value doesn't match\n");
+#endif
 		phtC->ValMismatchCnt++;
 	} else {
 		phtC->ValMatchCnt++;

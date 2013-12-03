@@ -442,9 +442,11 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	iRes = phash_find(gHashTable,&cbN,&phTemp);
 	if(iRes != -1) {
 		strcat(sNextBestMoves,gHashTable->phashArr[iRes].sNBMoves);
+#ifdef DEBUG_HTPRINT
 		dbg_log(fLog,"INFO:move_process:HTHIT:HTPos[%d]:val[%d]:cbNsMoves[%s],sNBMoves[%s]\n", 
 				iRes, gHashTable->phashArr[iRes].val, cbN.sMoves, sNextBestMoves);
 		phash_print(&(gHashTable->phashArr[iRes]),"FromHashTable");
+#endif
 		return gHashTable->phashArr[iRes].val;
 	}
 #endif

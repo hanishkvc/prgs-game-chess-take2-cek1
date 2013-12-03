@@ -120,3 +120,9 @@ continue or not.
   1975.42 seconds
   Nodes 5087K
   3Kn/sec
+
+* HashTable based version
+  Depth 5
+  1020 seconds
+  Nodes 2000K
+  3Kn/sec
