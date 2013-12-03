@@ -8,13 +8,15 @@
 #define DEBUG_MOVESGETCNT 1
 #define DEBUG_MOVEPROCESSVALIDATE 1
 
+//#define USE_HASHTABLE 1
+
 typedef unsigned long long u64;
 
 //#define PRG_VERSION "CEK1 v20131125_1430\n"
 #define STM_WHITE 'w'
 #define STM_BLACK 'b'
 
-#define MOVES_BUFSIZE 8196
+#define MOVES_BUFSIZE 1024
 #define NUMOFPARALLELMOVES 512
 #define S1KTEMPBUFSIZE 1024
 #define S32TEMPBUFSIZE 32

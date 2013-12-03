@@ -394,6 +394,8 @@ int mvhlpr_domoveh_oncb(struct cb *cbC, char *sMov)
 	return 0;
 }
 
+#include "positionhash.c"
+
 int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int secs, int movNum, int altMovNum,char *sNextBestMoves)
 {
 	struct cb cbN;
@@ -402,6 +404,9 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	int mSPos, mDPos;
 	char sBuf[S1KTEMPBUFSIZE];
 	char sNBMoves[MOVES_BUFSIZE];
+#ifdef USE_HASHTABLE
+	struct phash phTemp;
+#endif
 
 	bzero(sNBMoves,8);
 
@@ -433,8 +438,18 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	}
 	strcat(cbN.sMoves,sMov);
 	strcat(cbN.sMoves," ");
+#ifdef USE_HASHTABLE
+	iRes = phash_find(gHashTable,&cbN,&phTemp);
+	if(iRes != -1) {
+		strcat(sNextBestMoves,gHashTable->phashArr[iRes].sNBMoves);
+		dbg_log(fLog,"INFO:move_process:HTHIT:HTPos[%d]:val[%d]:cbNsMoves[%s],sNBMoves[%s]\n", 
+				iRes, gHashTable->phashArr[iRes].val, cbN.sMoves, sNextBestMoves);
+		phash_print(&(gHashTable->phashArr[iRes]),"FromHashTable");
+		return gHashTable->phashArr[iRes].val;
+	}
+#endif
 	iRes = cb_findbest(&cbN,curDepth,maxDepth,secs,movNum,sNBMoves);
-	strcat(sNextBestMoves,sNBMoves); // FIXME: CAN BE REMOVED, CROSSVERIFY
+	strcat(sNextBestMoves,sNBMoves); // FIXME: CAN BE REMOVED, CROSSVERIFY i.e sNBMoves can be replaced with sNextBestMoves in findbest
 	return iRes;
 }
 
@@ -604,6 +619,9 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			}
 		}
 	}
+#ifdef USE_HASHTABLE
+	phash_add(gHashTable,cbC,iMaxVal,cbC->sMoves,sNextBestMoves);
+#endif
 	return iMaxVal; 
 }
 
@@ -614,6 +632,14 @@ int process_go(char *sCmd)
 {
 	char sNextBestMoves[MOVES_BUFSIZE];
 
+#ifdef USE_HASHTABLE
+	if((gHashTable = malloc(sizeof(struct phashtable))) == NULL) {
+		fprintf(fLog,"INFO:process_go:Allocating HashTable of size[%ld] FAILED\n",sizeof(struct phashtable));
+		exit(-1);
+	}
+	phash_init(gHashTable);
+#endif
+	
 	if(clock_gettime(CLOCK_REALTIME_COARSE,&gtsStart) != 0) {
 		dbg_log(fLog,"FIXME:process_go:clock_gettime failed\n");
 		exit(50);
@@ -621,6 +647,9 @@ int process_go(char *sCmd)
 	bzero(sNextBestMoves,MOVES_BUFSIZE);
 	gMovesCnt = 0;
 	cb_findbest(&gb,0,gGameDepth,0,gStartMoveNum,sNextBestMoves);
+#ifdef USE_HASHTABLE
+	free(gHashTable);
+#endif
 	return 0;
 }
 
