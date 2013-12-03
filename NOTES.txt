@@ -116,13 +116,23 @@ continue or not.
   nodes in Total (i.e 23**6). And may be around 12 hours or so to find 
   the best move.
 
-* Depth 5
+* Normal version (startpos)
+  Depth 5
   1975.42 seconds
   Nodes 5087K
   3Kn/sec
 
-* HashTable based version
+* HashTable based version (startpos)
   Depth 5
-  1020 seconds
-  Nodes 2000K
-  3Kn/sec
+  967.20 seconds
+  Nodes 1769K
+  2Kn/sec
+
+****** 20131204
+
+* HashTable based version (startpos)
+  Depth 5
+  786.20 seconds
+  Nodes 1769K
+  2Kn/sec
+

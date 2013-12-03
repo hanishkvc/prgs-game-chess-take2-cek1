@@ -406,6 +406,7 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	char sNBMoves[MOVES_BUFSIZE];
 #ifdef USE_HASHTABLE
 	struct phash phTemp;
+	int iVal;
 #endif
 
 	bzero(sNBMoves,8);
@@ -441,13 +442,22 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 #ifdef USE_HASHTABLE
 	iRes = phash_find(gHashTable,&cbN,&phTemp);
 	if(iRes != -1) {
-		strcat(sNextBestMoves,gHashTable->phashArr[iRes].sNBMoves);
+		struct phash *phC;
+		if(cbN.sideToMove == STM_WHITE) {
+			strcat(sNextBestMoves,gHashTable->phashWArr[iRes].sNBMoves);
+			iVal = gHashTable->phashWArr[iRes].val;
+			phC = &gHashTable->phashWArr[iRes];
+		} else {
+			strcat(sNextBestMoves,gHashTable->phashBArr[iRes].sNBMoves);
+			iVal = gHashTable->phashBArr[iRes].val;
+			phC = &gHashTable->phashBArr[iRes];
+		}
 #ifdef DEBUG_HTPRINT
-		dbg_log(fLog,"INFO:move_process:HTHIT:HTPos[%d]:val[%d]:cbNsMoves[%s],sNBMoves[%s]\n", 
-				iRes, gHashTable->phashArr[iRes].val, cbN.sMoves, sNextBestMoves);
-		phash_print(&(gHashTable->phashArr[iRes]),"FromHashTable");
+		dbg_log(fLog,"INFO:move_process:HTHIT:%c:HTPos[%d]:val[%d]:cbNsMoves[%s],sNBMoves[%s]\n", 
+				cbN.sideToMove, iRes, iVal, cbN.sMoves, sNextBestMoves);
+		phash_print(phC,"FromHashTable");
 #endif
-		return gHashTable->phashArr[iRes].val;
+		return iVal;
 	}
 #endif
 	iRes = cb_findbest(&cbN,curDepth,maxDepth,secs,movNum,sNBMoves);

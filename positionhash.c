@@ -25,9 +25,12 @@ struct phash {
 };
 
 struct phashtable {
-	struct phash phashArr[PHASH_MAXCNT];
-	int phashNext;
-	int phashCnt;
+	struct phash phashWArr[PHASH_MAXCNT];
+	int phashWNext;
+	int phashWCnt;
+	struct phash phashBArr[PHASH_MAXCNT];
+	int phashBNext;
+	int phashBCnt;
 	int HashHitCnt;
 	int ValMismatchCnt;
 	int ValMatchCnt;
@@ -128,22 +131,46 @@ int phash_find(struct phashtable *phtC, struct cb *cbC, struct phash *phT)
 	int i;
 
 	phash_gen(phT,cbC);
-	for(i=0; i<phtC->phashCnt; i++) {
-		if((phtC->phashArr[i].aa != phT->aa) || (phtC->phashArr[i].sideToMove != phT->sideToMove))
-			continue;
-		//dbg_log(fLog,"INFO:phash_find:Found\n");
-		if((phtC->phashArr[i].wp == phT->wp) && (phtC->phashArr[i].wo == phT->wo) &&
-			(phtC->phashArr[i].bp == phT->bp) && (phtC->phashArr[i].bo == phT->bo)) {
-			phtC->HashHitCnt++;
-			return i;
-		} else {
+	if(phT->sideToMove == STM_WHITE) {
+
+		for(i=0; i<phtC->phashWCnt; i++) {
+			if((phtC->phashWArr[i].aa != phT->aa) || (phtC->phashWArr[i].sideToMove != phT->sideToMove))
+				continue;
+			if((phtC->phashWArr[i].wp == phT->wp) && (phtC->phashWArr[i].wo == phT->wo) &&
+				(phtC->phashWArr[i].bp == phT->bp) && (phtC->phashWArr[i].bo == phT->bo)) {
+				phtC->HashHitCnt++;
+				//dbg_log(fLog,"INFO:phash_find:W:HTHIT:HTPos[%d]\n",i);
+				return i;
+			} else {
 #ifdef DEBUG_HTPRINT
-			dbg_log(fLog,"INFO:phash_find:HTCLASH:HTPos[%d]:\n",i);
-			phash_print(&(phtC->phashArr[i]),"FromTable");
-			phash_print(phT,"NewBeingChecked");
+				dbg_log(fLog,"INFO:phash_find:W:HTCLASH:HTPos[%d]:\n",i);
+				phash_print(&(phtC->phashWArr[i]),"FromTable");
+				phash_print(phT,"NewBeingChecked");
 #endif
-			phtC->HashClashCnt++;
+				phtC->HashClashCnt++;
+			}
 		}
+	
+	} else {
+
+		for(i=0; i<phtC->phashBCnt; i++) {
+			if((phtC->phashBArr[i].aa != phT->aa) || (phtC->phashBArr[i].sideToMove != phT->sideToMove))
+				continue;
+			if((phtC->phashBArr[i].wp == phT->wp) && (phtC->phashBArr[i].wo == phT->wo) &&
+				(phtC->phashBArr[i].bp == phT->bp) && (phtC->phashBArr[i].bo == phT->bo)) {
+				phtC->HashHitCnt++;
+				//dbg_log(fLog,"INFO:phash_find:B:HTHIT:HTPos[%d]\n",i);
+				return i;
+			} else {
+#ifdef DEBUG_HTPRINT
+				dbg_log(fLog,"INFO:phash_find:B:HTCLASH:HTPos[%d]:\n",i);
+				phash_print(&(phtC->phashBArr[i]),"FromTable");
+				phash_print(phT,"NewBeingChecked");
+#endif
+				phtC->HashClashCnt++;
+			}
+		}
+	
 	}
 	return -1;
 }
@@ -152,21 +179,34 @@ void phash_add(struct phashtable *phtC, struct cb *cbC, int val, char *sMoves, c
 {
 	int iPos = 0;
 	struct phash phTemp;
+	struct phash *phashCArr;
+	int *pphashCNext;
+	int *pphashCCnt;
 
 	iPos = phash_find(phtC,cbC,&phTemp);
+	if(phTemp.sideToMove == STM_WHITE) {
+		phashCArr = phtC->phashWArr;
+		pphashCNext = &phtC->phashWNext;
+		pphashCCnt = &phtC->phashWCnt;
+	} else {
+		phashCArr = phtC->phashBArr;
+		pphashCNext = &phtC->phashBNext;
+		pphashCCnt = &phtC->phashBCnt;
+	}
+
 	if(iPos == -1) {
-		memcpy(&(phtC->phashArr[phtC->phashNext]),&phTemp,sizeof(struct phash));
-		phtC->phashArr[phtC->phashNext].val = val;
-		strncpy(phtC->phashArr[phtC->phashNext].sMoves,sMoves,MOVES_BUFSIZE);
-		strncpy(phtC->phashArr[phtC->phashNext].sNBMoves,sNextBestMoves,MOVES_BUFSIZE);
-		phtC->phashNext++;
-		if(phtC->phashCnt < PHASH_MAXCNT) {
-			phtC->phashCnt = phtC->phashNext;
+		memcpy(&(phashCArr[*pphashCNext]),&phTemp,sizeof(struct phash));
+		phashCArr[*pphashCNext].val = val;
+		strncpy(phashCArr[*pphashCNext].sMoves,sMoves,MOVES_BUFSIZE);
+		strncpy(phashCArr[*pphashCNext].sNBMoves,sNextBestMoves,MOVES_BUFSIZE);
+		(*pphashCNext)++;
+		if(*pphashCCnt < PHASH_MAXCNT) {
+			*pphashCCnt = *pphashCNext;
 		}
-		if(phtC->phashNext >= PHASH_MAXCNT) {
-			phtC->phashNext = 0;
+		if(*pphashCNext >= PHASH_MAXCNT) {
+			*pphashCNext = 0;
 		}
-	} else if(phtC->phashArr[iPos].val != val) {
+	} else if(phashCArr[iPos].val != val) {
 #ifdef DEBUG_HTPRINT
 		dbg_log(fLog,"DEBUG:phash_add:HTVALMISMATCH:Position in table, but Value doesn't match\n");
 #endif

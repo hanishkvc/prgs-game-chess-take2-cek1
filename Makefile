@@ -9,7 +9,7 @@ cek1: cek1.c moves.c evals.c generate_movebbs.c positioncmd.c
 	gcc -Wall -O2 -o cek1 cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE
 	gcc -Wall -g  -o cek1_xg cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE
 	gcc -Wall -O2 -o cek1_ht cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE -DUSE_HASHTABLE
-	gcc -Wall -g  -o cek1_htxg cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE -DUSE_HASHTABLE -DDEBUG_HTPRINT
+	gcc -Wall -g  -pg -o cek1_htxg cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE -DUSE_HASHTABLE -DDEBUG_HTPRINT
 
 install: cek1.c
 	cp cek1 ~/local/bin/
