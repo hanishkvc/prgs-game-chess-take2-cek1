@@ -293,15 +293,20 @@ int moves_forknight(struct cb *cbC, char movs[512][32], int iCur)
 	u64 bbS, bbD;
 	char sTemp[8];
 	int posS,posD;
+	u64 bbFOcc = 0;
 
-	if(cbC->sideToMove == STM_WHITE)
+	if(cbC->sideToMove == STM_WHITE) {
 		bbS = cbC->wn;
-	else
+		bbFOcc = cbC->wk | cbC->wq | cbC->wr | cbC->wn | cbC->wb | cbC->wp;
+	} else {
 		bbS = cbC->bn;
+		bbFOcc = cbC->bk | cbC->bq | cbC->br | cbC->bn | cbC->bb | cbC->bp;
+	}
 
 	while((posS = ffsll(bbS)) != 0) {
 		posS -= 1;
 		bbD = bbKnightMoves[posS];
+		bbD = bbD & ~bbFOcc;
 		while((posD = ffsll(bbD)) != 0) {
 			posD -= 1;
 			strncpy(movs[iCur],"N",32);
@@ -321,15 +326,20 @@ int moves_forking(struct cb *cbC, char movs[512][32], int iCur)
 	u64 bbS, bbD;
 	char sTemp[8];
 	int posS,posD;
+	u64 bbFOcc = 0;
 
-	if(cbC->sideToMove == STM_WHITE)
+	if(cbC->sideToMove == STM_WHITE) {
 		bbS = cbC->wk;
-	else
+		bbFOcc = cbC->wk | cbC->wq | cbC->wr | cbC->wn | cbC->wb | cbC->wp;
+	} else {
 		bbS = cbC->bk;
+		bbFOcc = cbC->bk | cbC->bq | cbC->br | cbC->bn | cbC->bb | cbC->bp;
+	}
 
 	while((posS = ffsll(bbS)) != 0) {
 		posS -= 1;
 		bbD = bbKingMoves[posS];
+		bbD = bbD & ~bbFOcc;
 		while((posD = ffsll(bbD)) != 0) {
 			posD -= 1;
 			strncpy(movs[iCur],"K",32);
@@ -347,7 +357,7 @@ int moves_forking(struct cb *cbC, char movs[512][32], int iCur)
 
 int moves_get(struct cb *cbC, char movs[512][32], int iCur)
 {
-	int iNew;
+	int iNew,iDiff;
 
 	iNew = moves_forknight(cbC, movs, iCur);
 	iNew = moves_forpawnattacks(cbC, movs, iNew);
@@ -361,7 +371,11 @@ int moves_get(struct cb *cbC, char movs[512][32], int iCur)
 		dbg_log(fLog,"FIXME:moves_get: List overflow ????\n");
 		exit(200);
 	}
-	gMovesCnt += (iNew-iCur);
+	iDiff = (iNew-iCur);
+	gMovesCnt += iDiff;
+#ifdef DEBUG_MOVESGETCNT
+	dbg_log(fLog,"INFO:moves_get: NewMoves[%d], AllTotalMovesTillNow[%d]\n",iDiff,gMovesCnt);
+#endif
 	return iNew;
 }
 
