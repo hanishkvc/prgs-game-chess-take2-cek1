@@ -357,7 +357,9 @@ int cb_evalpw_king_underattack(struct cb *cbC)
 		cbC->wk_underattack = 0;
 
 	// Result
+#ifdef DEBUG_EVALPRINT	
 	dbg_log(fLog,"INFO:kingunderattack: valW[%d] - valB[%d]\n", valW, valB);
+#endif
 	return (valW-valB);
 }
 
@@ -424,8 +426,10 @@ int cb_eval_tANDp_fromknights(struct cb *cbC, char activeSide)
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
 	val = ((val1 * weightage1) + (val2 * weightage2))/10;
+#ifdef DEBUG_EVALPRINT	
 	dbg_log(fLog,"INFO:tANDp_fromKnights:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
+#endif
 	// FIXME: The protection value is bit more complicated in that it is dependent on whether
 	// the threat from the opposite side is coming from a knight or other pieces.
 	// Because if threat from knight, then the protection is full and needs to be fully accounted
@@ -476,8 +480,10 @@ int cb_eval_tANDp_fromrooks(struct cb *cbC, char activeSide)
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
 	val = ((val1 * weightage1) + (val2 * weightage2))/10;
+#ifdef DEBUG_EVALPRINT	
 	dbg_log(fLog,"INFO:tANDp_fromRooks:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
+#endif
 	// FIXME: The threat and protection value is bit more complicated than provided above because
 	// If there are intervening pieces in the path, then the effect of threat and protection is 
 	// not the same as if there is a clear path.
@@ -526,8 +532,10 @@ int cb_eval_tANDp_frombishops(struct cb *cbC, char activeSide)
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
 	val = ((val1 * weightage1) + (val2 * weightage2))/10;
+#ifdef DEBUG_EVALPRINT	
 	dbg_log(fLog,"INFO:tANDp_fromBishops:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
+#endif
 	// FIXME: The threat and protection value is bit more complicated than provided above because
 	// If there are intervening pieces in the path, then the effect of threat and protection is 
 	// not the same as if there is a clear path.
@@ -576,8 +584,10 @@ int cb_eval_tANDp_fromqueens(struct cb *cbC, char activeSide)
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
 	val = ((val1 * weightage1) + (val2 * weightage2))/10;
+#ifdef DEBUG_EVALPRINT	
 	dbg_log(fLog,"INFO:tANDp_fromQueens:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
+#endif
 	// FIXME: The threat and protection value is bit more complicated than provided above because
 	// If there are intervening pieces in the path, then the effect of threat and protection is 
 	// not the same as if there is a clear path.
@@ -627,8 +637,10 @@ int cb_eval_tANDp_fromkings(struct cb *cbC, char activeSide)
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
 	val = ((val1 * weightage1) + (val2 * weightage2))/10;
+#ifdef DEBUG_EVALPRINT	
 	dbg_log(fLog,"INFO:tANDp_fromKings:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
+#endif
 	// FIXME: The threat and protection value is bit more complicated than provided above because
 	// If there are intervening pieces in the path, then the effect of threat and protection is 
 	// not the same as if there is a clear path.
@@ -680,8 +692,10 @@ int cb_eval_tANDp_frompawns(struct cb *cbC, char activeSide)
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
 	val = ((val1 * weightage1) + (val2 * weightage2))/10;
+#ifdef DEBUG_EVALPRINT	
 	dbg_log(fLog,"INFO:tANDp_fromPawns:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
+#endif
 	// FIXME: The threat and protection value is bit more complicated than provided above because
 	// If there are intervening pieces in the path, then the effect of threat and protection is 
 	// not the same as if there is a clear path.

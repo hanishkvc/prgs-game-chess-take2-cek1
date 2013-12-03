@@ -32,7 +32,12 @@ int gGameHash = 32;
 #define send_resp_ex(sBuffer,sSize,...) snprintf(sBuffer,sSize,__VA_ARGS__); send_resp(sBuffer);
 #define dbg_cb_bb_print dummy
 #define dbg_log(file,...) fprintf(file,__VA_ARGS__)
-//#define dbg_log(file,...) dummy()
+#define ddbg_log(file,...) dummy()
+/*
+#define ddbg_log(file,...) #ifdef DDEBUGLOG	\n\
+				dbg_log(file,__VA_ARGS__); \n\
+				#endif
+*/
 
 void dummy() 
 {

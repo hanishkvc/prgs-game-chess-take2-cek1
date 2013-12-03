@@ -2,6 +2,9 @@
 #define _cek1_
 
 //#define DEBUG_DIAGATTACK 1
+//#define DEBUG_MOVESPRINTCB 1
+//#define DEBUG_EVALPRINT 1
+//#define DEBUG_MOVEGENPRINT 1
 
 typedef unsigned long long u64;
 

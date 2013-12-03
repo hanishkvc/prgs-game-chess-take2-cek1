@@ -99,3 +99,21 @@ continue or not.
   already seen positions and short circuit the remaining
   depth search.
 
+****** 20131203
+
+* A run with depth of 3 usually takes between few seconds to around 
+  50 to 60 seconds.
+
+* A run with depth of 5 takes around 1800-2500 seconds (i.e guessing).
+  1918.26 seconds.
+  6461K nodes(moves) in Total
+  3Kn/sec.
+
+  i.e something like 23 moves per position and inturn 23**5 = 6436343 
+  and takes around 30 to 35 minutes to find the best move.
+
+  EXTRAPOLATING from this to a depth of 6, it will have around 148M 
+  nodes in Total (i.e 23**6). And may be around 12 hours or so to find 
+  the best move.
+
+
