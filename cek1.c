@@ -406,8 +406,12 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	bzero(sNBMoves,8);
 
 	iRes = move_validate(cbC, sMov);
-	if(iRes == DO_ERROR)
+	if(iRes == DO_ERROR) {
+#ifdef DEBUG_MOVEPROCESSVALIDATE
+		dbg_log(fLog,"INFO:move_process: Move[%s] Dropped/Error\n",sMov);
+#endif
 		return DO_ERROR;
+	}
 	memcpy(&cbN,cbC,sizeof(struct cb));
 
 	mPiece = sMov[0];

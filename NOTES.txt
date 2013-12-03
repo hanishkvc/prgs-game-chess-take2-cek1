@@ -116,4 +116,7 @@ continue or not.
   nodes in Total (i.e 23**6). And may be around 12 hours or so to find 
   the best move.
 
-
+* Depth 5
+  1975.42 seconds
+  Nodes 5087K
+  3Kn/sec

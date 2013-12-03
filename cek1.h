@@ -6,6 +6,7 @@
 //#define DEBUG_EVALPRINT 1
 //#define DEBUG_MOVEGENPRINT 1
 #define DEBUG_MOVESGETCNT 1
+#define DEBUG_MOVEPROCESSVALIDATE 1
 
 typedef unsigned long long u64;
 
