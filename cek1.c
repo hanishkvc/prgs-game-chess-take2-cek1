@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 #define DEBUG_UNWIND_SELECTION
 
@@ -18,6 +19,8 @@
 #include "cek1.h"
 
 FILE *fLog;
+FILE *fLogM;
+pid_t myPID = 0;
 
 struct cb gb;
 struct timespec gtsStart, gtsDiff;
@@ -622,6 +625,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			// Dummy time sent
 			// Nodes simply mapped to total Moves generated for now, which may be correct or wrong, to check
 			if(curDepth == 1) {
+				dbg_log(fLogM,"%d:SENT:%s\n",myPID,sNextBestMoves);
 				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %ld multipv 1 pv %s\n",
 					val,maxDepth-curDepth+1,gMovesCnt,gDTime,sNextBestMoves); //FIXME: Change to maxDepth
 				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"bestmove %s\n",cb_2longnot(movs[iMaxInd]));
@@ -687,11 +691,13 @@ int process_uci()
 		send_resp("option name Hash type spin default 1 min 1 max 100\n");
 		send_resp("option name depth type spin default 3 min 3 max 100\n");
 		send_resp("uciok\n");
+		dbg_log(fLogM,"%d:GOT:uci\n",myPID);
 	}
 	if(strncmp(sCmd,"isready",7) == 0) {
 		send_resp("readyok\n");
 	}
 	if(strncmp(sCmd,"position",8) == 0) {
+		dbg_log(fLogM,"%d:GOT:%s\n",myPID,sCmd);
 		if(process_position(&gb,sCmd) != 0)
 			send_resp("info string error parsing fen");
 	}
@@ -746,11 +752,15 @@ int main(int argc, char **argv)
 {
 	char sTemp[S32TEMPBUFSIZE];
 
+	myPID = getpid();
 	if((fLog=fopen("/tmp/cek1.log","a+")) == NULL)
 		return 1;
+	if((fLogM=fopen("/home/hanishkvc/cek1_main.log","a+")) == NULL)
+		return 2;
 	send_resp_ex(sTemp,S32TEMPBUFSIZE,"%s\n",PRG_VERSION);
 	prepare();
 	run();
+	fclose(fLogM);
 	fclose(fLog);
 	return 0;
 }
