@@ -15,6 +15,7 @@ install: cek1.c
 	cp cek1 ~/local/bin/
 	cp cek1_ht ~/local/bin/
 	touch ~/cek1.log
+	touch ~/cek1_main.log
 	ln -s ~/cek1.log /tmp/cek1.log	|| /bin/true
 
 clean:
@@ -26,6 +27,7 @@ clean:
 	rm ./cek1_ht	|| /bin/true
 	rm ./cek1_htxg	|| /bin/true
 	rm ~/cek1.log	|| /bin/true
+	rm ~/cek1_main.log	|| /bin/true
 
 clean-all: clean
 	rm /tmp/cek1.log	|| /bin/true

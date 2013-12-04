@@ -17,7 +17,7 @@ typedef unsigned long long u64;
 #define STM_WHITE 'w'
 #define STM_BLACK 'b'
 
-#define MOVES_BUFSIZE 1024
+#define MOVES_BUFSIZE 512
 #define NUMOFPARALLELMOVES 512
 #define S1KTEMPBUFSIZE 1024
 #define S32TEMPBUFSIZE 32
