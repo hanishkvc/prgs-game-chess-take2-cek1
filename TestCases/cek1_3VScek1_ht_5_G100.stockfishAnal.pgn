@@ -1,0 +1,212 @@
+[Event "HKVC MyEngineTesting"]
+[Site "?"]
+[Date "2013.12.04"]
+[Round "1"]
+[White "cek1"]
+[Black "cek1_ht"]
+[Result "*"]
+[TimeControl "1200/0"]
+
+1.Nc3 D 
+    {+0.56}
+1...e6 = 
+    {-0.74 Stockfish 111113 64: +0.30 / +0.00}
+    ( 1...d5 2.d4 Nf6 3.Nf3 e6 4.Bg5 Be7 5.e3 O-O 6.Be2 c5 7.O-O cxd4 8.
+    exd4 Qb6 9.Na4 Qa5 10.Nc3 Qb6 = )
+2.Nf3 D 
+    {+1.5}
+2...Bb4 = D 
+    {-0.69 Stockfish 111113 64: +0.48 / +0.14}
+    ( 2...Nf6 3.e4 d5 4.exd5 exd5 5.d4 Bb4 6.Be2 Nc6 7.O-O O-O 8.Bg5 Bxc3 
+    9.bxc3 h6 10.Bxf6 Qxf6 11.Rb1 Rb8 12.Re1 Bf5 13.Bd3 Bg4 14.Re3 a6 15.
+    Qc1 Be6 16.Ne5 = )
+3.Rb1 = D 
+    {+1.27 Stockfish 111113 64: +0.16 / +0.48}
+    ( 3.e4 Ne7 4.a3 Bxc3 5.dxc3 O-O 6.Be2 d6 7.O-O Nbc6 8.Be3 e5 9.b4 a6 
+    10.a4 Bd7 11.Re1 Kh8 = )
+3...Na6 += D 
+    {-1.5 Stockfish 111113 64: +0.56 / +0.16}
+    ( 3...d5 4.e4 Nc6 5.exd5 exd5 6.a3 Ba5 7.d4 Bxc3+ 8.bxc3 Nf6 9.Be2 Ne4
+    10.Qd3 O-O 11.c4 = )
+4.Ne4?! = 
+    {+1.55 Stockfish 111113 64: -0.20 / +0.56}
+    ( 4.e4 d5 5.e5 Ne7 6.Be2 O-O 7.a3 Bxc3 8.dxc3 Nc5 9.O-O b6 10.Bg5 Ne4 
+    += )
+4...d5 D 
+    {-3.67}
+5.c3?? -+ 
+    {+4.86 Stockfish 111113 64: -3.69 / -0.04}
+    ( 5.Ng3 h5 6.e3 h4 7.Ne2 Nf6 8.Nf4 Nb8 9.a3 Bd6 10.d4 Ne4 11.c4 g5 12.
+    Nd3 Nc6 13.c5 Be7 14.Nfe5 Nxe5 = )
+5...dxe4 D 
+    {-7.91}
+6.Qa4+? -+ D 
+    {+38.72 Stockfish 111113 64: -5.59 / -3.69}
+    ( 6.a3 Bd6 7.Qa4+ Bd7 8.Qxe4 f5 9.Qc2 Nf6 10.d4 c5 11.e3 Rc8 12.Be2 
+    O-O 13.O-O Bc6 14.Bd2 Ne4 15.g3 Qb6 16.Qd3 Qb3 17.Bd1 Qa2 18.Be2 Nxd2 
+    -+ )
+6...c6? -+ 
+    {-12.76 Stockfish 111113 64: -3.49 / -5.59}
+    ( 6...Bd7 7.Qc2 exf3 8.cxb4 Nxb4 9.Qb3 fxe2 10.Bxe2 -+ )
+7.cxb4 
+    {+1.38}
+7...exf3 
+    {-14.48}
+8.gxf3 D 
+    {-1.96}
+8...Nf6?! -+ D 
+    {-13.62 Stockfish 111113 64: -3.05 / -3.85}
+    ( 8...Ne7 9.b5 Nc7 10.bxc6 Nxc6 11.d3 O-O 12.h4 e5 13.Bg5 f6 14.Bd2 
+    Be6 15.Rc1 Nd4 16.Bh3 Re8 17.h5 Kh8 18.h6 g6 19.Bg4 -+ )
+9.Qb3?! -+ D 
+    {-1.7 Stockfish 111113 64: -4.26 / -3.05}
+    ( 9.b5 Nb8 10.b3 O-O 11.Bb2 Re8 12.Qf4 e5 13.Bxe5 Nh5 14.Qd4 Nd7 15.
+    Bg3 Qb6 16.Qxb6 axb6 17.bxc6 bxc6 18.a4 Nxg3 19.fxg3 Nc5 20.e4 Be6 21.
+    Bc4 Bxc4 22.bxc4 Rxa4 23.Ke2 Nd7 24.Rhc1 -+ )
+9...Nd7?! -+ D 
+    {-12.74 Stockfish 111113 64: -3.07 / -4.26}
+    ( 9...O-O 10.Rg1 e5 11.d3 Qd6 12.a3 Be6 13.Qc2 Nh5 14.Be3 Nf4 15.Rd1 
+    Nd5 16.Bh6 -+ )
+10.Qd3?! -+ 
+    {+37.71 Stockfish 111113 64: -4.46 / -3.07}
+    ( 10.Rg1 -+ )
+10...Nxb4 D 
+    {-13.76}
+11.Qe4?! -+ D 
+    {-2.36 Stockfish 111113 64: -5.87 / -4.50}
+    ( 11.Qb3 a5 12.a3 Nd5 13.e4 Nf4 14.d4 Ng6 15.Rg1 O-O 16.Bg5 Qc7 17.Rg3
+    Qd6 18.Rd1 h6 19.Be3 b6 20.Qc2 Ba6 21.Bxa6 -+ )
+11...Qa5? -+ D 
+    {-40.18 Stockfish 111113 64: -3.53 / -5.87}
+    ( 11...Nxa2 -+ )
+12.Bg2?? -+ D 
+    {+2.27 Stockfish 111113 64: -7.35 / -3.53}
+    ( 12.a3 Nd5 13.b4 Qc7 14.Bb2 O-O 15.Rg1 g6 16.h4 Qh2 17.Rg2 Qd6 -+ )
+12...Nf6 -+ 
+    {-13.05 Stockfish 111113 64: -5.79 / -7.35}
+    ( 12...Qxa2 13.Qxb4 Qxb1 14.O-O Qc2 15.f4 a5 16.Qa3 Nc5 17.Qc3 Qxc3 
+    18.dxc3 Ke7 19.Be3 Na4 20.Rb1 Bd7 21.Bf3 Rhb8 22.Kg2 g6 23.Bd4 b6 24.
+    e3 Nc5 25.Be5 -+ )
+13.Qe3 D 
+    {-0.23}
+13...Ne4?? 
+    {-35.58 Stockfish 111113 64: -0.78 / -22.76}
+    ( 13...Nc2+ 14.Kd1 Nxe3+ 15.fxe3 Qxa2 16.Kc2 Qc4+ 17.Kd1 Qb3+ 18.Ke1 
+    Qa2 19.Ra1 Qxa1 20.Kf2 e5 21.d3 Qb1 22.e4 O-O 23.Re1 Be6 24.Bf1 Rfd8 
+    25.Kg1 Qc2 26.e3 a5 27.Be2 b5 28.Kh1 a4 29.f4 Bg4 30.fxe5 -+ )
+14.Qxe4 
+    {+5.75}
+14...f5 D 
+    {-9.19}
+15.Qe3?? -+ 
+    {+3.85 Stockfish 111113 64: -17.77 / -0.86}
+    ( 15.Qc4 Qxa2 16.Qxa2 Nxa2 17.f4 a5 18.d4 Nb4 19.Bd2 Nd5 20.Rc1 )
+15...Nc2+ 
+    {-28.88}
+16.Kf1 
+    {-5.04}
+16...Nxe3+ 
+    {-14.43}
+17.dxe3 D 
+    {-7.54}
+17...Qc5 -+ 
+    {-46.83 Stockfish 111113 64: -12.62 / -19.63}
+    ( 17...Qxa2 18.Bh3 Qxb1 19.Kg2 Qc2 20.Re1 Kf7 21.e4 fxe4 22.fxe4 Qxe4+
+    23.Kg1 e5 24.Bg2 Qg6 25.Kh1 Qc2 26.h3 Be6 27.Kh2 a5 28.Bf3 Bd5 29.Bg2 
+    Bxg2 30.Kxg2 Rhd8 31.Bg5 Rd6 -+ )
+18.f4 
+    {-4.84}
+18...Qc2 
+    {-50.47}
+19.Kg1 
+    {-5.59}
+19...Qxb1 
+    {-60.33}
+20.Bf3 
+    {-14.54}
+20...Qxc1+ 
+    {-63.71}
+21.Kg2 D 
+    {-12.67}
+21...Qc5 -+ 
+    {-18.5 Stockfish 111113 64: -22.48 / -24.75}
+    ( 21...Qxb2 22.a4 Bd7 23.a5 Ke7 24.Rd1 Rad8 25.a6 -+ )
+22.b4 D 
+    {-6.3}
+22...Qe7 -+ 
+    {-19.98 Stockfish 111113 64: -22.08 / -24.18}
+    ( 22...Qxb4 23.Rd1 Qb2 24.a4 Bd7 25.Rd4 c5 26.Rc4 Rc8 27.a5 Bb5 28.
+    Bxb7 Bxc4 29.Bxc8 Ke7 -+ )
+23.Rd1 D 
+    {-5.98}
+23...Qh4 -+ 
+    {-23.62 Stockfish 111113 64: -23.47 / -23.67}
+    ( 23...Qxb4 24.Rd4 Qb2 25.a4 Ke7 26.Rc4 Qb3 27.Rc5 Qxa4 28.Kg3 Bd7 29.
+    Re5 a5 30.e4 fxe4 31.Rxe4 Qc2 32.f5 e5 -+ )
+24.Bxc6+ 
+    {+21.51}
+24...bxc6 
+    {-60.43}
+25.f3 D 
+    {-17.3}
+25...Qh5 -+ 
+    {-60.81 Stockfish 111113 64: -30.72 / -107.60}
+    ( 25...Ba6 26.b5 Bxb5 27.Rf1 Kf7 28.Rf2 Rhd8 29.a4 Bxa4 30.Rf1 Rd2 31.
+    Rf2 Re8 32.h3 Ra8 33.e4 Qxf4 34.e5 Qg5+ 35.Kh2 Rd1 36.Rg2 Qf4+ 37.Rg3 
+    Qxe5 38.h4 Qxe2+ 39.Rg2 Qxf3 40.h5 Qxh5+ 41.Kg3 Rd3+ -+ )
+26.Rd2 D 
+    {-20.04}
+26...Bd7 -+ 
+    {-61.88 Stockfish 111113 64: -29.17 / -99.16}
+    ( 26...Ba6 27.b5 Bxb5 28.a4 Rd8 29.Rxd8+ Kxd8 30.axb5 cxb5 31.e4 b4 
+    32.exf5 exf5 33.e3 b3 34.h3 b2 35.e4 b1=Q 36.exf5 Qhxf5 37.Kf2 Qxh3 
+    38.f5 Qhf1+ 39.Kg3 Qxf3+ 40.Kxf3 -+ )
+27.Rxd7 
+    {-19.74}
+27...Kxd7 
+    {-64.23}
+28.b5 
+    {-22.02}
+28...cxb5 
+    {-65.23}
+29.a4 
+    {-23.08}
+29...bxa4 
+    {-66.15}
+30.e4 
+    {-24.04}
+30...fxe4 
+    {-67.17}
+31.fxe4 
+    {-24.3}
+31...Qxe2+ 
+    {-67.91}
+32.Kg3 
+    {-23.86}
+32...Rad8 
+    {-68.23}
+33.Kh4 
+    {-24.58}
+33...Qg2 
+    {-69.54}
+34.h3 
+    {-25.13}
+34...Kc8 
+    {-70.36}
+35.f5 
+    {-25.32}
+35...h5 
+    {-320.0}
+36.fxe6 
+    {-320.0}
+36...a3 
+    {-320.0}
+37.e5 
+    {-320.0}
+37...a2 
+    {-320.0}
+38.e7 
+    {-320.0}
+    ( 38.e7 { 100:-327.49} 38...g5# )
+*
+

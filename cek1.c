@@ -566,10 +566,10 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		}
 	}
 
-	// FIXME:TODO:LATER:Maybe (to think) Send best value from the moves above or best N in multipv case
+	// TODO:LATER:Maybe (to think) Send best value from the moves above or best N in multipv case
 
 #ifdef DEBUG_UNWIND_SELECTION
-	dbg_log(fLog,"DEBUG:findbest:curDepth[%d] unwind *** SelectFROM ***\n",curDepth);
+	dbg_log(fLog,"DEBUG:findbest:%c:curDepth[%d] unwind *** SelectFROM ***\n",cbC->sideToMove,curDepth);
 	for(iCur = 0; iCur < iMCnt; iCur++) {
 		dbg_log(fLog,"DEBUG:%d:Move[%s],eval[%d],NBMoves[%s]\n",iCur,movs[iCur],movsEval[iCur],movsNBMovesDBG[iCur]);
 	}
@@ -609,29 +609,42 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 #endif
 		}
 	}
+	
+	// PURPOSEFULLY degrade the value by a small value of 1, so that 
+	// if there are two moves at a given position with same value ideally (in the long run) at a given level, 
+	// we should select the one which achieves the desired result faster i.e with less moves.
+	// So we purposefully degrade the value by a small value/amount of 1.
+	if(iMaxVal > 0) {
+		iMaxVal = iMaxVal-1;
+	} else {
+		iMaxVal = iMaxVal+1;
+	}
+
 #ifdef CORRECTVALFOR_SIDETOMOVE
-	val = cb_valpw2valpstm(cbC->sideToMove,iMaxVal); // FIXME: Orig sideToMove
+	val = cb_valpw2valpstm(cbC->sideToMove,iMaxVal); // TODO:TOTHINK:TOCHECK: Orig sideToMove or current sideToMove, assuming UIC expects current
 #else
 	val = iMaxVal;
 #endif
 	gDTime = diff_clocktime(&gtsStart);
-	//if(curDepth == 1) // FIXME: Have to think, may avoid this check
+	//if(curDepth == 1) // TODO:TOTHINK: may avoid this check (Avoided, but still think thro when additional logic added)
 	{
 		if(iMaxInd == -1) {
 			send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %ld spv %s pv %s %s\n",
 				val,curDepth,0,gDTime,sNextBestMoves,cbC->sMoves,"NO VALID MOVE");
 		}
 		else {
-			// Dummy time sent
 			// Nodes simply mapped to total Moves generated for now, which may be correct or wrong, to check
 			if(curDepth == 1) {
-				dbg_log(fLogM,"%d:SENT:%s\n",myPID,sNextBestMoves);
+				dbg_log(fLogM,"%d:SENT:%c:%s\n",myPID,cbC->sideToMove,sNextBestMoves);
+				dbg_log(fLog,"INFO:%c: TotalMoves[%d], HTCLASH[%d], HTHIT[%d], HTVALMISMATCH[%d], HTVALMATCH[%d]\n", 
+						cbC->sideToMove, gMovesCnt,
+						gHashTable->HashClashCnt,gHashTable->HashHitCnt,gHashTable->ValMismatchCnt,gHashTable->ValMatchCnt);
 				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %ld multipv 1 pv %s\n",
-					val,maxDepth-curDepth+1,gMovesCnt,gDTime,sNextBestMoves); //FIXME: Change to maxDepth
+					val,maxDepth-curDepth+1,gMovesCnt,gDTime,sNextBestMoves); //FIXED: Changed to maxDepth, using generic formula
 				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"bestmove %s\n",cb_2longnot(movs[iMaxInd]));
 			} else {
 				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info string unwinddepth cp %d depth %d nodes %d time %ld pv %s\n",
-					val,curDepth,gMovesCnt,gDTime,sNextBestMoves);
+					val,curDepth,gMovesCnt,gDTime,sNextBestMoves); //FIXME: Maybe change to amount of depth unwinded ???
 			}
 		}
 	}
@@ -641,8 +654,6 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	return iMaxVal; 
 }
 
-// TODO: Have to extract proper move number from position fen process logic below
-// and pass this proper move number to cb_findbest
 
 int process_go(char *sCmd)
 {
