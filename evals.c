@@ -385,6 +385,32 @@ int cb_evalpw_mat(struct cb *cbC)
 	return valPW;
 }
 
+// NOTE: GENERIC
+//
+// The threat and protection value is bit complicated in that it depends on
+// whether there are intermediate pieces in the path as well as whether the
+// piece giving the threat or protection is knight, pawn or king OR if it is
+// one of the other pieces like Queen, Rook or Bishop - which can slide thro
+// multiple squares in a single move provided there are no intervening pieces
+// in the board.
+// In case of knight, has it can jump across other intervening pieces 
+// calculating the threat and protection is relatively straight forward.
+// Similarly in case of Pawn or King, as they can move only 1 square at any 
+// given time/move again the calculation is straight forward.
+// HOWEVER in case of the sliding pieces ie Queen, Rook or Bishop, while
+// calculating the threat given or portection provided, one has to see if the
+// there are intervening pieces which block the protection or threat and based
+// on that give a weighted value for these.
+//
+// ALSO The protection value is ideally bit more complicated in that it is 
+// dependent on whether there is a immidiate threat to the piece being protected 
+// or whether that piece is safe in the short term. TODO:TOTHINK: Currently this 
+// temporal dependence is not accounted directly. However indirectly it is
+// accounted in that depth search for Moves will take these factors into
+// account automatically because of the way the depth search works. So this may
+// be good enough wrt this aspect of calculating protection value.
+//
+
 int cb_eval_tANDp_fromknights(struct cb *cbC, char activeSide)
 {
 
@@ -397,12 +423,12 @@ int cb_eval_tANDp_fromknights(struct cb *cbC, char activeSide)
 
 	if(activeSide == STM_WHITE) {
 		cNBB = cbC->wn;
-		weightage1 = 10; // threats_given
-		weightage2 = 8; // protection_provided
+		weightage1 = WEIGHTAGE_THREAT; // threats_given
+		weightage2 = WEIGHTAGE_PROTECTION; // protection_provided
 	} else {
 		cNBB = cbC->bn;
-		weightage1 = 8; // protection_provided
-		weightage2 = 10; // threats_given
+		weightage1 = WEIGHTAGE_PROTECTION; // protection_provided
+		weightage2 = WEIGHTAGE_THREAT; // threats_given
 	}
 	while((nPos = ffsll(cNBB)) != 0) {
 		nPos -= 1;
@@ -425,12 +451,12 @@ int cb_eval_tANDp_fromknights(struct cb *cbC, char activeSide)
 
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
-	val = ((val1 * weightage1) + (val2 * weightage2))/10;
+	val = ((val1 * weightage1) + (val2 * weightage2))/WEIGHTAGE_SCALE;
 #ifdef DEBUG_EVALPRINT	
 	dbg_log(fLog,"INFO:tANDp_fromKnights:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
 #endif
-	// FIXME: The protection value is bit more complicated in that it is dependent on whether
+	// TODO:TOTHINK: The protection value is bit more complicated in that it is dependent on whether
 	// the threat from the opposite side is coming from a knight or other pieces.
 	// Because if threat from knight, then the protection is full and needs to be fully accounted
 	// However if threat from other pieces, then the protection needs to be fully or partially accounted
@@ -607,12 +633,12 @@ int cb_eval_tANDp_fromkings(struct cb *cbC, char activeSide)
 
 	if(activeSide == STM_WHITE) {
 		cNBB = cbC->wk;
-		weightage1 = 10; // threats_given
-		weightage2 = 8; // protection_provided
+		weightage1 = WEIGHTAGE_THREAT; // threats_given
+		weightage2 = WEIGHTAGE_PROTECTION; // protection_provided
 	} else {
 		cNBB = cbC->bk;
-		weightage1 = 8; // protection_provided
-		weightage2 = 10; // threats_given
+		weightage1 = WEIGHTAGE_PROTECTION; // protection_provided
+		weightage2 = WEIGHTAGE_THREAT; // threats_given
 	}
 	// King cann't directly attack the other side king, but keeping for now, have to think bit more
 	while((nPos = ffsll(cNBB)) != 0) {
@@ -636,15 +662,14 @@ int cb_eval_tANDp_fromkings(struct cb *cbC, char activeSide)
 
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
-	val = ((val1 * weightage1) + (val2 * weightage2))/10;
+	val = ((val1 * weightage1) + (val2 * weightage2))/WEIGHTAGE_SCALE;
 #ifdef DEBUG_EVALPRINT	
 	dbg_log(fLog,"INFO:tANDp_fromKings:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
 #endif
-	// FIXME: The threat and protection value is bit more complicated than provided above because
-	// If there are intervening pieces in the path, then the effect of threat and protection is 
-	// not the same as if there is a clear path.
-	// FORNOW: Threat and Protection values given same weightage always, irrespective of intervening pieces or not.
+	// NOTE: The threat given and protection provided by King is straightforward, has it can only move 
+	// one square at any given time.
+	// However a King cann't attack the opposite King, this has to be thought thro and accounted in future
 	return val;
 }
 
@@ -661,13 +686,13 @@ int cb_eval_tANDp_frompawns(struct cb *cbC, char activeSide)
 
 	if(activeSide == STM_WHITE) {
 		cNBB = cbC->wp;
-		weightage1 = 10; // threats_given
-		weightage2 = 8; // protection_provided
+		weightage1 = WEIGHTAGE_THREAT; // threats_given
+		weightage2 = WEIGHTAGE_PROTECTION; // protection_provided
 		bbPawnAttackMoves = bbWhitePawnAttackMoves;
 	} else {
 		cNBB = cbC->bp;
-		weightage1 = 8; // protection_provided
-		weightage2 = 10; // threats_given
+		weightage1 = WEIGHTAGE_PROTECTION; // protection_provided
+		weightage2 = WEIGHTAGE_THREAT; // threats_given
 		bbPawnAttackMoves = bbBlackPawnAttackMoves;
 	}
 	while((nPos = ffsll(cNBB)) != 0) {
@@ -691,15 +716,13 @@ int cb_eval_tANDp_frompawns(struct cb *cbC, char activeSide)
 
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
-	val = ((val1 * weightage1) + (val2 * weightage2))/10;
+	val = ((val1 * weightage1) + (val2 * weightage2))/WEIGHTAGE_SCALE;
 #ifdef DEBUG_EVALPRINT	
 	dbg_log(fLog,"INFO:tANDp_fromPawns:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
 #endif
-	// FIXME: The threat and protection value is bit more complicated than provided above because
-	// If there are intervening pieces in the path, then the effect of threat and protection is 
-	// not the same as if there is a clear path.
-	// FORNOW: Threat and Protection values given same weightage always, irrespective of intervening pieces or not.
+	// NOTE: The threat given and protection provided by Pawn is straightforward, has it can only move 
+	// one square at any given time.
 	return val;
 }
 

@@ -130,9 +130,15 @@ continue or not.
 
 ****** 20131204
 
-* HashTable based version (startpos)
+* HashTable based version (startpos) _0xxx
   Depth 5
   786.20 seconds
   Nodes 1769K
   2Kn/sec
+
+* HashTable based version (startpos) _17xx
+  Depth 5
+  641.10 seconds
+  Nodes 1769K
+  3Kn/sec
 
