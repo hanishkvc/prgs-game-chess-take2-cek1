@@ -807,8 +807,10 @@ int cb_evalpw(struct cb *cbC)
 
 	valPW = valMat + valTandP + valKingAttacked;
 
+#ifdef DEBUG_EVALSUMMARYPRINT	
 	dbg_log(fLog,"valMat[%d] + valTandP[%d] + valKingAttacked[%d] = valPW[%d] <=> Moves[%s]\n",
 				valMat, valTandP, valKingAttacked, valPW, cbC->sMoves);
+#endif
 	return valPW;
 }
 
