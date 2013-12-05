@@ -142,3 +142,73 @@ continue or not.
   Nodes 1769K
   3Kn/sec
 
+* HashTable based version (startpos) _1953 
+  (eval_tANDp updated for Direct and Indirect)
+  Depth 5
+  667.24 seconds
+  Nodes 1769K
+  3Kn/sec
+
+****** 20131205
+
+* The Eval logic was giving equal or almost similar weightage to 
+  protection_provided compared to threats_given So the combined 
+  effect was that in situations where the logic should have 
+  attacked a opponent piece, instead it was moving pieces around 
+  which gives it a percieved better eval because it inturn was 
+  giving a  large protection value.
+
+  HOWEVER 
+  1. as currently the logic doesn't calibrate the protection value 
+     looking at the attacks on the given peice i.e before deciding 
+     how much weightage to give to that protection.
+ 
+  2. And also as a piece under a single attack requires 2 pieces 
+     protecting it in the worst case and 1 more protecting piece
+     than the number of opposing attacking pieces. 
+
+  The weightage has been tuned such that protection weightage is
+  only half of the threat weightage.
+ 
+* HashTable based version with rebalanced weightages (startpos) 
+  (eval_tANDp updated for Direct and Indirect)
+  Depth 5
+  248.06 seconds
+  Nodes 1769K
+  7Kn/sec
+
+TODO:NEXT:
+* Add support for pawn promotion. After thinking thro it
+  rather than adding it at the end of findbest during
+  unwinding. Better to add it during move generation
+  for pawns, if it is found that the pawn will go into
+  the final rank on the opposite side. So automatically
+  the remaining calculations will kick in wrt finding
+  the right candidate move of pawn promotion for the 
+  given position.
+  
+  NOTE: If added at unwind time, one would have had to 
+  call the findbest again there as a special case to find
+  which of the 4 possible pawn promotion possibilities
+  would have been the best one.
+
+* Also check how castle info is passed thro and add
+  support for same.
+
+* Maybe add a mixed depth search logic, where
+  First N steps of the depth, do a full search
+  over all the valid moves and for depths beyond
+  that N, do a selective depth search for another
+  M steps.
+  This selective depth search, will only select
+  few of the most/more positive, 
+  few of the most/more negative and 
+  few of the inbetween/middle (~0) moves.
+  May be between 6 to 9 moves.
+
+  i.e say (20-40)**5+9**6+3**12
+
+* Use tsearch or hsearch or equivalent for HashTables
+  and inturn see the performance impact if any
+
+

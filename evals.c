@@ -433,19 +433,19 @@ int cb_eval_tANDp_fromknights(struct cb *cbC, char activeSide)
 	while((sPos = ffsll(cSBB)) != 0) {
 		sPos -= 1;
 		//dbg_log(fLog,"DEBUG:tANDp_fromknights:STM[%c]:cSBB[%0llx]:sPos[%d]\n",activeSide,cSBB,sPos);
-		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bk) * VALUE_KING;
-		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bq) * VALUE_QUEEN;
-		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->br) * VALUE_ROOK;
-		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bn) * VALUE_KNIGHT;
-		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bb) * VALUE_BISHOP;
-		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bp) * VALUE_PAWN;
+		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bk) * VALUE_KING * WT_DIRECT;
+		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bq) * VALUE_QUEEN * WT_DIRECT;
+		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->br) * VALUE_ROOK * WT_DIRECT;
+		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bn) * VALUE_KNIGHT * WT_DIRECT;
+		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bb) * VALUE_BISHOP * WT_DIRECT;
+		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bp) * VALUE_PAWN * WT_DIRECT;
 
-		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wk) * VALUE_KING;
-		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wq) * VALUE_QUEEN;
-		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wr) * VALUE_ROOK;
-		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wn) * VALUE_KNIGHT;
-		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wb) * VALUE_BISHOP;
-		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wp) * VALUE_PAWN;
+		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wk) * VALUE_KING * WT_DIRECT;
+		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wq) * VALUE_QUEEN * WT_DIRECT;
+		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wr) * VALUE_ROOK * WT_DIRECT;
+		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wn) * VALUE_KNIGHT * WT_DIRECT;
+		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wb) * VALUE_BISHOP * WT_DIRECT;
+		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wp) * VALUE_PAWN * WT_DIRECT;
 		cSBB &= ~(1ULL << sPos);			
 	}
 
@@ -465,6 +465,40 @@ int cb_eval_tANDp_fromknights(struct cb *cbC, char activeSide)
 	return val;
 }
 
+int eval_lineattack(struct cb *cbC, int sPos, u64 dBB, int pieceValue, int wDirect, int wIndirect)
+{
+	int dPos;
+	int iVal = 0;
+
+	while((dPos = ffsll(dBB)) != 0) {
+		dPos -= 1;
+		if(evalhlpr_lineattack(cbC,sPos,dPos,-1) == ATTACK_YES) {
+			iVal += pieceValue*wDirect;
+		} else {
+			iVal += pieceValue*wIndirect;
+		}
+		dBB &= ~(1ULL << dPos);			
+	}
+	return iVal;
+}
+
+int eval_diagattack(struct cb *cbC, int sPos, u64 dBB, int pieceValue, int wDirect, int wIndirect)
+{
+	int dPos;
+	int iVal = 0;
+
+	while((dPos = ffsll(dBB)) != 0) {
+		dPos -= 1;
+		if(evalhlpr_diagattack(cbC,sPos,dPos,-1) == ATTACK_YES) {
+			iVal += pieceValue*wDirect;
+		} else {
+			iVal += pieceValue*wIndirect;
+		}
+		dBB &= ~(1ULL << dPos);			
+	}
+	return iVal;
+}
+
 int cb_eval_tANDp_fromrooks(struct cb *cbC, char activeSide)
 {
 
@@ -477,35 +511,35 @@ int cb_eval_tANDp_fromrooks(struct cb *cbC, char activeSide)
 
 	if(activeSide == STM_WHITE) {
 		cSBB = cbC->wr;
-		weightage1 = 10; // threats_given
-		weightage2 = 8; // protection_provided
+		weightage1 = WEIGHTAGE_THREAT; // threats_given
+		weightage2 = WEIGHTAGE_PROTECTION; // protection_provided
 	} else {
 		cSBB = cbC->br;
-		weightage1 = 8; // protection_provided
-		weightage2 = 10; // threats_given
+		weightage1 = WEIGHTAGE_PROTECTION; // protection_provided
+		weightage2 = WEIGHTAGE_THREAT; // threats_given
 	}
 	while((sPos = ffsll(cSBB)) != 0) {
 		sPos -= 1;
 		//dbg_log(fLog,"DEBUG:tANDp_fromrooks:STM[%c]:cSBB[%0llx]:sPos[%d]\n",activeSide,cSBB,sPos);
-		val1 += __builtin_popcountl(bbRookMoves[sPos] & cbC->bk) * VALUE_KING;
-		val1 += __builtin_popcountl(bbRookMoves[sPos] & cbC->bq) * VALUE_QUEEN;
-		val1 += __builtin_popcountl(bbRookMoves[sPos] & cbC->br) * VALUE_ROOK;
-		val1 += __builtin_popcountl(bbRookMoves[sPos] & cbC->bn) * VALUE_KNIGHT;
-		val1 += __builtin_popcountl(bbRookMoves[sPos] & cbC->bb) * VALUE_BISHOP;
-		val1 += __builtin_popcountl(bbRookMoves[sPos] & cbC->bp) * VALUE_PAWN;
+		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bk), VALUE_KING,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bq), VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->br), VALUE_ROOK,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bn), VALUE_KNIGHT,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bp), VALUE_PAWN,WT_DIRECT,WT_INDIRECT);
 
-		val2 += __builtin_popcountl(bbRookMoves[sPos] & cbC->wk) * VALUE_KING;
-		val2 += __builtin_popcountl(bbRookMoves[sPos] & cbC->wq) * VALUE_QUEEN;
-		val2 += __builtin_popcountl(bbRookMoves[sPos] & cbC->wr) * VALUE_ROOK;
-		val2 += __builtin_popcountl(bbRookMoves[sPos] & cbC->wn) * VALUE_KNIGHT;
-		val2 += __builtin_popcountl(bbRookMoves[sPos] & cbC->wb) * VALUE_BISHOP;
-		val2 += __builtin_popcountl(bbRookMoves[sPos] & cbC->wp) * VALUE_PAWN;
+		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wk), VALUE_KING,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wq), VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wr), VALUE_ROOK,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wn), VALUE_KNIGHT,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wp), VALUE_PAWN,WT_DIRECT,WT_INDIRECT);
 		cSBB &= ~(1ULL << sPos);			
 	}
 
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
-	val = ((val1 * weightage1) + (val2 * weightage2))/10;
+	val = ((val1 * weightage1) + (val2 * weightage2))/WEIGHTAGE_SCALE;
 #ifdef DEBUG_EVALPRINT	
 	dbg_log(fLog,"INFO:tANDp_fromRooks:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
@@ -529,35 +563,35 @@ int cb_eval_tANDp_frombishops(struct cb *cbC, char activeSide)
 
 	if(activeSide == STM_WHITE) {
 		cSBB = cbC->wb;
-		weightage1 = 10; // threats_given
-		weightage2 = 8; // protection_provided
+		weightage1 = WEIGHTAGE_THREAT; // threats_given
+		weightage2 = WEIGHTAGE_PROTECTION; // protection_provided
 	} else {
 		cSBB = cbC->bb;
-		weightage1 = 8; // protection_provided
-		weightage2 = 10; // threats_given
+		weightage1 = WEIGHTAGE_PROTECTION; // protection_provided
+		weightage2 = WEIGHTAGE_THREAT; // threats_given
 	}
 	while((sPos = ffsll(cSBB)) != 0) {
 		sPos -= 1;
 		//dbg_log(fLog,"DEBUG:tANDp_frombishops:STM[%c]:cSBB[%0llx]:sPos[%d]\n",activeSide,cSBB,sPos);
-		val1 += __builtin_popcountl(bbBishopMoves[sPos] & cbC->bk) * VALUE_KING;
-		val1 += __builtin_popcountl(bbBishopMoves[sPos] & cbC->bq) * VALUE_QUEEN;
-		val1 += __builtin_popcountl(bbBishopMoves[sPos] & cbC->br) * VALUE_ROOK;
-		val1 += __builtin_popcountl(bbBishopMoves[sPos] & cbC->bn) * VALUE_KNIGHT;
-		val1 += __builtin_popcountl(bbBishopMoves[sPos] & cbC->bb) * VALUE_BISHOP;
-		val1 += __builtin_popcountl(bbBishopMoves[sPos] & cbC->bp) * VALUE_PAWN;
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bk), VALUE_KING,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bq), VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->br), VALUE_ROOK,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bn), VALUE_KNIGHT,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bp), VALUE_PAWN,WT_DIRECT,WT_INDIRECT);
 
-		val2 += __builtin_popcountl(bbBishopMoves[sPos] & cbC->wk) * VALUE_KING;
-		val2 += __builtin_popcountl(bbBishopMoves[sPos] & cbC->wq) * VALUE_QUEEN;
-		val2 += __builtin_popcountl(bbBishopMoves[sPos] & cbC->wr) * VALUE_ROOK;
-		val2 += __builtin_popcountl(bbBishopMoves[sPos] & cbC->wn) * VALUE_KNIGHT;
-		val2 += __builtin_popcountl(bbBishopMoves[sPos] & cbC->wb) * VALUE_BISHOP;
-		val2 += __builtin_popcountl(bbBishopMoves[sPos] & cbC->wp) * VALUE_PAWN;
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wk), VALUE_KING,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wq), VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wr), VALUE_ROOK,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wn), VALUE_KNIGHT,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wp), VALUE_PAWN,WT_DIRECT,WT_INDIRECT);
 		cSBB &= ~(1ULL << sPos);			
 	}
 
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
-	val = ((val1 * weightage1) + (val2 * weightage2))/10;
+	val = ((val1 * weightage1) + (val2 * weightage2))/WEIGHTAGE_SCALE;
 #ifdef DEBUG_EVALPRINT	
 	dbg_log(fLog,"INFO:tANDp_fromBishops:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
@@ -581,35 +615,47 @@ int cb_eval_tANDp_fromqueens(struct cb *cbC, char activeSide)
 
 	if(activeSide == STM_WHITE) {
 		cSBB = cbC->wq;
-		weightage1 = 10; // threats_given
-		weightage2 = 8; // protection_provided
+		weightage1 = WEIGHTAGE_THREAT; // threats_given
+		weightage2 = WEIGHTAGE_PROTECTION; // protection_provided
 	} else {
 		cSBB = cbC->bq;
-		weightage1 = 8; // protection_provided
-		weightage2 = 10; // threats_given
+		weightage1 = WEIGHTAGE_PROTECTION; // protection_provided
+		weightage2 = WEIGHTAGE_THREAT; // threats_given
 	}
 	while((sPos = ffsll(cSBB)) != 0) {
 		sPos -= 1;
 		//dbg_log(fLog,"DEBUG:tANDp_fromqueens:STM[%c]:cSBB[%0llx]:sPos[%d]\n",activeSide,cSBB,sPos);
-		val1 += __builtin_popcountl(bbQueenMoves[sPos] & cbC->bk) * VALUE_KING;
-		val1 += __builtin_popcountl(bbQueenMoves[sPos] & cbC->bq) * VALUE_QUEEN;
-		val1 += __builtin_popcountl(bbQueenMoves[sPos] & cbC->br) * VALUE_ROOK;
-		val1 += __builtin_popcountl(bbQueenMoves[sPos] & cbC->bn) * VALUE_KNIGHT;
-		val1 += __builtin_popcountl(bbQueenMoves[sPos] & cbC->bb) * VALUE_BISHOP;
-		val1 += __builtin_popcountl(bbQueenMoves[sPos] & cbC->bp) * VALUE_PAWN;
+		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bk), VALUE_KING,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bk), VALUE_KING,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bq), VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bq), VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->br), VALUE_ROOK,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->br), VALUE_ROOK,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bn), VALUE_KNIGHT,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bn), VALUE_KNIGHT,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bp), VALUE_PAWN,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bp), VALUE_PAWN,WT_DIRECT,WT_INDIRECT);
 
-		val2 += __builtin_popcountl(bbQueenMoves[sPos] & cbC->wk) * VALUE_KING;
-		val2 += __builtin_popcountl(bbQueenMoves[sPos] & cbC->wq) * VALUE_QUEEN;
-		val2 += __builtin_popcountl(bbQueenMoves[sPos] & cbC->wr) * VALUE_ROOK;
-		val2 += __builtin_popcountl(bbQueenMoves[sPos] & cbC->wn) * VALUE_KNIGHT;
-		val2 += __builtin_popcountl(bbQueenMoves[sPos] & cbC->wb) * VALUE_BISHOP;
-		val2 += __builtin_popcountl(bbQueenMoves[sPos] & cbC->wp) * VALUE_PAWN;
+		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wk), VALUE_KING,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wk), VALUE_KING,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wq), VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wq), VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wr), VALUE_ROOK,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wr), VALUE_ROOK,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wn), VALUE_KNIGHT,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wn), VALUE_KNIGHT,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wp), VALUE_PAWN,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wp), VALUE_PAWN,WT_DIRECT,WT_INDIRECT);
 		cSBB &= ~(1ULL << sPos);			
 	}
 
 	// For White val1 = threats_given; val2 = protection_provided
 	// For Black val2 = threats_given; val1 = protection_provided
-	val = ((val1 * weightage1) + (val2 * weightage2))/10;
+	val = ((val1 * weightage1) + (val2 * weightage2))/WEIGHTAGE_SCALE;
 #ifdef DEBUG_EVALPRINT	
 	dbg_log(fLog,"INFO:tANDp_fromQueens:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
@@ -644,19 +690,19 @@ int cb_eval_tANDp_fromkings(struct cb *cbC, char activeSide)
 	while((sPos = ffsll(cSBB)) != 0) {
 		sPos -= 1;
 		//dbg_log(fLog,"DEBUG:tANDp_fromkings:STM[%c]:cSBB[%0llx]:sPos[%d]\n",activeSide,cSBB,sPos);
-		val1 += __builtin_popcountl(bbKingMoves[sPos] & cbC->bk) * VALUE_KING;
-		val1 += __builtin_popcountl(bbKingMoves[sPos] & cbC->bq) * VALUE_QUEEN;
-		val1 += __builtin_popcountl(bbKingMoves[sPos] & cbC->br) * VALUE_ROOK;
-		val1 += __builtin_popcountl(bbKingMoves[sPos] & cbC->bn) * VALUE_KNIGHT;
-		val1 += __builtin_popcountl(bbKingMoves[sPos] & cbC->bb) * VALUE_BISHOP;
-		val1 += __builtin_popcountl(bbKingMoves[sPos] & cbC->bp) * VALUE_PAWN;
+		val1 += __builtin_popcountl(bbKingMoves[sPos] & cbC->bk) * VALUE_KING * WT_DIRECT;
+		val1 += __builtin_popcountl(bbKingMoves[sPos] & cbC->bq) * VALUE_QUEEN * WT_DIRECT;
+		val1 += __builtin_popcountl(bbKingMoves[sPos] & cbC->br) * VALUE_ROOK * WT_DIRECT;
+		val1 += __builtin_popcountl(bbKingMoves[sPos] & cbC->bn) * VALUE_KNIGHT * WT_DIRECT;
+		val1 += __builtin_popcountl(bbKingMoves[sPos] & cbC->bb) * VALUE_BISHOP * WT_DIRECT;
+		val1 += __builtin_popcountl(bbKingMoves[sPos] & cbC->bp) * VALUE_PAWN * WT_DIRECT;
 
-		val2 += __builtin_popcountl(bbKingMoves[sPos] & cbC->wk) * VALUE_KING;
-		val2 += __builtin_popcountl(bbKingMoves[sPos] & cbC->wq) * VALUE_QUEEN;
-		val2 += __builtin_popcountl(bbKingMoves[sPos] & cbC->wr) * VALUE_ROOK;
-		val2 += __builtin_popcountl(bbKingMoves[sPos] & cbC->wn) * VALUE_KNIGHT;
-		val2 += __builtin_popcountl(bbKingMoves[sPos] & cbC->wb) * VALUE_BISHOP;
-		val2 += __builtin_popcountl(bbKingMoves[sPos] & cbC->wp) * VALUE_PAWN;
+		val2 += __builtin_popcountl(bbKingMoves[sPos] & cbC->wk) * VALUE_KING * WT_DIRECT;
+		val2 += __builtin_popcountl(bbKingMoves[sPos] & cbC->wq) * VALUE_QUEEN * WT_DIRECT;
+		val2 += __builtin_popcountl(bbKingMoves[sPos] & cbC->wr) * VALUE_ROOK * WT_DIRECT;
+		val2 += __builtin_popcountl(bbKingMoves[sPos] & cbC->wn) * VALUE_KNIGHT * WT_DIRECT;
+		val2 += __builtin_popcountl(bbKingMoves[sPos] & cbC->wb) * VALUE_BISHOP * WT_DIRECT;
+		val2 += __builtin_popcountl(bbKingMoves[sPos] & cbC->wp) * VALUE_PAWN * WT_DIRECT;
 		cSBB &= ~(1ULL << sPos);			
 	}
 
@@ -675,7 +721,6 @@ int cb_eval_tANDp_fromkings(struct cb *cbC, char activeSide)
 
 int cb_eval_tANDp_frompawns(struct cb *cbC, char activeSide)
 {
-
 	int sPos = 0;
 	int val = 0;
 	int val1 = 0;
@@ -698,19 +743,19 @@ int cb_eval_tANDp_frompawns(struct cb *cbC, char activeSide)
 	while((sPos = ffsll(cSBB)) != 0) {
 		sPos -= 1;
 		//dbg_log(fLog,"DEBUG:tANDp_frompawns:STM[%c]:cSBB[%0llx]:sPos[%d]\n",activeSide,cSBB,sPos);
-		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bk) * VALUE_KING;
-		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bq) * VALUE_QUEEN;
-		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->br) * VALUE_ROOK;
-		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bn) * VALUE_KNIGHT;
-		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bb) * VALUE_BISHOP;
-		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bp) * VALUE_PAWN;
+		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bk) * VALUE_KING * WT_DIRECT;
+		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bq) * VALUE_QUEEN * WT_DIRECT;
+		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->br) * VALUE_ROOK * WT_DIRECT;
+		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bn) * VALUE_KNIGHT * WT_DIRECT;
+		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bb) * VALUE_BISHOP * WT_DIRECT;
+		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bp) * VALUE_PAWN * WT_DIRECT;
 
-		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wk) * VALUE_KING;
-		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wq) * VALUE_QUEEN;
-		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wr) * VALUE_ROOK;
-		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wn) * VALUE_KNIGHT;
-		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wb) * VALUE_BISHOP;
-		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wp) * VALUE_PAWN;
+		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wk) * VALUE_KING * WT_DIRECT;
+		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wq) * VALUE_QUEEN * WT_DIRECT;
+		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wr) * VALUE_ROOK * WT_DIRECT;
+		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wn) * VALUE_KNIGHT * WT_DIRECT;
+		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wb) * VALUE_BISHOP * WT_DIRECT;
+		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wp) * VALUE_PAWN * WT_DIRECT;
 		cSBB &= ~(1ULL << sPos);			
 	}
 

@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdarg.h>
 
 #define DEBUG_UNWIND_SELECTION
 
@@ -35,6 +36,7 @@ int gGameHash = 32;
 #define send_resp_ex(sBuffer,sSize,...) snprintf(sBuffer,sSize,__VA_ARGS__); send_resp(sBuffer);
 #define dbg_cb_bb_print dummy
 #define dbg_log(file,...) fprintf(file,__VA_ARGS__)
+#define dbgs_log dbgex_log
 #define ddbg_log(file,...) dummy()
 /*
 #define ddbg_log(file,...) #ifdef DDEBUGLOG	\n\
@@ -44,6 +46,15 @@ int gGameHash = 32;
 
 void dummy() 
 {
+}
+
+void dbgex_log(FILE *f,char *fmt,...)
+{
+	va_list vaC;
+	va_start(vaC,fmt);
+	vfprintf(f,fmt,vaC);
+	va_end(vaC);
+	fflush(f);
 }
 
 long diff_clocktime(struct timespec *tsStart)
@@ -635,9 +646,9 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		else {
 			// Nodes simply mapped to total Moves generated for now, which may be correct or wrong, to check
 			if(curDepth == 1) {
-				dbg_log(fLogM,"%d:SENT:%c:%s\n",myPID,cbC->sideToMove,sNextBestMoves);
-				dbg_log(fLog,"INFO:%c: TotalMoves[%d], HTCLASH[%d], HTHIT[%d], HTVALMISMATCH[%d], HTVALMATCH[%d]\n", 
-						cbC->sideToMove, gMovesCnt,
+				dbgs_log(fLogM,"%d:SENT:%c:%s\n",myPID,cbC->sideToMove,sNextBestMoves);
+				dbgs_log(fLogM,"%d:INFO:%c: TotalMoves[%d], HTCLASH[%d], HTHIT[%d], HTVALMISMATCH[%d], HTVALMATCH[%d]\n", 
+						myPID, cbC->sideToMove, gMovesCnt,
 						gHashTable->HashClashCnt,gHashTable->HashHitCnt,gHashTable->ValMismatchCnt,gHashTable->ValMatchCnt);
 				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %ld multipv 1 pv %s\n",
 					val,maxDepth-curDepth+1,gMovesCnt,gDTime,sNextBestMoves); //FIXED: Changed to maxDepth, using generic formula
@@ -700,15 +711,15 @@ int process_uci()
 		send_resp("id author hkvc\n");
 		send_resp("option name Ponder type check default true\n");
 		send_resp("option name Hash type spin default 1 min 1 max 100\n");
-		send_resp("option name depth type spin default 3 min 3 max 100\n");
+		send_resp("option name depth type spin default 3 min 1 max 100\n");
 		send_resp("uciok\n");
-		dbg_log(fLogM,"%d:GOT:uci\n",myPID);
+		dbgs_log(fLogM,"%d:GOT:uci\n",myPID);
 	}
 	if(strncmp(sCmd,"isready",7) == 0) {
 		send_resp("readyok\n");
 	}
 	if(strncmp(sCmd,"position",8) == 0) {
-		dbg_log(fLogM,"%d:GOT:%s\n",myPID,sCmd);
+		dbgs_log(fLogM,"%d:GOT:%s\n",myPID,sCmd);
 		if(process_position(&gb,sCmd) != 0)
 			send_resp("info string error parsing fen");
 	}
