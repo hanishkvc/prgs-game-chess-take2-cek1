@@ -1,15 +1,17 @@
 
+DBG_MISCOPTS= -DDEBUG_EVALPRINT -DDEBUG_LEAFPRINT -DDEBUG_UNWINDPRINT -DDEBUG_UNWIND_SELECTION
+HT_OPTS= -DUSE_HASHTABLE -DDEBUG_HTPRINT
 
 cek1: cek1.c cek1.h moves.c evals.c generate_movebbs.c positioncmd.c positionhash.c
 	echo -n "#define PRG_VERSION \"CEK1 v" > __MAKE__PREFIX.h
 	date +%Y%m%d_%H%M\" > __MAKE__DT.h
 	cat __MAKE__PREFIX.h __MAKE__DT.h > makeheader.h
 	gcc -Wall -O2 -o cek1_pw cek1.c -D_GNU_SOURCE
-	gcc -Wall -g  -o cek1_pwxg cek1.c -D_GNU_SOURCE -DDEBUG_EVALPRINT
+	gcc -Wall -g  -o cek1_pwxg cek1.c -D_GNU_SOURCE ${DBG_MISCOPTS}
 	gcc -Wall -O2 -o cek1 cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE
-	gcc -Wall -g  -o cek1_xg cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE -DDEBUG_EVALPRINT
-	gcc -Wall -O2 -o cek1_ht cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE -DUSE_HASHTABLE -DDEBUG_HTPRINT
-	gcc -Wall -g  -pg -o cek1_htxg cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE -DUSE_HASHTABLE -DDEBUG_HTPRINT -DDEBUG_EVALPRINT
+	gcc -Wall -g  -o cek1_xg cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${DBG_MISCOPTS}
+	gcc -Wall -O2 -o cek1_ht cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${HT_OPTS}
+	gcc -Wall -g  -pg -o cek1_htxg cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${HT_OPTS} ${DBG_MISCOPTS}
 
 install-base: cek1
 	cp cek1 ~/local/bin/

@@ -213,4 +213,22 @@ TODO:NEXT:
 * Use tsearch or hsearch or equivalent for HashTables
   and inturn see the performance impact if any
 
+******* 20131205
+
+* Updating program so that it doesn't send info messages to
+  UCI gui, for curDepth==MaxDepth; leads to the engine
+  result speeding up almost 4 to 6 times. MOST PROBABLY
+  because it used to sync these messages, and because
+  there are hell lot of moves at the MaxDepth level.
+
+  Depth 5
+  87.25 seconds
+  Nodes 1769K
+  20Kn/sec
+
+  (Remove logging of Leaf move infos)
+  Depth 5
+  37.58 seconds
+  Nodes 1769K
+  47Kn/sec
 
