@@ -126,7 +126,7 @@ void phash_print(struct phash *phT, char *sMsg)
 				phT->aa, phT->wp, phT->wo, phT->bp, phT->bo, phT->sideToMove, phT->sMoves, phT->sNBMoves);
 }
 
-int phash_find(struct phashtable *phtC, struct cb *cbC, struct phash *phT)
+struct phash *phash_find(struct phashtable *phtC, struct cb *cbC, struct phash *phT, int *iPos)
 {
 	int i;
 
@@ -140,7 +140,8 @@ int phash_find(struct phashtable *phtC, struct cb *cbC, struct phash *phT)
 				(phtC->phashWArr[i].bp == phT->bp) && (phtC->phashWArr[i].bo == phT->bo)) {
 				phtC->HashHitCnt++;
 				//dbg_log(fLog,"INFO:phash_find:W:HTHIT:HTPos[%d]\n",i);
-				return i;
+				*iPos = i;
+				return &(phtC->phashWArr[i]);
 			} else {
 #ifdef DEBUG_HTPRINT
 				dbg_log(fLog,"INFO:phash_find:W:HTCLASH:HTPos[%d]:\n",i);
@@ -160,7 +161,8 @@ int phash_find(struct phashtable *phtC, struct cb *cbC, struct phash *phT)
 				(phtC->phashBArr[i].bp == phT->bp) && (phtC->phashBArr[i].bo == phT->bo)) {
 				phtC->HashHitCnt++;
 				//dbg_log(fLog,"INFO:phash_find:B:HTHIT:HTPos[%d]\n",i);
-				return i;
+				*iPos = i;
+				return &(phtC->phashBArr[i]);
 			} else {
 #ifdef DEBUG_HTPRINT
 				dbg_log(fLog,"INFO:phash_find:B:HTCLASH:HTPos[%d]:\n",i);
@@ -172,7 +174,8 @@ int phash_find(struct phashtable *phtC, struct cb *cbC, struct phash *phT)
 		}
 	
 	}
-	return -1;
+	*iPos = -1;
+	return NULL;
 }
 
 void phash_add(struct phashtable *phtC, struct cb *cbC, int val, char *sMoves, char *sNextBestMoves)
@@ -182,8 +185,9 @@ void phash_add(struct phashtable *phtC, struct cb *cbC, int val, char *sMoves, c
 	struct phash *phashCArr;
 	int *pphashCNext;
 	int *pphashCCnt;
+	struct phash *phRes;
 
-	iPos = phash_find(phtC,cbC,&phTemp);
+	phRes = phash_find(phtC,cbC,&phTemp,&iPos);
 	if(phTemp.sideToMove == STM_WHITE) {
 		phashCArr = phtC->phashWArr;
 		pphashCNext = &phtC->phashWNext;
@@ -194,7 +198,7 @@ void phash_add(struct phashtable *phtC, struct cb *cbC, int val, char *sMoves, c
 		pphashCCnt = &phtC->phashBCnt;
 	}
 
-	if(iPos == -1) {
+	if(phRes == NULL) {
 		memcpy(&(phashCArr[*pphashCNext]),&phTemp,sizeof(struct phash));
 		phashCArr[*pphashCNext].val = val;
 		strncpy(phashCArr[*pphashCNext].sMoves,sMoves,MOVES_BUFSIZE);
