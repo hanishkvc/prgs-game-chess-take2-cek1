@@ -1,0 +1,24 @@
+[Event "MyChessEngineTest"]
+[Site "Home, INDIA"]
+[Date "2013.12.05"]
+[Round "G101"]
+[White "cek1_ht"]
+[Black "cek1_ht"]
+[Result "*"]
+[EventDate "2013.12.05"]
+[SPECIAL_T1 "HKVC MyChessEngineTesting"]
+
+1.Nc3 
+    ( 1.Nc3 Nc6 2.Nb5 e6 3.b3 Bb4 4.a3 Ba5 5.a4 Nf6 6.c3 a6 7.Nd4 Nxd4 8.
+    cxd4 Bb4 ~ {Have to check Why This move was done.} 9.e3 Ne4 10.Qf3 Qf6
+    ~ {Have to check Why} 11.Qxe4 Kf8 12.Ke2 Qg5 13.Qf3 Qg6 14.Ba3 Bxa3 
+    15.Rxa3 Rg8 16.Ra1 c6 17.Re1 h5 18.h3 Rb8 19.Qf4 e5 ~ {Why not move 
+    Rook away} 20.Qxe5 d6 21.Qf4 Bg4+ ~ {Why take soo much risk} 22.hxg4 
+    hxg4 23.Nh3 ~ {Why take this risk} 23...gxh3 24.Rxh3 Re8 25.Rf3 Rxe3+ 
+    26.Qxe3 Qg4 27.Qe7+ ~ {Why this risk} 
+        ( { [CEK1 v20131205_0120] 5:M3} 27.Kd1 Qd7 28.Qe2 Qf5 29.Qe7# )
+    )
+1...Nc6 2.Nd5 e6 3.Nxc7+ Qxc7 
+    ( 3...Ke7 )
+*
+
