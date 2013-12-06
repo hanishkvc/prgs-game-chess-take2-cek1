@@ -503,9 +503,9 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 
 	valPW = cb_evalpw(cbC);
 #ifdef CORRECTVALFOR_SIDETOMOVE
-	// FIXME: Should use the original sideToMove (i.e curDepth = 0) info and not the current sideToMove (curDepth > 0)
+	// FIXED: Should use the original sideToMove (i.e curDepth = 0) info and not the current sideToMove (curDepth > 0)
 	// Have to add a variable to struct cb to store the sideToMoveORIG
-	val = cb_valpw2valpstm(cbC->sideToMove,valPW); 
+	val = cb_valpw2valpstm(cbC->origSideToMove,valPW); 
 #else
 	val = valPW;
 #endif
@@ -639,8 +639,10 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		iMaxVal = iMaxVal+1;
 	}
 
-#ifdef CORRECTVALFOR_SIDETOMOVE
-	val = cb_valpw2valpstm(cbC->sideToMove,iMaxVal); // TODO:TOTHINK:TOCHECK: Orig sideToMove or current sideToMove, assuming UIC expects current
+#ifdef CORRECTVALFOR_SIDETOMOVE 
+	// DONE:TOTHINK:TOCHECK: Orig sideToMove or current sideToMove, assuming UCI expects current
+	// Rather UCI expects the eval score to be wrt the original sideToMove, when it gave the go command
+	val = cb_valpw2valpstm(cbC->origSideToMove,iMaxVal);
 #else
 	val = iMaxVal;
 #endif

@@ -31,6 +31,7 @@ int process_position_fen(struct cb *cbC, char *sCmd)
 		cbC->sideToMove=STM_WHITE;
 	else
 		cbC->sideToMove=STM_BLACK;
+	cbC->origSideToMove = cbC->sideToMove;
 
 
 	r = 7; f = 0;
@@ -160,6 +161,7 @@ int process_position_startpos(struct cb *cbC, char *sCmd)
 		cb_bb_setpos(&(cbC->bp),6,f);
 
 	cbC->sideToMove=STM_WHITE;
+	cbC->origSideToMove = cbC->sideToMove;
 	cb_print(cbC);
 
 	if((movStr = strtok(NULL," ")) == NULL)
@@ -188,6 +190,7 @@ int process_position_startpos(struct cb *cbC, char *sCmd)
 		iCnt++;
 	}
 
+	cbC->origSideToMove = cbC->sideToMove;
 	cb_print(cbC);
 	return 0;
 }

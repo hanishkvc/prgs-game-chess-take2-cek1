@@ -302,7 +302,7 @@ because, even when in the middle of a depth search, we will
 be looking at as well as sending uci info messages wrt
 moves starting from the original starting position with the 
 original sideToMove till the depth searched or till maxDepth
-(as part of unwinding). 
+(as part of unwinding). - FIXED (20131206_1206)
 
 
 FIXME: The value of the king to be potentially tweaked wrt
