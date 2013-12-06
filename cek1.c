@@ -261,13 +261,29 @@ int move_validate(struct cb *cbC, char *sMov)
 	return iRes;
 }
 
-void mvhlpr_domovel_oncb(struct cb *cbC, char mPiece, int mSPos, int mDPos)
+void mvhlpr_domovel_oncb(struct cb *cbC, char mPiece, int mSPos, int mDPos, int hint)
 {
 	
 	if(cbC->sideToMove == STM_WHITE) {
 		if(mPiece == 'K') {
 			cbC->wk &= ~(1ULL << mSPos);
 			cbC->wk |= (1ULL << mDPos);
+			if(hint != SM_NORMAL) {
+#ifdef DEBUG_SMPRINT
+				dbg_log(fLog,"INFO:domovel:Castling?\n");
+				cb_print(cbC);
+#endif
+				if(hint == SM_KINGSIDECASTLE) {
+					mvhlpr_domovel_oncb(cbC,'R',7,5,SM_NORMAL);
+				} else if(hint == SM_QUEENSIDECASTLE) {
+					mvhlpr_domovel_oncb(cbC,'R',0,3,SM_NORMAL);
+				}
+				cbC->wkCanKsC = SM_FALSE;
+				cbC->wkCanQsC = SM_FALSE;
+#ifdef DEBUG_SMPRINT
+				cb_print(cbC);
+#endif
+			}
 		} else if(mPiece == 'Q') {
 			cbC->wq &= ~(1ULL << mSPos);
 			cbC->wq |= (1ULL << mDPos);
@@ -294,6 +310,22 @@ void mvhlpr_domovel_oncb(struct cb *cbC, char mPiece, int mSPos, int mDPos)
 		if(mPiece == 'K') {
 			cbC->bk &= ~(1ULL << mSPos);
 			cbC->bk |= (1ULL << mDPos);
+			if(hint != SM_NORMAL) {
+#ifdef DEBUG_SMPRINT
+				dbg_log(fLog,"INFO:domovel:Castling?\n");
+				cb_print(cbC);
+#endif
+				if(hint == SM_KINGSIDECASTLE) {
+					mvhlpr_domovel_oncb(cbC,'R',63,61,SM_NORMAL);
+				} else if(hint == SM_QUEENSIDECASTLE) {
+					mvhlpr_domovel_oncb(cbC,'R',56,59,SM_NORMAL);
+				}
+				cbC->bkCanKsC = SM_FALSE;
+				cbC->bkCanQsC = SM_FALSE;
+#ifdef DEBUG_SMPRINT
+				cb_print(cbC);
+#endif
+			}
 		} else if(mPiece == 'Q') {
 			cbC->bq &= ~(1ULL << mSPos);
 			cbC->bq |= (1ULL << mDPos);
@@ -324,81 +356,112 @@ int mvhlpr_domoveh_oncb(struct cb *cbC, char *sMov)
 {
 	int sPos = 0;
 	int dPos = 0;
+	int hint = SM_NORMAL;
 
 	sPos = cb_strloc2bbpos(sMov);
 	dPos = cb_strloc2bbpos(&sMov[2]);
 
 	if((cbC->wk & (1ULL << sPos)) != 0) {
-		if(cbC->sideToMove == 'w')
-			mvhlpr_domovel_oncb(cbC,'K',sPos,dPos);
-		else {
+		if(cbC->sideToMove == 'w') {
+			if(sPos == 4) {
+				if(dPos == 6) {
+					hint = SM_KINGSIDECASTLE;
+				} else if (dPos == 2) {
+					hint = SM_QUEENSIDECASTLE;
+				} else {
+					cbC->wkCanKsC = SM_FALSE;
+					cbC->wkCanQsC = SM_FALSE;
+				}
+			}
+			mvhlpr_domovel_oncb(cbC,'K',sPos,dPos,hint);
+		} else {
 			return -1;
 		}
 	} else if((cbC->wq & (1ULL << sPos)) != 0) {
 		if(cbC->sideToMove == 'w')
-			mvhlpr_domovel_oncb(cbC,'Q',sPos,dPos);
+			mvhlpr_domovel_oncb(cbC,'Q',sPos,dPos,hint);
 		else {
 			return -1;
 		}
 	} else if((cbC->wr & (1ULL << sPos)) != 0) {
-		if(cbC->sideToMove == 'w')
-			mvhlpr_domovel_oncb(cbC,'R',sPos,dPos);
-		else {
+		if(cbC->sideToMove == 'w') {
+			if(sPos == 0) {
+				cbC->wkCanQsC = SM_FALSE;
+			} else if(sPos == 7) {
+				cbC->wkCanKsC = SM_FALSE;
+			}
+			mvhlpr_domovel_oncb(cbC,'R',sPos,dPos,hint);
+		} else {
 			return -1;
 		}
 	} else if((cbC->wn & (1ULL << sPos)) != 0) {
 		if(cbC->sideToMove == 'w')
-			mvhlpr_domovel_oncb(cbC,'N',sPos,dPos);
+			mvhlpr_domovel_oncb(cbC,'N',sPos,dPos,hint);
 		else {
 			return -1;
 		}
 	} else if((cbC->wb & (1ULL << sPos)) != 0) {
 		if(cbC->sideToMove == 'w')
-			mvhlpr_domovel_oncb(cbC,'B',sPos,dPos);
+			mvhlpr_domovel_oncb(cbC,'B',sPos,dPos,hint);
 		else {
 			return -1;
 		}
 	} else if((cbC->wp & (1ULL << sPos)) != 0) {
 		if(cbC->sideToMove == 'w')
-			mvhlpr_domovel_oncb(cbC,'P',sPos,dPos);
+			mvhlpr_domovel_oncb(cbC,'P',sPos,dPos,hint);
 		else {
 			return -1;
 		}
 	}
 
 	if((cbC->bk & (1ULL << sPos)) != 0) {
-		if(cbC->sideToMove == 'b')
-			mvhlpr_domovel_oncb(cbC,'K',sPos,dPos);
-		else {
+		if(cbC->sideToMove == 'b') {
+			if(sPos == 60) {
+				if(dPos == 62) {
+					hint = SM_KINGSIDECASTLE;
+				} else if (dPos == 58) {
+					hint = SM_QUEENSIDECASTLE;
+				} else {
+					cbC->bkCanKsC = SM_FALSE;
+					cbC->bkCanQsC = SM_FALSE;
+				}
+			}
+			mvhlpr_domovel_oncb(cbC,'K',sPos,dPos,hint);
+		} else {
 			return -1;
 		}
 	} else if((cbC->bq & (1ULL << sPos)) != 0) {
 		if(cbC->sideToMove == 'b')
-			mvhlpr_domovel_oncb(cbC,'Q',sPos,dPos);
+			mvhlpr_domovel_oncb(cbC,'Q',sPos,dPos,hint);
 		else {
 			return -1;
 		}
 	} else if((cbC->br & (1ULL << sPos)) != 0) {
-		if(cbC->sideToMove == 'b')
-			mvhlpr_domovel_oncb(cbC,'R',sPos,dPos);
-		else {
+		if(cbC->sideToMove == 'b') {
+			if(sPos == 0) {
+				cbC->bkCanQsC = SM_FALSE;
+			} else if(sPos == 7) {
+				cbC->bkCanKsC = SM_FALSE;
+			}
+			mvhlpr_domovel_oncb(cbC,'R',sPos,dPos,hint);
+		} else {
 			return -1;
 		}
 	} else if((cbC->bn & (1ULL << sPos)) != 0) {
 		if(cbC->sideToMove == 'b')
-			mvhlpr_domovel_oncb(cbC,'N',sPos,dPos);
+			mvhlpr_domovel_oncb(cbC,'N',sPos,dPos,hint);
 		else {
 			return -1;
 		}
 	} else if((cbC->bb & (1ULL << sPos)) != 0) {
 		if(cbC->sideToMove == 'b')
-			mvhlpr_domovel_oncb(cbC,'B',sPos,dPos);
+			mvhlpr_domovel_oncb(cbC,'B',sPos,dPos,hint);
 		else {
 			return -1;
 		}
 	} else if((cbC->bp & (1ULL << sPos)) != 0) {
 		if(cbC->sideToMove == 'b')
-			mvhlpr_domovel_oncb(cbC,'P',sPos,dPos);
+			mvhlpr_domovel_oncb(cbC,'P',sPos,dPos,hint);
 		else {
 			return -1;
 		}
@@ -414,6 +477,7 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	int iRes;
 	char mPiece;
 	int mSPos, mDPos;
+	int mHint = SM_NORMAL;
 	char sBuf[S1KTEMPBUFSIZE];
 	char sNBMoves[MOVES_BUFSIZE];
 #ifdef USE_HASHTABLE
@@ -437,11 +501,15 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	mPiece = sMov[0];
 	mSPos = cb_strloc2bbpos(&sMov[1]);
 	mDPos = cb_strloc2bbpos(&sMov[4]);
+	mHint = sMov[6];
+	if(mHint != SM_NORMAL) {
+		exit(-2);
+	}
 	
 	if(gUCIOption & UCIOPTION_CUSTOM_SHOWCURRMOVE) {
 		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info depth %d currmove %s currmovenumber %d\n", curDepth, cb_2longnot(sMov), altMovNum);
 	}
-	mvhlpr_domovel_oncb(&cbN,mPiece,mSPos,mDPos);
+	mvhlpr_domovel_oncb(&cbN,mPiece,mSPos,mDPos,mHint);
 	if(cbC->sideToMove == STM_WHITE) {
 #ifdef MOVELIST_ADDMOVENUM_SMOVES
 		sprintf(sBuf,"%d.",movNum);
