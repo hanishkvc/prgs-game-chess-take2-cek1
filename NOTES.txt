@@ -232,3 +232,97 @@ TODO:NEXT:
   Nodes 1769K
   47Kn/sec
 
+* Have cut out most of the debug log messages from the
+  NON Debug version of the program.
+
+* Found that as HashTable logic had not accounted for 
+  the curDepth it was short circuiting evals wrt depth
+  search which it shouldn't have. i.e A PositionEval
+  at curDepth=5 (which is just a position immidiate eval
+  and not depth search based temporal eval if maxDepth
+  is 5) was for example short circuiting / bypassing a 
+  eval for the same Position but at curDepth=2, which 
+  would have allowed temporal/depth search based eval of 
+  that position till the allowed maxDepth. This BUG was
+  found when doing searchs with maxDepth=6. As it was
+  finding BestMoves of only 2 moves instead of 6 moves.
+
+  So updated HashTable logic to account for it.
+
+******* 20131206 (As Expected)
+
+* Have just confirmed that the current simple and stupid
+  HashTable logic which I have implemented using a linear
+  search based logic is killing performance like hell.
+
+  Originally all the debug messages and verbose uci info 
+  messages with syncing was eating up most of the time 
+  and thus even thou the linear search based HashTable
+  was inefficient it was still leading to a overall
+  faster logic, as it was killing out lot of depth searchs
+  for positions which repeat themselve across different
+  move sequences and inturn these costly sync based
+  messages.
+
+  However once the debug logs and info messages were
+  eliminated for the normal Non debug version of the
+  program, the linear search became the cultprit wrt
+  eating time. And going back to the normal non HT
+  based logic showed a speed increase of 15 to 30 
+  times.
+
+  i.e node or move searches went from 10-20 Kn/sec to
+  ~300Kn/sec. 
+
+  NOTE that with the Non HT version of the program the
+  The Nodes/Moves searched has increased from the earlier 
+  1M-30M range to 30-100M range.
+
+  So what this has showed (as expected) is that 
+
+  1. HashTable has the potential to greatly cut out moves
+  to search, due to repeated positions across moves.
+
+  2. However till a better HashTable logic is implemented 
+  which actually uses pure Hash based searching or btree or 
+  so, the current linear search based semi HashTable is
+  killing performance [Atleast at depth of 5, HAVETOCHECK
+  what is the impact for depth of 6 and more]
+
+TOCHECK:FIXME: Also found that there is some corner case 
+in the hash based logic, which is leading to HTVALMISMATCH 
+counter being hit, which ideally shouldn't occur normally. 
+This has be be debugged for the HT version of the program, 
+independent of the better HT search logic.
+
+FIXME:2: Have also found as always suspected that it is
+better to send score cp wrt the original sideToMove rather
+than the current sideToMove in the middle of a depth search
+because, even when in the middle of a depth search, we will
+be looking at as well as sending uci info messages wrt
+moves starting from the original starting position with the 
+original sideToMove till the depth searched or till maxDepth
+(as part of unwinding). 
+
+
+FIXME: The value of the king to be potentially tweaked wrt
+normal cases other than under checkmate as well as special
+case of identifying a possible check on the king. Because
+otherwise currently finding that pieces blindly sacrifice
+themselves in the hope of checking (not checking mating)
+the opponents king. HAVE TO THINK THIS MORE.
+
+FIXME: Also has previously captured, I have to update the
+best move identification logic during unwinding. Currently
+it blindly identifies the most value giving/gaining move
+for a given position based on future possible moves. However
+may be I have to check what is the best and the worst value
+I can end up in a given position based on possible opponent
+moves and then identify a move which maximises the possible
+profit, while parallely minimising the possible loss. HAVE
+TO THINK THIS MORE.
+
+NOTE: A nice set of defines to help debug move selection logic
+NORM_ADDOPTS = -DDEBUG_UNWINDSUMMARYPRINT -DDEBUG_UNWIND_SELECTION -DDEBUG_EVALSUMMARYPRINT
+This reduces the speed by atleast ~100KN/sec, but worth it
+for debugging issues with move selection logic.

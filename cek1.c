@@ -456,7 +456,7 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	strcat(cbN.sMoves,sMov);
 	strcat(cbN.sMoves," ");
 #ifdef USE_HASHTABLE
-	phRes = phash_find(gHashTable,&cbN,&phTemp,&iPos);
+	phRes = phash_find(gHashTable,&cbN,&phTemp,&iPos,curDepth,HTFIND_STRICTMODE);
 	if(phRes != NULL) {
 		strcat(sNextBestMoves,phRes->sNBMoves);
 		iVal = phRes->val;
@@ -578,7 +578,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	// TODO:LATER:Maybe (to think) Send best value from the moves above or best N in multipv case
 
 #ifdef DEBUG_UNWIND_SELECTION
-	dbg_log(fLog,"DEBUG:findbest:%c:curDepth[%d] unwind *** SelectFROM ***\n",cbC->sideToMove,curDepth);
+	dbg_log(fLog,"DEBUG:findbest:%c:curDepth[%d] Pos[%s] unwind *** SelectFROM ***\n",cbC->sideToMove,curDepth,cbC->sMoves);
 	for(iCur = 0; iCur < iMCnt; iCur++) {
 		dbg_log(fLog,"DEBUG:%d:Move[%s],eval[%d],NBMoves[%s]\n",iCur,movs[iCur],movsEval[iCur],movsNBMovesDBG[iCur]);
 	}
@@ -588,11 +588,15 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			iMaxVal = VALPW_WHITESTUCK_GOODFORBLACK;
 			iMaxInd = -1;
 			strcpy(sNextBestMoves,"WHITE_NOP");
+#ifdef DEBUG_UNWINDLOWLVLSUMMARYPRINT
 			dbg_log(fLog,"DEBUG:findbest:curDepth[%d] sideToMove[%c] PMoves[%s] NO VALID MOVE eval[%d]\n",
 						curDepth,cbC->sideToMove,cbC->sMoves,iMaxVal);
+#endif
 		} else {
+#ifdef DEBUG_UNWINDLOWLVLSUMMARYPRINT
 			dbg_log(fLog,"INFO:findbest:curDepth[%d] sideToMove[%c] PMoves[%s] mov[%s] eval[%d] NBMoves[%s]\n",
 						curDepth,cbC->sideToMove,cbC->sMoves,movs[iMaxPosInd],movsEval[iMaxPosInd],sMaxPosNBMoves);
+#endif
 			iMaxVal = iMaxPosVal;
 			iMaxInd = iMaxPosInd;
 #ifdef MOVELIST_ADDMOVENUM_NBMOVES
@@ -606,11 +610,15 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			iMaxVal = VALPW_BLACKSTUCK_GOODFORWHITE;
 			iMaxInd = -1;
 			strcpy(sNextBestMoves,"BLACK_NOP");
+#ifdef DEBUG_UNWINDLOWLVLSUMMARYPRINT
 			dbg_log(fLog,"DEBUG:findbest:curDepth[%d] sideToMove[%c] PMoves[%s] NO VALID MOVE eval[%d]\n",
 						curDepth,cbC->sideToMove,cbC->sMoves,iMaxVal);
+#endif
 		} else {
+#ifdef DEBUG_UNWINDLOWLVLSUMMARYPRINT
 			dbg_log(fLog,"INFO:findbest:curDepth[%d] sideToMove[%c] PMoves[%s] mov[%s] eval[%d] NBMoves[%s]\n",
 						curDepth,cbC->sideToMove,cbC->sMoves,movs[iMaxNegInd],movsEval[iMaxNegInd],sMaxNegNBMoves);
+#endif
 			iMaxVal = iMaxNegVal;
 			iMaxInd = iMaxNegInd;
 #ifdef MOVELIST_ADDMOVENUM_NBMOVES
@@ -644,7 +652,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %ld pv %s string %s - %s\n",
 				val,maxDepth-curDepth+1,gMovesCnt,gDTime,cb_2longnot(cbC->sMoves),sNextBestMoves,"NO VALID MOVE");
 			} else {
-#ifdef DEBUG_UNWINDPRINT
+#ifdef DEBUG_UNWINDSUMMARYPRINT
 			dbg_log(fLog,"INFO:info score cp %d depth %d nodes %d time %ld pv %s string %s - %s\n",
 				val,maxDepth-curDepth+1,gMovesCnt,gDTime,cb_2longnot(cbC->sMoves),sNextBestMoves,"NO VALID MOVE");
 #endif
@@ -653,10 +661,14 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		else {
 			// Nodes simply mapped to total Moves generated for now, which may be correct or wrong, to check
 			if(curDepth == 1) {
-				dbgs_log(fLogM,"%d:SENT:%c:Time[%d],Moves[%s]\n",myPID,cbC->sideToMove,gDTime,sNextBestMoves);
-				dbgs_log(fLogM,"%d:INFO:%c:TotalMoves[%d], HTCLASH[%d], HTHIT[%d], HTVALMISMATCH[%d], HTVALMATCH[%d]\n", 
-						myPID, cbC->sideToMove, gMovesCnt,
-						gHashTable->HashClashCnt,gHashTable->HashHitCnt,gHashTable->ValMismatchCnt,gHashTable->ValMatchCnt);
+				dbgs_log(fLogM,"%d:SENT:%c:evalPW[%d],Depth[%d],Nodes[%d],Time[%d],Moves[%s]\n",
+						myPID,cbC->sideToMove,iMaxVal,maxDepth-curDepth+1,gMovesCnt,gDTime,sNextBestMoves);
+#ifdef DEBUG_HTPRINT
+				dbgs_log(fLogM,"%d:HTINFO:%c:CLASH[%d],HIT[%d],VALMISMATCH[%d],VALMATCH[%d],BETTEREVALD[%d],CANBETTEREVAL[%d]\n", 
+						myPID, cbC->sideToMove,
+						gHashTable->HashClashCnt,gHashTable->HashHitCnt,gHashTable->ValMismatchCnt,gHashTable->ValMatchCnt,
+						gHashTable->BetterEvaldCnt,gHashTable->CanBetterEvalCnt);
+#endif
 				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %ld multipv 1 pv %s\n",
 					val,maxDepth-curDepth+1,gMovesCnt,gDTime,sNextBestMoves); //FIXED: Changed to maxDepth, using generic formula
 				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"bestmove %s\n",cb_2longnot(movs[iMaxInd]));
@@ -665,7 +677,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 					val,maxDepth-curDepth+1,gMovesCnt,gDTime,cb_2longnot(cbC->sMoves),sNextBestMoves);
 			} else { 
 				//FIXED: Changed to Amount of depth unwinded
-#ifdef DEBUG_UNWINDPRINT
+#ifdef DEBUG_UNWINDSUMMARYPRINT
 				dbg_log(fLog,"INFO:info score cp %d depth %d nodes %d time %ld pv %s %s\n",
 					val,maxDepth-curDepth+1,gMovesCnt,gDTime,cb_2longnot(cbC->sMoves),sNextBestMoves);
 #endif
@@ -673,7 +685,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		}
 	}
 #ifdef USE_HASHTABLE
-	phash_add(gHashTable,cbC,iMaxVal,cbC->sMoves,sNextBestMoves);
+	phash_add(gHashTable,cbC,iMaxVal,cbC->sMoves,sNextBestMoves,curDepth);
 #endif
 	return iMaxVal; 
 }
