@@ -1,0 +1,19 @@
+[Event "HKVC MyEngine Testing"]
+[Site "Home, INDIA"]
+[Date "2013.12.06"]
+[Round "G104"]
+[White "cek1-5"]
+[Black "cek1-5"]
+[Result "*"]
+[EventDate "2013.12.06"]
+[SPECIAL_T1 "HKVC MyEngine testing"]
+
+1.Nc3 e6 2.e3 Bb4 3.Bb5 Qf6 4.Qg4 Bxc3 5.dxc3 a6 6.Ba4 b5 7.Qb4?? 
+    {A potential blunder. Have to tweak the eval logic to avoid this.}
+7...g5? 
+    {Have to check why this move instead of b5xa4}
+8.Nf3 
+    ( { [CEK1 v20131206_0240] 5:-4.96} 8.Nf3 Nc6 9.Qc5 Ne5 10.Kf1 bxa4 )
+    ( )
+*
+
