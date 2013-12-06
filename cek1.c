@@ -554,7 +554,7 @@ int cb_valpw2valpstm(char sideToMove, int valPW)
 
 int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves)
 {
-	int valPW;
+	int valPWStatic;
 	int val;
 	char sBuf[S1KTEMPBUFSIZE];
 	char movs[NUMOFPARALLELMOVES][32];
@@ -569,13 +569,13 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	char movsNBMovesDBG[NUMOFPARALLELMOVES][2048];
 #endif
 
-	valPW = cb_evalpw(cbC);
+	valPWStatic = cb_evalpw(cbC);
 #ifdef CORRECTVALFOR_SIDETOMOVE
 	// FIXED: Should use the original sideToMove (i.e curDepth = 0) info and not the current sideToMove (curDepth > 0)
 	// Have to add a variable to struct cb to store the sideToMoveORIG
-	val = cb_valpw2valpstm(cbC->origSideToMove,valPW); 
+	val = cb_valpw2valpstm(cbC->origSideToMove,valPWStatic); 
 #else
-	val = valPW;
+	val = valPWStatic;
 #endif
 
 	gDTime = diff_clocktime(&gtsStart);
@@ -593,7 +593,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 #endif
 		if((cbC->wk_underattack > 1) || (cbC->bk_underattack > 1))
 			return DO_ERROR;
-		return valPW;
+		return valPWStatic;
 	}
 
 	// sideToMove is actually nextSideToMove from symantic perspective
@@ -706,6 +706,8 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	} else {
 		iMaxVal = iMaxVal+1;
 	}
+
+	iMaxVal += valPWStatic;
 
 #ifdef CORRECTVALFOR_SIDETOMOVE 
 	// DONE:TOTHINK:TOCHECK: Orig sideToMove or current sideToMove, assuming UCI expects current

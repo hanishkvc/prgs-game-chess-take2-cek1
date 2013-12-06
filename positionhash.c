@@ -1,5 +1,6 @@
 
-#define PHASH_MAXCNT (1000*1000)
+//#define PHASH_MAXCNT (1000*1000)
+#define PHASH_MAXCNT (8*1000)
 
 // NOTE: Ideally 6 bits was good enough has there are only 64 possible
 // squares in which a piece can be. However as there are 64 bits in

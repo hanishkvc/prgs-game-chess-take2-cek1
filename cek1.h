@@ -53,6 +53,14 @@ typedef unsigned long long u64;
 #define WT_DIRECT 2
 #define WT_INDIRECT 1
 
+#define EVALSMAT_DIV 1
+#define EVALSTANDP_DIV 100
+#define EVALSKINGUNDERATTACK_DIV 100
+// OverAchiever Value Multiplier
+#define OAVMULT 2
+// UnderAchiever Value Multiplier
+#define UAVMULT(V) ((V*6)/8)
+
 #define UCIOPTION_CUSTOM_SHOWCURRMOVE 0x0080ULL
 
 #define LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN 100

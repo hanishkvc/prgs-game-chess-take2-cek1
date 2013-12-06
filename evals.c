@@ -355,10 +355,10 @@ int cb_evalpw_king_underattack(struct cb *cbC)
 		cbC->wk_underattack = 0;
 
 	// Result
-#ifdef DEBUG_EVALPRINT	
+#ifdef DEBUG_EVALPRINT
 	dbg_log(fLog,"INFO:kingunderattack: valW[%d] - valB[%d]\n", valW, valB);
 #endif
-	return (valW-valB);
+	return ((valW-valB)/EVALSKINGUNDERATTACK_DIV);
 }
 
 int cb_evalpw_mat(struct cb *cbC)
@@ -379,7 +379,10 @@ int cb_evalpw_mat(struct cb *cbC)
 	valW += __builtin_popcountll(cbC->wb)*VALUE_BISHOP;
 	valW += __builtin_popcountll(cbC->wq)*VALUE_QUEEN;
 
-	valPW = valW-valB;
+	valPW = (valW-valB)/EVALSMAT_DIV;
+#ifdef DEBUG_EVALPRINT
+	dbg_log(fLog,"INFO:evalpw_mat: valW[%d] - valB[%d]\n", valW, valB);
+#endif
 	return valPW;
 }
 
@@ -431,16 +434,16 @@ int cb_eval_tANDp_fromknights(struct cb *cbC, char activeSide)
 	while((sPos = ffsll(cSBB)) != 0) {
 		sPos -= 1;
 		//dbg_log(fLog,"DEBUG:tANDp_fromknights:STM[%c]:cSBB[%0llx]:sPos[%d]\n",activeSide,cSBB,sPos);
-		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bk) * VALUE_KING * WT_DIRECT;
-		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bq) * VALUE_QUEEN * WT_DIRECT;
-		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->br) * VALUE_ROOK * WT_DIRECT;
+		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bk) * OAVMULT*VALUE_KING * WT_DIRECT;
+		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bq) * OAVMULT*VALUE_QUEEN * WT_DIRECT;
+		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->br) * OAVMULT*VALUE_ROOK * WT_DIRECT;
 		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bn) * VALUE_KNIGHT * WT_DIRECT;
 		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bb) * VALUE_BISHOP * WT_DIRECT;
 		val1 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->bp) * VALUE_PAWN * WT_DIRECT;
 
-		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wk) * VALUE_KING * WT_DIRECT;
-		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wq) * VALUE_QUEEN * WT_DIRECT;
-		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wr) * VALUE_ROOK * WT_DIRECT;
+		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wk) * OAVMULT*VALUE_KING * WT_DIRECT;
+		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wq) * OAVMULT*VALUE_QUEEN * WT_DIRECT;
+		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wr) * OAVMULT*VALUE_ROOK * WT_DIRECT;
 		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wn) * VALUE_KNIGHT * WT_DIRECT;
 		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wb) * VALUE_BISHOP * WT_DIRECT;
 		val2 += __builtin_popcountl(bbKnightMoves[sPos] & cbC->wp) * VALUE_PAWN * WT_DIRECT;
@@ -519,15 +522,15 @@ int cb_eval_tANDp_fromrooks(struct cb *cbC, char activeSide)
 	while((sPos = ffsll(cSBB)) != 0) {
 		sPos -= 1;
 		//dbg_log(fLog,"DEBUG:tANDp_fromrooks:STM[%c]:cSBB[%0llx]:sPos[%d]\n",activeSide,cSBB,sPos);
-		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bk), VALUE_KING,WT_DIRECT,WT_INDIRECT);
-		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bq), VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bk), OAVMULT*VALUE_KING,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bq), OAVMULT*VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
 		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->br), VALUE_ROOK,WT_DIRECT,WT_INDIRECT);
 		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bn), VALUE_KNIGHT,WT_DIRECT,WT_INDIRECT);
 		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
 		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bp), VALUE_PAWN,WT_DIRECT,WT_INDIRECT);
 
-		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wk), VALUE_KING,WT_DIRECT,WT_INDIRECT);
-		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wq), VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wk), OAVMULT*VALUE_KING,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wq), OAVMULT*VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
 		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wr), VALUE_ROOK,WT_DIRECT,WT_INDIRECT);
 		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wn), VALUE_KNIGHT,WT_DIRECT,WT_INDIRECT);
 		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
@@ -542,7 +545,7 @@ int cb_eval_tANDp_fromrooks(struct cb *cbC, char activeSide)
 	dbg_log(fLog,"INFO:tANDp_fromRooks:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
 #endif
-	// FIXME: The threat and protection value is bit more complicated than provided above because
+	// FIXED: The threat and protection value is bit more complicated than provided above because
 	// If there are intervening pieces in the path, then the effect of threat and protection is 
 	// not the same as if there is a clear path.
 	// FORNOW: Threat and Protection values given same weightage always, irrespective of intervening pieces or not.
@@ -571,16 +574,16 @@ int cb_eval_tANDp_frombishops(struct cb *cbC, char activeSide)
 	while((sPos = ffsll(cSBB)) != 0) {
 		sPos -= 1;
 		//dbg_log(fLog,"DEBUG:tANDp_frombishops:STM[%c]:cSBB[%0llx]:sPos[%d]\n",activeSide,cSBB,sPos);
-		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bk), VALUE_KING,WT_DIRECT,WT_INDIRECT);
-		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bq), VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
-		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->br), VALUE_ROOK,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bk), OAVMULT*VALUE_KING,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bq), OAVMULT*VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->br), OAVMULT*VALUE_ROOK,WT_DIRECT,WT_INDIRECT);
 		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bn), VALUE_KNIGHT,WT_DIRECT,WT_INDIRECT);
 		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
 		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bp), VALUE_PAWN,WT_DIRECT,WT_INDIRECT);
 
-		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wk), VALUE_KING,WT_DIRECT,WT_INDIRECT);
-		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wq), VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
-		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wr), VALUE_ROOK,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wk), OAVMULT*VALUE_KING,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wq), OAVMULT*VALUE_QUEEN,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wr), OAVMULT*VALUE_ROOK,WT_DIRECT,WT_INDIRECT);
 		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wn), VALUE_KNIGHT,WT_DIRECT,WT_INDIRECT);
 		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
 		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wp), VALUE_PAWN,WT_DIRECT,WT_INDIRECT);
@@ -594,7 +597,7 @@ int cb_eval_tANDp_frombishops(struct cb *cbC, char activeSide)
 	dbg_log(fLog,"INFO:tANDp_fromBishops:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
 #endif
-	// FIXME: The threat and protection value is bit more complicated than provided above because
+	// FIXED: The threat and protection value is bit more complicated than provided above because
 	// If there are intervening pieces in the path, then the effect of threat and protection is 
 	// not the same as if there is a clear path.
 	// FORNOW: Threat and Protection values given same weightage always, irrespective of intervening pieces or not.
@@ -633,8 +636,8 @@ int cb_eval_tANDp_fromqueens(struct cb *cbC, char activeSide)
 		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bn), VALUE_KNIGHT,WT_DIRECT,WT_INDIRECT);
 		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
 		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
-		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bp), VALUE_PAWN,WT_DIRECT,WT_INDIRECT);
-		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bp), VALUE_PAWN,WT_DIRECT,WT_INDIRECT);
+		val1 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->bp), UAVMULT(VALUE_PAWN),WT_DIRECT,WT_INDIRECT);
+		val1 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->bp), UAVMULT(VALUE_PAWN),WT_DIRECT,WT_INDIRECT);
 
 		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wk), VALUE_KING,WT_DIRECT,WT_INDIRECT);
 		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wk), VALUE_KING,WT_DIRECT,WT_INDIRECT);
@@ -646,8 +649,8 @@ int cb_eval_tANDp_fromqueens(struct cb *cbC, char activeSide)
 		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wn), VALUE_KNIGHT,WT_DIRECT,WT_INDIRECT);
 		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
 		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wb), VALUE_BISHOP,WT_DIRECT,WT_INDIRECT);
-		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wp), VALUE_PAWN,WT_DIRECT,WT_INDIRECT);
-		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wp), VALUE_PAWN,WT_DIRECT,WT_INDIRECT);
+		val2 += eval_lineattack(cbC,sPos,(bbRookMoves[sPos] & cbC->wp), UAVMULT(VALUE_PAWN),WT_DIRECT,WT_INDIRECT);
+		val2 += eval_diagattack(cbC,sPos,(bbBishopMoves[sPos] & cbC->wp), UAVMULT(VALUE_PAWN),WT_DIRECT,WT_INDIRECT);
 		cSBB &= ~(1ULL << sPos);			
 	}
 
@@ -658,7 +661,7 @@ int cb_eval_tANDp_fromqueens(struct cb *cbC, char activeSide)
 	dbg_log(fLog,"INFO:tANDp_fromQueens:val1[%d] * weightage1[%d] + val2[%d] * weightage2[%d] = val[%d]\n",
 			val1,weightage1, val2, weightage2, val);
 #endif
-	// FIXME: The threat and protection value is bit more complicated than provided above because
+	// FIXED: The threat and protection value is bit more complicated than provided above because
 	// If there are intervening pieces in the path, then the effect of threat and protection is 
 	// not the same as if there is a clear path.
 	// FORNOW: Threat and Protection values given same weightage always, irrespective of intervening pieces or not.
@@ -741,18 +744,18 @@ int cb_eval_tANDp_frompawns(struct cb *cbC, char activeSide)
 	while((sPos = ffsll(cSBB)) != 0) {
 		sPos -= 1;
 		//dbg_log(fLog,"DEBUG:tANDp_frompawns:STM[%c]:cSBB[%0llx]:sPos[%d]\n",activeSide,cSBB,sPos);
-		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bk) * VALUE_KING * WT_DIRECT;
-		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bq) * VALUE_QUEEN * WT_DIRECT;
-		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->br) * VALUE_ROOK * WT_DIRECT;
-		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bn) * VALUE_KNIGHT * WT_DIRECT;
-		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bb) * VALUE_BISHOP * WT_DIRECT;
+		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bk) * OAVMULT*VALUE_KING * WT_DIRECT;
+		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bq) * OAVMULT*VALUE_QUEEN * WT_DIRECT;
+		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->br) * OAVMULT*VALUE_ROOK * WT_DIRECT;
+		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bn) * OAVMULT*VALUE_KNIGHT * WT_DIRECT;
+		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bb) * OAVMULT*VALUE_BISHOP * WT_DIRECT;
 		val1 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->bp) * VALUE_PAWN * WT_DIRECT;
 
-		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wk) * VALUE_KING * WT_DIRECT;
-		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wq) * VALUE_QUEEN * WT_DIRECT;
-		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wr) * VALUE_ROOK * WT_DIRECT;
-		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wn) * VALUE_KNIGHT * WT_DIRECT;
-		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wb) * VALUE_BISHOP * WT_DIRECT;
+		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wk) * OAVMULT*VALUE_KING * WT_DIRECT;
+		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wq) * OAVMULT*VALUE_QUEEN * WT_DIRECT;
+		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wr) * OAVMULT*VALUE_ROOK * WT_DIRECT;
+		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wn) * OAVMULT*VALUE_KNIGHT * WT_DIRECT;
+		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wb) * OAVMULT*VALUE_BISHOP * WT_DIRECT;
 		val2 += __builtin_popcountl(bbPawnAttackMoves[sPos] & cbC->wp) * VALUE_PAWN * WT_DIRECT;
 		cSBB &= ~(1ULL << sPos);			
 	}
@@ -787,8 +790,12 @@ int cb_evalpw_threatsANDprotection(struct cb *cbC)
 	valB += cb_eval_tANDp_fromkings(cbC,STM_BLACK);
 	valW += cb_eval_tANDp_frompawns(cbC,STM_WHITE);
 	valB += cb_eval_tANDp_frompawns(cbC,STM_BLACK);
-	valPW = valW - valB;
-	return (valPW/10);
+
+	valPW = (valW - valB)/EVALSTANDP_DIV;
+#ifdef DEBUG_EVALPRINT
+	dbg_log(fLog,"INFO:evalpw_tANDp: valW[%d] - valB[%d]\n", valW, valB);
+#endif
+	return valPW;
 }
 
 int cb_evalpw(struct cb *cbC)
