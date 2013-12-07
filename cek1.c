@@ -14,6 +14,11 @@
 #include <unistd.h>
 #include <stdarg.h>
 
+#define NUMOFTHREADS 1
+#ifdef USE_THREAD
+#include <pthread.h>
+#endif
+
 #include "makeheader.h"
 #include "cek1.h"
 
@@ -566,6 +571,24 @@ int cb_valpw2valpstm(char sideToMove, int valPW)
 		return valPW;
 }
 
+struct moveprocessHlpr {
+	struct cb *cbC;
+	char *sMov;
+	int curDepth;
+	int maxDepth;
+	int secs;
+	int movNum;
+	int altMovNum;
+	char *sNextBestMoves;
+};
+
+void *moveprocess_hlpr(void *arg)
+{
+	struct moveprocessHlpr *mpH;
+	mpH = arg;
+	return (void*)move_process(mpH->cbC,mpH->sMov,mpH->curDepth,mpH->maxDepth,mpH->secs,mpH->movNum,mpH->altMovNum,mpH->sNextBestMoves);
+}
+
 int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves)
 {
 	int valPWStatic;
@@ -580,6 +603,8 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	char s2LN[MOVES_BUFSIZE];
 	long lDTime = 0;
 	char movsNBMoves[NUMOFPARALLELMOVES][MOVES_BUFSIZE];
+	struct moveprocessHlpr mpH;
+	pthread_t ptIds[NUMOFTHREADS];
 
 	valPWStatic = cb_evalpw(cbC);
 #ifdef CORRECTVALFOR_SIDETOMOVE
@@ -629,7 +654,31 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	for(iCur = 0; iCur < iMCnt; iCur++) {
 		//send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info currmove %s currmovenumber %d\n", movs[iCur], iCur);
 		strcpy(movsNBMoves[iCur],"");
-		movsEval[iCur] = move_process(cbC, movs[iCur], curDepth, maxDepth, secs, movNum, iCur,movsNBMoves[iCur]); 
+		mpH.cbC = cbC;
+		mpH.sMov = movs[iCur];
+		mpH.curDepth = curDepth;
+		mpH.maxDepth = maxDepth;
+		mpH.secs = secs;
+		mpH.movNum = movNum;
+		mpH.altMovNum = iCur;
+		mpH.sNextBestMoves = movsNBMoves[iCur];
+#ifdef USE_THREAD
+		if(curDepth == 1)
+		{
+		int iTRes;
+
+		iTRes=pthread_create(&ptIds[0],NULL,moveprocess_hlpr,&mpH);
+		if(iTRes != 0)
+			exit(-100);
+		iTRes=pthread_join(ptIds[0],&movsEval[iCur]);
+		if(iTRes != 0)
+			exit(-100);
+		} else {
+		movsEval[iCur] = (int)moveprocess_hlpr(&mpH);
+		}
+#else
+		movsEval[iCur] = (int)moveprocess_hlpr(&mpH);
+#endif
 		if(movsEval[iCur] == DO_ERROR)
 			continue;
 		if(iMaxPosInd == -1) {
@@ -822,6 +871,9 @@ int process_uci()
 	strcpy(sPNBuf,"HT");
 #else
 	strcpy(sPNBuf,"NORM");
+#endif
+#ifdef USE_THREAD
+	strcat(sPNBuf,"THR");
 #endif
 
 	if(strncmp(sCmd,"uci",3) == 0) {
