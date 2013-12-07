@@ -481,9 +481,9 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	char sBuf[S1KTEMPBUFSIZE];
 	char sNBMoves[MOVES_BUFSIZE];
 #ifdef USE_HASHTABLE
-	struct phash phTemp;
+	//struct phash phTemp;
 	int iVal;
-	int iPos;
+	//int iPos;
 	struct phash *phRes;
 #endif
 
@@ -524,13 +524,13 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	strcat(cbN.sMoves,sMov);
 	strcat(cbN.sMoves," ");
 #ifdef USE_HASHTABLE
-	phRes = phash_find(gHashTable,&cbN,&phTemp,&iPos,curDepth,HTFIND_STRICTMODE);
+	phRes = phash_find(gHashTable,&cbN,0x55aa,"",curDepth,HTFIND_FIND);
 	if(phRes != NULL) {
 		strcat(sNextBestMoves,phRes->sNBMoves);
 		iVal = phRes->val;
 #ifdef DEBUG_HTPRINT
 		dbg_log(fLog,"INFO:move_process:HTHIT:%c:HTPos[%d]:val[%d]:cbNsMoves[%s],sNBMoves[%s]\n", 
-				cbN.sideToMove, iPos, iVal, cbN.sMoves, sNextBestMoves);
+				cbN.sideToMove, 9999, iVal, cbN.sMoves, sNextBestMoves);
 		phash_print(phRes,"FromHashTable");
 #endif
 		return iVal;
@@ -735,11 +735,11 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			if(curDepth == 1) {
 				dbgs_log(fLogM,"%d:SENT:%c:evalPW[%d],Depth[%d],Nodes[%d],Time[%d],Moves[%s]\n",
 						myPID,cbC->sideToMove,iMaxVal,maxDepth-curDepth+1,gMovesCnt,gDTime,sNextBestMoves);
-#ifdef DEBUG_HTPRINT
-				dbgs_log(fLogM,"%d:HTINFO:%c:CLASH[%d],HIT[%d],VALMISMATCH[%d],VALMATCH[%d],BETTEREVALD[%d],CANBETTEREVAL[%d]\n", 
+#ifdef DEBUG_HTSUMMARYPRINT
+				dbgs_log(fLogM,"%d:HTINFO:%c:CLASH[%d],HIT[%d],VALMISMATCH[%d],VALMATCH[%d],BETTEREVALD[%d],CANBETTEREVAL[%d],TableSize[%d]\n", 
 						myPID, cbC->sideToMove,
 						gHashTable->HashClashCnt,gHashTable->HashHitCnt,gHashTable->ValMismatchCnt,gHashTable->ValMatchCnt,
-						gHashTable->BetterEvaldCnt,gHashTable->CanBetterEvalCnt);
+						gHashTable->BetterEvaldCnt,gHashTable->CanBetterEvalCnt,gHashTable->WCnt+gHashTable->BCnt);
 #endif
 				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %ld multipv 1 pv %s\n",
 					val,maxDepth-curDepth+1,gMovesCnt,gDTime,sNextBestMoves); //FIXED: Changed to maxDepth, using generic formula
@@ -757,7 +757,10 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		}
 	}
 #ifdef USE_HASHTABLE
-	phash_add(gHashTable,cbC,iMaxVal,cbC->sMoves,sNextBestMoves,curDepth);
+	//if(curDepth <= 5) 
+	{
+	phash_find(gHashTable,cbC,iMaxVal,sNextBestMoves,curDepth,HTFIND_ADD);
+	}
 #endif
 	return iMaxVal; 
 }
@@ -800,13 +803,20 @@ int process_uci()
 	char sCmdBuf[UCICMDBUFSIZE];
 	char *sCmd;
 	char sTemp[S1KTEMPBUFSIZE];
+	char sPNBuf[16];
 
 	sCmd = fgets(sCmdBuf, S1KTEMPBUFSIZE, stdin);
 	dbg_log(fLog,"GOT:%s\n",sCmd);
 	fflush(fLog);
 
+#ifdef USE_HASHTABLE
+	strcpy(sPNBuf,"HT");
+#else
+	strcpy(sPNBuf,"NORM");
+#endif
+
 	if(strncmp(sCmd,"uci",3) == 0) {
-		send_resp_ex(sTemp,S1KTEMPBUFSIZE,"id name %s\n",PRG_VERSION);
+		send_resp_ex(sTemp,S1KTEMPBUFSIZE,"id name %s-%s\n",PRG_VERSION,sPNBuf);
 		send_resp("id author hkvc\n");
 		send_resp("option name Ponder type check default true\n");
 		send_resp("option name Hash type spin default 1 min 1 max 100\n");

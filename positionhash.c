@@ -1,4 +1,6 @@
 
+#include <search.h>
+
 //#define PHASH_MAXCNT (1000*1000)
 #define PHASH_MAXCNT (8*1000)
 
@@ -27,12 +29,11 @@ struct phash {
 };
 
 struct phashtable {
-	struct phash phashWArr[PHASH_MAXCNT];
-	int phashWNext;
-	int phashWCnt;
-	struct phash phashBArr[PHASH_MAXCNT];
-	int phashBNext;
-	int phashBCnt;
+	void *phashWTr;
+	void *phashBTr;
+	int WCnt;
+	int BCnt;
+	int phashCnt;
 	int HashHitCnt;
 	int ValMismatchCnt;
 	int ValMatchCnt;
@@ -46,6 +47,12 @@ struct phashtable *gHashTable;
 void phash_init(struct phashtable *phtC)
 {
 	bzero(phtC,sizeof(struct phashtable));
+}
+
+void phash_cleanup(struct phashtable *phtC)
+{
+	tdestroy(phtC->phashWTr,free);
+	tdestroy(phtC->phashBTr,free);
 }
 
 // NOTE: It currently accounts for a standard chess game only
@@ -119,7 +126,7 @@ void phash_gen(struct phash *phC, struct cb *cbC)
 	tPos = (ffsll(bbT) & PHASH_PPOSMASK);
 	phC->bo |= tPos<<PHASH_KSHIFT;
 	
-	phC->aa = phC->wp + phC->bp + phC->wo + phC->bo;
+	phC->aa = phC->wp + 2*phC->bp + phC->wo + phC->bo;
 	phC->sideToMove = cbC->sideToMove;
 }
 
@@ -130,133 +137,121 @@ void phash_print(struct phash *phT, char *sMsg)
 				phT->aa, phT->wp, phT->wo, phT->bp, phT->bo, phT->sideToMove, phT->sMoves, phT->sNBMoves);
 }
 
-struct phash *phash_find(struct phashtable *phtC, struct cb *cbC, struct phash *phT, int *iPos, int curDepth, int hint)
+int compare(const void *pa, const void *pb)
 {
-	int i;
+	if(((struct phash *)pa)->aa < ((struct phash *)pb)->aa)
+		return -1;
+	else if(((struct phash *)pa)->aa > ((struct phash *)pb)->aa)
+		return 1;
+	return 0;
+}
 
-	phash_gen(phT,cbC);
-	if(phT->sideToMove == STM_WHITE) {
+struct phash *phash_find(struct phashtable *phtC, struct cb *cbC, int val, char *sNextBestMoves, int curDepth, int hint)
+{
+	struct phash *phT;
+	struct phash *phRes, **phResP;
+	int *pCnt;
 
-		for(i=0; i<phtC->phashWCnt; i++) {
-			if((phtC->phashWArr[i].aa != phT->aa) || (phtC->phashWArr[i].sideToMove != phT->sideToMove))
-				continue;
-			if((phtC->phashWArr[i].wp == phT->wp) && (phtC->phashWArr[i].wo == phT->wo) &&
-				(phtC->phashWArr[i].bp == phT->bp) && (phtC->phashWArr[i].bo == phT->bo)) {
-				if((phtC->phashWArr[i].curDepth <= curDepth) || (hint == HTFIND_IGNORECURDEPTH)) {
-					phtC->HashHitCnt++;
-					//dbg_log(fLog,"INFO:phash_find:W:HTHIT:HTPos[%d]\n",i);
-					*iPos = i;
-					return &(phtC->phashWArr[i]);
-				} else {
-					phtC->CanBetterEvalCnt++;
-					break;
-				}
-			} else {
-#ifdef DEBUG_HTPRINT
-				dbg_log(fLog,"INFO:phash_find:W:HTCLASH:HTPos[%d]:\n",i);
-				phash_print(&(phtC->phashWArr[i]),"FromTable");
-				phash_print(phT,"NewBeingChecked");
-#endif
-				phtC->HashClashCnt++;
-			}
-		}
-	
-	} else {
-
-		for(i=0; i<phtC->phashBCnt; i++) {
-			if((phtC->phashBArr[i].aa != phT->aa) || (phtC->phashBArr[i].sideToMove != phT->sideToMove))
-				continue;
-			if((phtC->phashBArr[i].wp == phT->wp) && (phtC->phashBArr[i].wo == phT->wo) &&
-				(phtC->phashBArr[i].bp == phT->bp) && (phtC->phashBArr[i].bo == phT->bo)) {
-				if((phtC->phashBArr[i].curDepth <= curDepth) || (hint == HTFIND_IGNORECURDEPTH)) {
-					phtC->HashHitCnt++;
-					//dbg_log(fLog,"INFO:phash_find:B:HTHIT:HTPos[%d]\n",i);
-					*iPos = i;
-					return &(phtC->phashBArr[i]);
-				} else {
-					phtC->CanBetterEvalCnt++;
-					break;
-				}
-			} else {
-#ifdef DEBUG_HTPRINT
-				dbg_log(fLog,"INFO:phash_find:B:HTCLASH:HTPos[%d]:\n",i);
-				phash_print(&(phtC->phashBArr[i]),"FromTable");
-				phash_print(phT,"NewBeingChecked");
-#endif
-				phtC->HashClashCnt++;
-			}
-		}
-	
+	phT = malloc(sizeof(struct phash));
+	if(phT == NULL) {
+		exit(-10);
 	}
-	*iPos = -1;
-	return NULL;
+	phash_gen(phT,cbC);
+
+		if(hint == HTFIND_FIND) {
+			if(cbC->sideToMove == STM_WHITE)
+				phResP = tfind((void*)phT, &phtC->phashWTr, compare);
+			else
+				phResP = tfind((void*)phT, &phtC->phashBTr, compare);
+			if(phResP == NULL) {
+				free(phT);
+				return NULL;
+			}
+			phRes = *phResP;
+			if((phRes->wp == phT->wp) && (phRes->wo == phT->wo) &&
+				(phRes->bp == phT->bp) && (phRes->bo == phT->bo)) {
+				if(phRes->curDepth <= curDepth) {
+					phtC->HashHitCnt++;
+					free(phT);
+					return phRes;
+				} else {
+					phtC->CanBetterEvalCnt++;
+					free(phT);
+					return NULL;
+				}
+			} else {
+#ifdef DEBUG_HTPRINT
+				phT->curDepth = curDepth;
+				phT->val = val;
+				strncpy(phT->sMoves,cbC->sMoves,MOVES_BUFSIZE);
+				strncpy(phT->sNBMoves,sNextBestMoves,MOVES_BUFSIZE);
+
+				dbg_log(fLog,"INFO:phash_find:%c:HTCLASH:\n",cbC->sideToMove);
+				phash_print(phRes,"FromTable");
+				phash_print(phT,"NewBeingChecked");
+#endif
+				phtC->HashClashCnt++;
+				free(phT);
+				return NULL;
+			}
+		} else {	// HTFIND_ADD
+			phT->curDepth = curDepth;
+			phT->val = val;
+			strncpy(phT->sMoves,cbC->sMoves,MOVES_BUFSIZE);
+			strncpy(phT->sNBMoves,sNextBestMoves,MOVES_BUFSIZE);
+			if(cbC->sideToMove == STM_WHITE) {
+				pCnt = &(phtC->WCnt);
+				phResP = tsearch((void*)phT, &phtC->phashWTr, compare);
+			} else {
+				pCnt = &(phtC->BCnt);
+				phResP = tsearch((void*)phT, &phtC->phashBTr, compare);
+			}
+			if(phResP == NULL) {	// Memory error
+				free(phT);
+				return NULL;
+			}
+			phRes = *phResP;
+			if(phRes == phT) {	// New item added, nothing else to do.
+				*pCnt = *pCnt+1;
+				return phRes;
+			}
+			// Another item which matches base aa found. Update if required.
+			if((phRes->wp == phT->wp) && (phRes->wo == phT->wo) &&
+				(phRes->bp == phT->bp) && (phRes->bo == phT->bo)) {
+				if(phRes->curDepth <= curDepth) {
+					free(phT);
+					return phRes;
+				} else {	// Previous version old, update to new
+					phtC->BetterEvaldCnt++;
+					phRes->curDepth = curDepth;
+					phRes->val = val;
+					strncpy(phRes->sMoves,cbC->sMoves,MOVES_BUFSIZE);
+					strncpy(phRes->sNBMoves,sNextBestMoves,MOVES_BUFSIZE);
+					free(phT);
+					return phRes;
+				}
+			} else {
+#ifdef DEBUG_HTPRINT
+				dbg_log(fLog,"INFO:phash_find:%c:HTCLASH:\n",cbC->sideToMove);
+				phash_print(phRes,"FromTable");
+				phash_print(phT,"NewBeingChecked");
+#endif
+				phtC->HashClashCnt++;
+				free(phT);
+				return NULL;
+			}
+		}
 }
 
 void phash_add(struct phashtable *phtC, struct cb *cbC, int val, char *sMoves, char *sNextBestMoves, int curDepth)
 {
-	int iPos = 0;
-	struct phash phTemp;
-	struct phash *phashCArr;
-	int *pphashCNext;
-	int *pphashCCnt;
-	struct phash *phRes;
-
-	phRes = phash_find(phtC,cbC,&phTemp,&iPos,curDepth,HTFIND_IGNORECURDEPTH);
-	if(phTemp.sideToMove == STM_WHITE) {
-		phashCArr = phtC->phashWArr;
-		pphashCNext = &phtC->phashWNext;
-		pphashCCnt = &phtC->phashWCnt;
-	} else {
-		phashCArr = phtC->phashBArr;
-		pphashCNext = &phtC->phashBNext;
-		pphashCCnt = &phtC->phashBCnt;
-	}
-
-	if(phRes == NULL) {
-		memcpy(&(phashCArr[*pphashCNext]),&phTemp,sizeof(struct phash));
-		phashCArr[*pphashCNext].val = val;
-		phashCArr[*pphashCNext].curDepth = curDepth;
-		strncpy(phashCArr[*pphashCNext].sMoves,sMoves,MOVES_BUFSIZE);
-		strncpy(phashCArr[*pphashCNext].sNBMoves,sNextBestMoves,MOVES_BUFSIZE);
-		(*pphashCNext)++;
-		if(*pphashCCnt < PHASH_MAXCNT) {
-			*pphashCCnt = *pphashCNext;
-		}
-		if(*pphashCNext >= PHASH_MAXCNT) {
-			*pphashCNext = 0;
-		}
-	} else if(phRes->curDepth > curDepth) { 
-		// The new position info is a better eval as it has more moves searched along depth
-		// the curDepth here limits to what extent moves will be searched along the depth
-		// So a Higher curDepth means less depth searched,
-		// while a Lower curDepth means more depth searched, so a better eval result.
+/*
 #ifdef DEBUG_HTPRINT
 		dbg_log(fLog,"INFO:phash_add:HTBETTEREVALD:Position in table (depth=%d), but better eval (depth=%d) has been done\n",
 					phRes->curDepth,curDepth);
 		dbg_log(fLog,"....:phash_add:HT.sMoves[%s],HT.sNBMoves[%s] AND New.sMoves[%s],New.sNBMoves[%s]\n",
 					phRes->sMoves, phRes->sNBMoves, sMoves, sNextBestMoves);
 #endif
-		phRes->curDepth = curDepth;
-		phRes->val = val;
-		strncpy(phRes->sMoves,sMoves,MOVES_BUFSIZE);
-		strncpy(phRes->sNBMoves,sNextBestMoves,MOVES_BUFSIZE);
-		phtC->BetterEvaldCnt++;
-	} else if(phRes->curDepth < curDepth) {
-		dbgs_log(fLog,"FIXME:BUG: moveprocess phash_find missed this ?! or a corner case in logic/thought.HTCurDepth[%d],NewCurDepth[%d]\n",
-					phRes->curDepth,curDepth);
-		dbg_log(fLog,"....:phash_add:HT.sMoves[%s],HT.sNBMoves[%s] AND New.sMoves[%s],New.sNBMoves[%s]\n",
-					phRes->sMoves, phRes->sNBMoves, sMoves, sNextBestMoves);
-		exit(-1);
-	} else if(phashCArr[iPos].val != val) {
-#ifdef DEBUG_HTPRINT
-		dbg_log(fLog,"DEBUG:phash_add:HTVALMISMATCH:TableHitBut?:HT[Pos:%d=Val:%d]NewVal[%d]RetVal[%d], HTCurDepth[%d]=NewCurDepth[%d]\n",
-					iPos,phashCArr[iPos].val,val,phRes->val,phRes->curDepth,curDepth);
-		dbg_log(fLog,"....:phash_add:HT.sMoves[%s],HT.sNBMoves[%s] AND New.sMoves[%s],New.sNBMoves[%s]\n",
-					phRes->sMoves, phRes->sNBMoves, sMoves, sNextBestMoves);
-#endif
-		phtC->ValMismatchCnt++;
-	} else {
-		phtC->ValMatchCnt++;
-	}
+*/
 }
 
