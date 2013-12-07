@@ -576,14 +576,10 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	int iMCnt, iCur;
 	int iMaxPosVal,iMaxPosInd,iMaxNegVal,iMaxNegInd;
 	int iMaxVal, iMaxInd;
-	char sNBMoves[MOVES_BUFSIZE];
 	char sMaxPosNBMoves[MOVES_BUFSIZE],sMaxNegNBMoves[MOVES_BUFSIZE];
 	char s2LN[MOVES_BUFSIZE];
 	long lDTime = 0;
-
-#ifdef DEBUG_UNWIND_SELECTION
-	char movsNBMovesDBG[NUMOFPARALLELMOVES][MOVES_BUFSIZE];
-#endif
+	char movsNBMoves[NUMOFPARALLELMOVES][MOVES_BUFSIZE];
 
 	valPWStatic = cb_evalpw(cbC);
 #ifdef CORRECTVALFOR_SIDETOMOVE
@@ -632,11 +628,8 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	iMCnt = moves_get(cbC,movs,0);
 	for(iCur = 0; iCur < iMCnt; iCur++) {
 		//send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info currmove %s currmovenumber %d\n", movs[iCur], iCur);
-		strcpy(sNBMoves,"");
-		movsEval[iCur] = move_process(cbC, movs[iCur], curDepth, maxDepth, secs, movNum, iCur,sNBMoves); 
-#ifdef DEBUG_UNWIND_SELECTION
-		strcpy(movsNBMovesDBG[iCur],sNBMoves);
-#endif
+		strcpy(movsNBMoves[iCur],"");
+		movsEval[iCur] = move_process(cbC, movs[iCur], curDepth, maxDepth, secs, movNum, iCur,movsNBMoves[iCur]); 
 		if(movsEval[iCur] == DO_ERROR)
 			continue;
 		if(iMaxPosInd == -1) {
@@ -644,18 +637,18 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			iMaxPosVal = movsEval[iCur];
 			iMaxNegInd = iCur;
 			iMaxNegVal = movsEval[iCur];
-			strcpy(sMaxPosNBMoves,sNBMoves);
-			strcpy(sMaxNegNBMoves,sNBMoves);
+			strcpy(sMaxPosNBMoves,movsNBMoves[iCur]);
+			strcpy(sMaxNegNBMoves,movsNBMoves[iCur]);
 		}
 		if(movsEval[iCur] > iMaxPosVal) {
 			iMaxPosVal = movsEval[iCur];
 			iMaxPosInd = iCur;
-			strcpy(sMaxPosNBMoves,sNBMoves);
+			strcpy(sMaxPosNBMoves,movsNBMoves[iCur]);
 		}
 		if(movsEval[iCur] < iMaxNegVal) {
 			iMaxNegVal = movsEval[iCur];
 			iMaxNegInd = iCur;
-			strcpy(sMaxNegNBMoves,sNBMoves);
+			strcpy(sMaxNegNBMoves,movsNBMoves[iCur]);
 		}
 	}
 
@@ -664,7 +657,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 #ifdef DEBUG_UNWIND_SELECTION
 	dbg_log(fLog,"DEBUG:findbest:%c:curDepth[%d] Pos[%s] unwind *** SelectFROM ***\n",cbC->sideToMove,curDepth,cbC->sMoves);
 	for(iCur = 0; iCur < iMCnt; iCur++) {
-		dbg_log(fLog,"DEBUG:%d:Move[%s],eval[%d],NBMoves[%s]\n",iCur,movs[iCur],movsEval[iCur],movsNBMovesDBG[iCur]);
+		dbg_log(fLog,"DEBUG:%d:Move[%s],eval[%d],NBMoves[%s]\n",iCur,movs[iCur],movsEval[iCur],movsNBMoves[iCur]);
 	}
 #endif
 	if(cbC->sideToMove == STM_WHITE) {
