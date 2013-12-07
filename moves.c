@@ -2,7 +2,6 @@
 int moves_forpawnattacks(struct cb *cbC, char movs[512][32], int iCur)
 {
 	u64 bbS, bbD;
-	char sTemp[8];
 	int posS,posD;
 	u64 bbEOcc = 0;
 
@@ -26,10 +25,11 @@ int moves_forpawnattacks(struct cb *cbC, char movs[512][32], int iCur)
 		}
 		while((posD = ffsll(bbD)) != 0) {
 			posD -= 1;
-			strncpy(movs[iCur],"P",32);
-			strcat(movs[iCur],cb_bbpos2strloc(posS,sTemp));
-			strcat(movs[iCur],"x");
-			strcat(movs[iCur],cb_bbpos2strloc(posD,sTemp));
+			movs[iCur][0] = 'P';
+			movs[iCur][1] = posS;
+			movs[iCur][2] = 'x';
+			movs[iCur][3] = posD;
+			movs[iCur][4] = 0;
 			iCur += 1;
 			bbD &= ~(1ULL << posD);			
 		}
@@ -41,7 +41,6 @@ int moves_forpawnattacks(struct cb *cbC, char movs[512][32], int iCur)
 int moves_forpawnnormal(struct cb *cbC, char movs[512][32], int iCur)
 {
 	u64 bbS, bbD;
-	char sTemp[8];
 	int posS,posD;
 	u64 bbWOcc = 0;
 	u64 bbBOcc = 0;
@@ -69,17 +68,18 @@ int moves_forpawnnormal(struct cb *cbC, char movs[512][32], int iCur)
 			posD -= 1;
 			bbD &= ~(1ULL << posD);			
 
-			strncpy(movs[iCur],"P",32);
-			strcat(movs[iCur],cb_bbpos2strloc(posS,sTemp));
-			strcat(movs[iCur],"-");
-			strcat(movs[iCur],cb_bbpos2strloc(posD,sTemp));
+			movs[iCur][0] = 'P';
+			movs[iCur][1] = posS;
+			movs[iCur][2] = '-';
+			movs[iCur][3] = posD;
+			movs[iCur][4] = 0;
 
 			if(abs(posS-posD) > 8) {
 				if(evalhlpr_lineattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
 #ifdef DEBUG_MOVEGENPRINT					
 					dbg_log(fLog,"INFO:moves_forpawnnormal: DROPPING mov[%s] as others inbetween\n",movs[iCur]);
 #endif
-					strncpy(movs[iCur],"",32);
+					movs[iCur][0] = 0;
 					continue;
 				}
 			}
@@ -94,7 +94,6 @@ int moves_forpawnnormal(struct cb *cbC, char movs[512][32], int iCur)
 int moves_forbishop(struct cb *cbC, char movs[512][32], int iCur)
 {
 	u64 bbS, bbD;
-	char sTemp[8];
 	int posS,posD;
 	u64 bbFOcc = 0;
 
@@ -118,16 +117,17 @@ int moves_forbishop(struct cb *cbC, char movs[512][32], int iCur)
 			posD -= 1;
 			bbD &= ~(1ULL << posD);			
 
-			strncpy(movs[iCur],"B",32);
-			strcat(movs[iCur],cb_bbpos2strloc(posS,sTemp));
-			strcat(movs[iCur],"-");
-			strcat(movs[iCur],cb_bbpos2strloc(posD,sTemp));
+			movs[iCur][0] = 'B';
+			movs[iCur][1] = posS;
+			movs[iCur][2] = '-';
+			movs[iCur][3] = posD;
+			movs[iCur][4] = 0;
 
 			if(evalhlpr_diagattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
 #ifdef DEBUG_MOVEGENPRINT				
 				dbg_log(fLog,"INFO:moves_forbishop: DROPPING mov[%s] as others inbetween\n",movs[iCur]);
 #endif
-				strncpy(movs[iCur],"",32);
+				movs[iCur][0] = 0;
 				continue;
 			} else {
 #ifdef DEBUG_MOVEGENPRINT				
@@ -145,7 +145,6 @@ int moves_forbishop(struct cb *cbC, char movs[512][32], int iCur)
 int moves_forrook(struct cb *cbC, char movs[512][32], int iCur)
 {
 	u64 bbS, bbD;
-	char sTemp[8];
 	int posS,posD;
 	u64 bbFOcc = 0;
 
@@ -169,10 +168,11 @@ int moves_forrook(struct cb *cbC, char movs[512][32], int iCur)
 			posD -= 1;
 			bbD &= ~(1ULL << posD);			
 
-			strncpy(movs[iCur],"R",32);
-			strcat(movs[iCur],cb_bbpos2strloc(posS,sTemp));
-			strcat(movs[iCur],"-");
-			strcat(movs[iCur],cb_bbpos2strloc(posD,sTemp));
+			movs[iCur][0] = 'R';
+			movs[iCur][1] = posS;
+			movs[iCur][2] = '-';
+			movs[iCur][3] = posD;
+			movs[iCur][4] = 0;
 
 			if(evalhlpr_lineattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
 #ifdef DEBUG_MOVEGENPRINT				
@@ -192,7 +192,6 @@ int moves_forrook(struct cb *cbC, char movs[512][32], int iCur)
 int moves_forqueen(struct cb *cbC, char movs[512][32], int iCur)
 {
 	u64 bbS, bbD, bbQ;
-	char sTemp[8];
 	int posS,posD;
 	u64 bbFOcc = 0;
 
@@ -218,10 +217,11 @@ int moves_forqueen(struct cb *cbC, char movs[512][32], int iCur)
 			posD -= 1;
 			bbD &= ~(1ULL << posD);			
 
-			strncpy(movs[iCur],"Q",32);
-			strcat(movs[iCur],cb_bbpos2strloc(posS,sTemp));
-			strcat(movs[iCur],"-");
-			strcat(movs[iCur],cb_bbpos2strloc(posD,sTemp));
+			movs[iCur][0] = 'Q';
+			movs[iCur][1] = posS;
+			movs[iCur][2] = '-';
+			movs[iCur][3] = posD;
+			movs[iCur][4] = 0;
 
 			if(evalhlpr_lineattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
 #ifdef DEBUG_MOVEGENPRINT				
@@ -246,10 +246,11 @@ int moves_forqueen(struct cb *cbC, char movs[512][32], int iCur)
 			posD -= 1;
 			bbD &= ~(1ULL << posD);			
 
-			strncpy(movs[iCur],"Q",32);
-			strcat(movs[iCur],cb_bbpos2strloc(posS,sTemp));
-			strcat(movs[iCur],"-");
-			strcat(movs[iCur],cb_bbpos2strloc(posD,sTemp));
+			movs[iCur][0] = 'Q';
+			movs[iCur][1] = posS;
+			movs[iCur][2] = '-';
+			movs[iCur][3] = posD;
+			movs[iCur][4] = 0;
 
 			if(evalhlpr_diagattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
 #ifdef DEBUG_MOVEGENPRINT				
@@ -291,7 +292,6 @@ int moves_forqueen(struct cb *cbC, char movs[512][32], int iCur)
 int moves_forknight(struct cb *cbC, char movs[512][32], int iCur)
 {
 	u64 bbS, bbD;
-	char sTemp[8];
 	int posS,posD;
 	u64 bbFOcc = 0;
 
@@ -309,10 +309,11 @@ int moves_forknight(struct cb *cbC, char movs[512][32], int iCur)
 		bbD = bbD & ~bbFOcc;
 		while((posD = ffsll(bbD)) != 0) {
 			posD -= 1;
-			strncpy(movs[iCur],"N",32);
-			strcat(movs[iCur],cb_bbpos2strloc(posS,sTemp));
-			strcat(movs[iCur],"-");
-			strcat(movs[iCur],cb_bbpos2strloc(posD,sTemp));
+			movs[iCur][0] = 'N';
+			movs[iCur][1] = posS;
+			movs[iCur][2] = '-';
+			movs[iCur][3] = posD;
+			movs[iCur][4] = 0;
 			iCur += 1;
 			bbD &= ~(1ULL << posD);			
 		}
@@ -324,7 +325,6 @@ int moves_forknight(struct cb *cbC, char movs[512][32], int iCur)
 int moves_forking(struct cb *cbC, char movs[512][32], int iCur)
 {
 	u64 bbS, bbD;
-	char sTemp[8];
 	int posS,posD;
 	u64 bbFOcc = 0;
 
@@ -342,10 +342,11 @@ int moves_forking(struct cb *cbC, char movs[512][32], int iCur)
 		bbD = bbD & ~bbFOcc;
 		while((posD = ffsll(bbD)) != 0) {
 			posD -= 1;
-			strncpy(movs[iCur],"K",32);
-			strcat(movs[iCur],cb_bbpos2strloc(posS,sTemp));
-			strcat(movs[iCur],"-");
-			strcat(movs[iCur],cb_bbpos2strloc(posD,sTemp));
+			movs[iCur][0] = 'K';
+			movs[iCur][1] = posS;
+			movs[iCur][2] = '-';
+			movs[iCur][3] = posD;
+			movs[iCur][4] = 0;
 			//check_iskingattacked(posD);
 			iCur += 1;
 			bbD &= ~(1ULL << posD);

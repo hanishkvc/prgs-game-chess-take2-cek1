@@ -240,7 +240,7 @@ int mv_dest_occupied(struct cb *cbC, char *sMov)
 		bbSOcc = cbC->bk | cbC->bq | cbC->br | cbC->bn | cbC->bb | cbC->bp;
 		bbEOcc = cbC->wk | cbC->wq | cbC->wr | cbC->wn | cbC->wb | cbC->wp;
 	}
-	iPos = cb_strloc2bbpos(&sMov[4]);
+	iPos = sMov[3];
 	if(iPos == -1)
 		return DO_ERROR;
 	if(bbSOcc & (1ULL<<iPos))
@@ -469,6 +469,18 @@ int mvhlpr_domoveh_oncb(struct cb *cbC, char *sMov)
 	return 0;
 }
 
+void cb_cmov2smov(char *cMov, char *sMov)
+{
+	char sTemp[8];
+	char sDest[8];
+	sDest[0] = cMov[0]; sDest[1] = 0;
+	strcat(&sDest[1],cb_bbpos2strloc(cMov[1],sTemp));
+	sDest[3] = cMov[2]; sDest[4] = 0;
+	strcat(&sDest[4],cb_bbpos2strloc(cMov[3],sTemp));
+	//sDest[6] = 0;
+	strncpy(sMov,sDest,8);
+}
+
 #include "positionhash.c"
 
 int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int secs, int movNum, int altMovNum,char *sNextBestMoves)
@@ -492,6 +504,7 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	iRes = move_validate(cbC, sMov);
 	if(iRes == DO_ERROR) {
 #ifdef DEBUG_MOVEPROCESSVALIDATE
+		cb_cmov2smov(sMov,sMov);
 		dbg_log(fLog,"INFO:move_process: Move[%s] Dropped/Error\n",sMov);
 #endif
 		return DO_ERROR;
@@ -499,12 +512,13 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 	memcpy(&cbN,cbC,sizeof(struct cb));
 
 	mPiece = sMov[0];
-	mSPos = cb_strloc2bbpos(&sMov[1]);
-	mDPos = cb_strloc2bbpos(&sMov[4]);
-	mHint = sMov[6];
+	mSPos = sMov[1];
+	mDPos = sMov[3];
+	mHint = sMov[4];
 	if(mHint != SM_NORMAL) {
 		exit(-2);
 	}
+	cb_cmov2smov(sMov,sMov);
 	
 	if(gUCIOption & UCIOPTION_CUSTOM_SHOWCURRMOVE) {
 		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info depth %d currmove %s currmovenumber %d\n", curDepth, cb_2longnot(sMov), altMovNum);
