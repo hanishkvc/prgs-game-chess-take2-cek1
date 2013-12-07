@@ -125,8 +125,17 @@ void phash_gen(struct phash *phC, struct cb *cbC)
 	bbT = cbC->bk;
 	tPos = (ffsll(bbT) & PHASH_PPOSMASK);
 	phC->bo |= tPos<<PHASH_KSHIFT;
-	
-	phC->aa = phC->wp + 2*phC->bp + phC->wo + phC->bo;
+	// Best hash till now
+	phC->aa = (phC->wp>>4) + (phC->bp<<4) + (phC->wo<<2) + phC->bo;
+	/* Better than simple addition, while still not too complicated
+	 * But more clashes than the hash shown above
+	phC->aa = ((phC->wp>>4) + (phC->bp<<4));
+	phC->aa += (phC->aa)*(cbC->wn+cbC->bn);
+	phC->aa += (phC->aa)*(cbC->wb+cbC->bb);
+	phC->aa += (phC->aa)*(cbC->wr+cbC->br);
+	phC->aa += (phC->aa)*(cbC->wq+cbC->bq);
+	phC->aa += (phC->aa)*(cbC->wk+cbC->bk);
+	*/
 	phC->sideToMove = cbC->sideToMove;
 }
 
