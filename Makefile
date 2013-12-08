@@ -59,3 +59,22 @@ clean-log:
 clean-all: clean clean-log
 	rm /tmp/cek1.log	|| /bin/true
 	
+
+test5:
+	~/local/bin/cek1nonthread_fast < TestCases/AutoTest1/test_5.cmd > /tmp/tnon5.log || /bin/true
+	~/local/bin/cek1_fastt < TestCases/AutoTest1/test_5.cmd > /tmp/tthr5.log || /bin/true
+	sed -e 's/depth 4.*pv/depth xxx pv/' /tmp/tnon5.log > /tmp/tnon5.simp.log
+	sed -e 's/depth 4.*pv/depth xxx pv/' /tmp/tthr5.log > /tmp/tthr5.simp.log
+	diff -ub /tmp/tnon5.simp.log /tmp/tthr5.simp.log | less
+
+test6:
+	~/local/bin/cek1nonthread_fast < TestCases/AutoTest1/test_6.cmd > /tmp/tnon6.log || /bin/true
+	~/local/bin/cek1_fastt < TestCases/AutoTest1/test_6.cmd > /tmp/tthr6.log || /bin/true
+	sed -e 's/depth 5.*pv/depth xxx pv/' /tmp/tnon6.log > /tmp/tnon6.simp.log
+	sed -e 's/depth 5.*pv/depth xxx pv/' /tmp/tthr6.log > /tmp/tthr6.simp.log
+	diff -ub /tmp/tnon6.simp.log /tmp/tthr6.simp.log | less
+
+clean-test:
+	rm tnon5.log || /bin/true
+	rm tthr5.log || /bin/true
+
