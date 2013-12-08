@@ -41,6 +41,7 @@ installn: install-base
 
 clean:
 	rm __MAKE__*		|| /bin/true
+	rm makeheader.h		|| /bin/true
 	rm ./cek1_pw		|| /bin/true
 	rm ./cek1_pwxg		|| /bin/true
 	rm ./cek1		|| /bin/true
