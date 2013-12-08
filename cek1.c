@@ -13,11 +13,25 @@
 #include <time.h>
 #include <unistd.h>
 #include <stdarg.h>
+#include <errno.h>
 
-#define NUMOFTHREADS 1
 #ifdef USE_THREAD
 #include <pthread.h>
 #endif
+
+/*
+#define handle_error_en(en, msg) \
+		do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
+*/
+
+void handle_error_en(int en, char *msg)
+{
+	do {
+		errno = en;
+		perror(msg);
+		exit(EXIT_FAILURE);
+	} while (0);
+}
 
 #include "makeheader.h"
 #include "cek1.h"
@@ -580,13 +594,15 @@ struct moveprocessHlpr {
 	int movNum;
 	int altMovNum;
 	char *sNextBestMoves;
+	int iRes;
 };
 
 void *moveprocess_hlpr(void *arg)
 {
 	struct moveprocessHlpr *mpH;
 	mpH = arg;
-	return (void*)move_process(mpH->cbC,mpH->sMov,mpH->curDepth,mpH->maxDepth,mpH->secs,mpH->movNum,mpH->altMovNum,mpH->sNextBestMoves);
+	mpH->iRes = move_process(mpH->cbC,mpH->sMov,mpH->curDepth,mpH->maxDepth,mpH->secs,mpH->movNum,mpH->altMovNum,mpH->sNextBestMoves);
+	return (void*)0;
 }
 
 int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves)
@@ -596,15 +612,22 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	char sBuf[S1KTEMPBUFSIZE];
 	char movs[NUMOFPARALLELMOVES][32];
 	int movsEval[NUMOFPARALLELMOVES];
-	int iMCnt, iCur;
+	int iMCnt, iCur, jCur;
 	int iMaxPosVal,iMaxPosInd,iMaxNegVal,iMaxNegInd;
 	int iMaxVal, iMaxInd;
 	char sMaxPosNBMoves[MOVES_BUFSIZE],sMaxNegNBMoves[MOVES_BUFSIZE];
 	char s2LN[MOVES_BUFSIZE];
 	long lDTime = 0;
 	char movsNBMoves[NUMOFPARALLELMOVES][MOVES_BUFSIZE];
-	struct moveprocessHlpr mpH;
+	struct moveprocessHlpr mpH[NUMOFTHREADS];
+	int xCur;
+#ifdef USE_THREAD
 	pthread_t ptIds[NUMOFTHREADS];
+	int iTRes[NUMOFTHREADS];
+	void *vpTRet[NUMOFTHREADS];
+	int iTResSingle;
+	pthread_attr_t attr;
+#endif
 
 	valPWStatic = cb_evalpw(cbC);
 #ifdef CORRECTVALFOR_SIDETOMOVE
@@ -651,53 +674,87 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	curDepth += 1;
 	iMaxPosVal = 0; iMaxNegVal = 0; iMaxPosInd = -1; iMaxNegInd = -1;
 	iMCnt = moves_get(cbC,movs,0);
-	for(iCur = 0; iCur < iMCnt; iCur++) {
-		//send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info currmove %s currmovenumber %d\n", movs[iCur], iCur);
-		strcpy(movsNBMoves[iCur],"");
-		mpH.cbC = cbC;
-		mpH.sMov = movs[iCur];
-		mpH.curDepth = curDepth;
-		mpH.maxDepth = maxDepth;
-		mpH.secs = secs;
-		mpH.movNum = movNum;
-		mpH.altMovNum = iCur;
-		mpH.sNextBestMoves = movsNBMoves[iCur];
 #ifdef USE_THREAD
-		if(curDepth == 1)
-		{
-		int iTRes;
-
-		iTRes=pthread_create(&ptIds[0],NULL,moveprocess_hlpr,&mpH);
-		if(iTRes != 0)
-			exit(-100);
-		iTRes=pthread_join(ptIds[0],&movsEval[iCur]);
-		if(iTRes != 0)
-			exit(-100);
-		} else {
-		movsEval[iCur] = (int)moveprocess_hlpr(&mpH);
-		}
-#else
-		movsEval[iCur] = (int)moveprocess_hlpr(&mpH);
+	iTResSingle = pthread_attr_init(&attr);
+	if(iTResSingle != 0)
+		handle_error_en(iTResSingle,"attr_init");
+	iTResSingle = pthread_attr_setstacksize(&attr,32000000);
+	if (iTResSingle != 0)
+		handle_error_en(iTResSingle,"attr_setstacksize");
 #endif
-		if(movsEval[iCur] == DO_ERROR)
-			continue;
-		if(iMaxPosInd == -1) {
-			iMaxPosInd = iCur;
-			iMaxPosVal = movsEval[iCur];
-			iMaxNegInd = iCur;
-			iMaxNegVal = movsEval[iCur];
-			strcpy(sMaxPosNBMoves,movsNBMoves[iCur]);
-			strcpy(sMaxNegNBMoves,movsNBMoves[iCur]);
+	for(jCur = 0; jCur < iMCnt; jCur+=NUMOFTHREADS) {
+		for(iCur = jCur; iCur < (jCur+NUMOFTHREADS); iCur++) {
+			if(iCur >= iMCnt) {
+				continue;
+			}
+			xCur=iCur-jCur;
+			//send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info currmove %s currmovenumber %d\n", movs[iCur], iCur);
+			strcpy(movsNBMoves[iCur],"");
+			mpH[xCur].cbC = cbC;
+			mpH[xCur].sMov = movs[iCur];
+			mpH[xCur].curDepth = curDepth;
+			mpH[xCur].maxDepth = maxDepth;
+			mpH[xCur].secs = secs;
+			mpH[xCur].movNum = movNum;
+			mpH[xCur].altMovNum = iCur;
+			mpH[xCur].sNextBestMoves = movsNBMoves[iCur];
+#ifdef USE_THREAD
+			if(curDepth <= THREAD_DEPTH)
+			{
+				iTRes[xCur]=pthread_create(&ptIds[xCur],&attr,moveprocess_hlpr,&mpH[xCur]);
+				if(iTRes[xCur] != 0) {
+					handle_error_en(iTRes[xCur],"pthread_create");
+				}
+#ifdef DEBUG_THREADPRINT
+				dbg_log(fLog,"INFO:jCur[%d]iCur[%d]xCur[%d]:Created thread[%ld]\n",jCur,iCur,xCur,ptIds[xCur]);
+#endif
+			} 
+			else
+#endif 
+			{
+				moveprocess_hlpr(&mpH[xCur]);
+				movsEval[iCur] = mpH[xCur].iRes;
+			}
 		}
-		if(movsEval[iCur] > iMaxPosVal) {
-			iMaxPosVal = movsEval[iCur];
-			iMaxPosInd = iCur;
-			strcpy(sMaxPosNBMoves,movsNBMoves[iCur]);
-		}
-		if(movsEval[iCur] < iMaxNegVal) {
-			iMaxNegVal = movsEval[iCur];
-			iMaxNegInd = iCur;
-			strcpy(sMaxNegNBMoves,movsNBMoves[iCur]);
+
+		for(iCur = jCur; iCur < (jCur+NUMOFTHREADS); iCur++) {
+			if(iCur >= iMCnt) {
+				continue;
+			}
+#ifdef USE_THREAD
+			if(curDepth <= THREAD_DEPTH)
+			{
+				xCur=iCur-jCur;
+#ifdef DEBUG_THREADPRINT
+				dbg_log(fLog,"INFO:jCur[%d]iCur[%d]xCur[%d]:Joining thread[%ld]\n",jCur,iCur,xCur,ptIds[xCur]);
+#endif
+				iTRes[xCur]=pthread_join(ptIds[xCur],&vpTRet[xCur]);
+				if(iTRes[xCur] != 0) {
+					handle_error_en(iTRes[xCur],"pthread_join");
+				}
+				movsEval[iCur] = mpH[xCur].iRes;
+			}
+#endif
+			if(movsEval[iCur] == DO_ERROR)
+				continue;
+			if(iMaxPosInd == -1) {
+				iMaxPosInd = iCur;
+				iMaxPosVal = movsEval[iCur];
+				iMaxNegInd = iCur;
+				iMaxNegVal = movsEval[iCur];
+				strcpy(sMaxPosNBMoves,movsNBMoves[iCur]);
+				strcpy(sMaxNegNBMoves,movsNBMoves[iCur]);
+			}
+			if(movsEval[iCur] > iMaxPosVal) {
+				iMaxPosVal = movsEval[iCur];
+				iMaxPosInd = iCur;
+				strcpy(sMaxPosNBMoves,movsNBMoves[iCur]);
+			}
+			if(movsEval[iCur] < iMaxNegVal) {
+				iMaxNegVal = movsEval[iCur];
+				iMaxNegInd = iCur;
+				strcpy(sMaxNegNBMoves,movsNBMoves[iCur]);
+			}
 		}
 	}
 

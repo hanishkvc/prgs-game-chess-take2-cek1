@@ -79,6 +79,8 @@ typedef unsigned long long u64;
 #define SM_FALSE 1
 #define SM_TRUE 0
 
+#define NUMOFTHREADS 2
+#define THREAD_DEPTH 2
 
 struct cb {
 	u64 wk,wq,wr,wb,wn,wp;
