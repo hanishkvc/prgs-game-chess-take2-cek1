@@ -18,6 +18,7 @@ cek1: cek1.c cek1.h moves.c evals.c generate_movebbs.c positioncmd.c positionhas
 	gcc -Wall -O2 -o cek1_fast cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS}
 	gcc -Wall -O2 -o cek1_fastmt cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} -DUSE_THREAD -lpthread
 	gcc -Wall -O2 -o cek1_fastmtbm cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} -DUSE_THREAD -lpthread -DUSE_BMPRUNING
+	gcc -Wall -g -o cek1_fastmtbmxg cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} -DUSE_THREAD -lpthread -DUSE_BMPRUNING
 	gcc -Wall -g -o cek1_fastmtxg cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} -DUSE_THREAD -lpthread
 	gcc -Wall -g  -o cek1_xg cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${DBG_OPTS}
 	gcc -Wall -O2 -o cek1_ht cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${HT_OPTS}
@@ -29,6 +30,7 @@ install-base: cek1
 	cp cek1_fast ~/local/bin/	|| /bin/true
 	cp cek1_fastmt ~/local/bin/	|| /bin/true
 	cp cek1_fastmtbm ~/local/bin/	|| /bin/true
+	cp cek1_fastmtbmxg ~/local/bin/	|| /bin/true
 	cp cek1_fastmtxg ~/local/bin/	|| /bin/true
 	cp cek1_ht ~/local/bin/		|| /bin/true
 	cp cek1_htxg ~/local/bin/	|| /bin/true
@@ -47,11 +49,12 @@ clean:
 	rm ./cek1_pw		|| /bin/true
 	rm ./cek1_pwxg		|| /bin/true
 	rm ./cek1		|| /bin/true
+	rm ./cek1_xg		|| /bin/true
 	rm ./cek1_fast		|| /bin/true
 	rm ./cek1_fastmt	|| /bin/true
-	rm ./cek1_fastmtbm	|| /bin/true
 	rm ./cek1_fastmtxg	|| /bin/true
-	rm ./cek1_xg		|| /bin/true
+	rm ./cek1_fastmtbm	|| /bin/true
+	rm ./cek1_fastmtbmxg	|| /bin/true
 	rm ./cek1_ht		|| /bin/true
 	rm ./cek1_htxg		|| /bin/true
 

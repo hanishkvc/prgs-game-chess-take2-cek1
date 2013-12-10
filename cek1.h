@@ -42,14 +42,14 @@ typedef unsigned long long u64;
 #define S32TEMPBUFSIZE 32
 #define UCICMDBUFSIZE S1KTEMPBUFSIZE
 
-#define VALUE_QUEEN 900
-#define VALUE_ROOK 500
-#define VALUE_BISHOP 300
-#define VALUE_KNIGHT 300
-#define VALUE_PAWN 100
-#define VALUE_KING ((VALUE_QUEEN+VALUE_ROOK+VALUE_BISHOP+VALUE_KNIGHT+VALUE_PAWN)/4)
+#define VQUEEN 900
+#define VROOK 500
+#define VBISHOP 300
+#define VKNIGHT 300
+#define VPAWN 100
+#define VKING ((VQUEEN+VROOK+VBISHOP+VKNIGHT+VPAWN)/4)
 
-#define VALUE_KING_ATTACKED (VALUE_KING*2)
+#define VKING_ATTACKED (VKING*2)
 
 // May be for side corresponding to OrigSideToMove logic should use a conservative strategy
 // i.e threat weightage is smaller than protection weightage (say 4 and 8)
@@ -65,7 +65,7 @@ typedef unsigned long long u64;
 #define EVALSTANDP_DIV 100
 #define EVALSKINGUNDERATTACK_DIV 100
 // OverAchiever Value Multiplier
-#define OAVMULT 2
+#define OAVMULT(V) ((V*5)/4)
 // UnderAchiever Value Multiplier
 #define UAVMULT(V) ((V*6)/8)
 
