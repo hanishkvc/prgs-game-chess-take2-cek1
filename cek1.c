@@ -612,7 +612,6 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	int val;
 	char sBuf[S1KTEMPBUFSIZE];
 	char movs[NUMOFPARALLELMOVES][32];
-	char movsInitial[NUMOFPARALLELMOVES][32];
 	int movsEval[NUMOFPARALLELMOVES];
 	int iMCnt, iCur, jCur;
 	int iMaxPosVal,iMaxPosInd,iMaxNegVal,iMaxNegInd;
@@ -623,11 +622,14 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	char movsNBMoves[NUMOFPARALLELMOVES][MOVES_BUFSIZE];
 	struct moveprocessHlpr mpH[NUMOFTHREADS];
 	int xCur;
+#ifdef USE_BMPRUNING
+	char movsInitial[NUMOFPARALLELMOVES][32];
 	int tInd;
 	int movsInd[NUMOFPARALLELMOVES];
 	int iSkip;
 	int iTMCnt;
 	char *possibleBlundMove = NULL;
+#endif
 #ifdef USE_THREAD
 	pthread_t ptIds[NUMOFTHREADS];
 	int iTRes[NUMOFTHREADS];
@@ -684,6 +686,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 
 	curDepth += 1;
 	iMaxPosVal = 0; iMaxNegVal = 0; iMaxPosInd = -1; iMaxNegInd = -1;
+#ifdef USE_BMPRUNING
 	iMCnt = moves_get(cbC,movsInitial,0);
 
 	for(iCur = 0; iCur < iMCnt; iCur+=1) {
@@ -725,6 +728,9 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	}
 	iMCnt = iMCnt - iSkip;
 	//fprintf(stderr,"INFO:TEMP:Check here\n");
+#else
+	iMCnt = moves_get(cbC,movs,0);
+#endif
 
 #ifdef USE_THREAD
 	iTResSingle = pthread_attr_init(&attr);
@@ -734,6 +740,8 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	if (iTResSingle != 0)
 		handle_error_en(iTResSingle,"attr_setstacksize");
 #endif
+
+#ifdef USE_BMPRUNING
 	iTMCnt = iMCnt;
 	if(curDepth > 2) {
 		if(curDepth < 6)
@@ -747,6 +755,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	}
 	if(iMCnt > iTMCnt)
 		iMCnt = iTMCnt;
+#endif
 	for(jCur = 0; jCur < iMCnt; jCur+=NUMOFTHREADS) {
 		for(iCur = jCur; iCur < (jCur+NUMOFTHREADS); iCur++) {
 			if(iCur >= iMCnt) {
@@ -996,7 +1005,10 @@ int process_uci()
 	strcpy(sPNBuf,"NORM");
 #endif
 #ifdef USE_THREAD
-	strcat(sPNBuf,"THR");
+	strcat(sPNBuf,"MT");
+#endif
+#ifdef USE_BMPRUNING
+	strcat(sPNBuf,"BM");
 #endif
 
 	if(strncmp(sCmd,"uci",3) == 0) {

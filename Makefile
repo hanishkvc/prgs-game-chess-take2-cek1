@@ -16,8 +16,9 @@ cek1: cek1.c cek1.h moves.c evals.c generate_movebbs.c positioncmd.c positionhas
 	gcc -Wall -g  -o cek1_pwxg cek1.c -D_GNU_SOURCE ${DBG_OPTS}
 	gcc -Wall -O2 -o cek1 cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${NORM_ADDOPTS}
 	gcc -Wall -O2 -o cek1_fast cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS}
-	gcc -Wall -O2 -o cek1_fastt cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} -DUSE_THREAD -lpthread
-	gcc -Wall -g -o cek1_fasttxg cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} -DUSE_THREAD -lpthread
+	gcc -Wall -O2 -o cek1_fastmt cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} -DUSE_THREAD -lpthread
+	gcc -Wall -O2 -o cek1_fastmtbm cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} -DUSE_THREAD -lpthread -DUSE_BMPRUNING
+	gcc -Wall -g -o cek1_fastmtxg cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} -DUSE_THREAD -lpthread
 	gcc -Wall -g  -o cek1_xg cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${DBG_OPTS}
 	gcc -Wall -O2 -o cek1_ht cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${HT_OPTS}
 	gcc -Wall -g  -pg -o cek1_htxg cek1.c -D_GNU_SOURCE -DCORRECTVALFOR_SIDETOMOVE ${HT_OPTS} ${DBG_OPTS}
@@ -26,8 +27,9 @@ cek1: cek1.c cek1.h moves.c evals.c generate_movebbs.c positioncmd.c positionhas
 install-base: cek1
 	cp cek1 ~/local/bin/		|| /bin/true
 	cp cek1_fast ~/local/bin/	|| /bin/true
-	cp cek1_fastt ~/local/bin/	|| /bin/true
-	cp cek1_fasttxg ~/local/bin/	|| /bin/true
+	cp cek1_fastmt ~/local/bin/	|| /bin/true
+	cp cek1_fastmtbm ~/local/bin/	|| /bin/true
+	cp cek1_fastmtxg ~/local/bin/	|| /bin/true
 	cp cek1_ht ~/local/bin/		|| /bin/true
 	cp cek1_htxg ~/local/bin/	|| /bin/true
 	touch ~/cek1.log		|| /bin/true
@@ -46,8 +48,9 @@ clean:
 	rm ./cek1_pwxg		|| /bin/true
 	rm ./cek1		|| /bin/true
 	rm ./cek1_fast		|| /bin/true
-	rm ./cek1_fastt		|| /bin/true
-	rm ./cek1_fasttxg	|| /bin/true
+	rm ./cek1_fastmt	|| /bin/true
+	rm ./cek1_fastmtbm	|| /bin/true
+	rm ./cek1_fastmtxg	|| /bin/true
 	rm ./cek1_xg		|| /bin/true
 	rm ./cek1_ht		|| /bin/true
 	rm ./cek1_htxg		|| /bin/true
@@ -62,14 +65,14 @@ clean-all: clean clean-log
 
 test5:
 	~/local/bin/cek1nonthread_fast < TestCases/AutoTest1/test_5.cmd > /tmp/tnon5.log || /bin/true
-	~/local/bin/cek1_fastt < TestCases/AutoTest1/test_5.cmd > /tmp/tthr5.log || /bin/true
+	~/local/bin/cek1_fastmt < TestCases/AutoTest1/test_5.cmd > /tmp/tthr5.log || /bin/true
 	sed -e 's/depth 4.*pv/depth xxx pv/' /tmp/tnon5.log > /tmp/tnon5.simp.log
 	sed -e 's/depth 4.*pv/depth xxx pv/' /tmp/tthr5.log > /tmp/tthr5.simp.log
 	diff -ub /tmp/tnon5.simp.log /tmp/tthr5.simp.log | less
 
 test6:
 	~/local/bin/cek1nonthread_fast < TestCases/AutoTest1/test_6.cmd > /tmp/tnon6.log || /bin/true
-	~/local/bin/cek1_fastt < TestCases/AutoTest1/test_6.cmd > /tmp/tthr6.log || /bin/true
+	~/local/bin/cek1_fastmt < TestCases/AutoTest1/test_6.cmd > /tmp/tthr6.log || /bin/true
 	sed -e 's/depth 5.*pv/depth xxx pv/' /tmp/tnon6.log > /tmp/tnon6.simp.log
 	sed -e 's/depth 5.*pv/depth xxx pv/' /tmp/tthr6.log > /tmp/tthr6.simp.log
 	diff -ub /tmp/tnon6.simp.log /tmp/tthr6.simp.log | less
