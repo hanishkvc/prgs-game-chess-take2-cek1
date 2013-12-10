@@ -501,7 +501,7 @@ void cb_cmov2smov(char *cMov, char *sMov)
 
 #include "positionhash.c"
 
-int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int secs, int movNum, int altMovNum,char *sNextBestMoves)
+int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int secs, int movNum, int altMovNum,char *sNextBestMoves, int hint)
 {
 	struct cb cbN;
 	int iRes;
@@ -569,7 +569,7 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 		return iVal;
 	}
 #endif
-	iRes = cb_findbest(&cbN,curDepth,maxDepth,secs,movNum,sNBMoves);
+	iRes = cb_findbest(&cbN,curDepth,maxDepth,secs,movNum,sNBMoves,hint);
 	strcat(sNextBestMoves,sNBMoves); // FIXME: CAN BE REMOVED, CROSSVERIFY i.e sNBMoves can be replaced with sNextBestMoves in findbest
 	return iRes;
 }
@@ -594,6 +594,7 @@ struct moveprocessHlpr {
 	int movNum;
 	int altMovNum;
 	char *sNextBestMoves;
+	int hint;
 	int iRes;
 };
 
@@ -601,16 +602,17 @@ void *moveprocess_hlpr(void *arg)
 {
 	struct moveprocessHlpr *mpH;
 	mpH = arg;
-	mpH->iRes = move_process(mpH->cbC,mpH->sMov,mpH->curDepth,mpH->maxDepth,mpH->secs,mpH->movNum,mpH->altMovNum,mpH->sNextBestMoves);
+	mpH->iRes = move_process(mpH->cbC,mpH->sMov,mpH->curDepth,mpH->maxDepth,mpH->secs,mpH->movNum,mpH->altMovNum,mpH->sNextBestMoves, mpH->hint);
 	return (void*)0;
 }
 
-int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves)
+int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves, int hint)
 {
 	int valPWStatic;
 	int val;
 	char sBuf[S1KTEMPBUFSIZE];
 	char movs[NUMOFPARALLELMOVES][32];
+	char movsInitial[NUMOFPARALLELMOVES][32];
 	int movsEval[NUMOFPARALLELMOVES];
 	int iMCnt, iCur, jCur;
 	int iMaxPosVal,iMaxPosInd,iMaxNegVal,iMaxNegInd;
@@ -621,6 +623,10 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	char movsNBMoves[NUMOFPARALLELMOVES][MOVES_BUFSIZE];
 	struct moveprocessHlpr mpH[NUMOFTHREADS];
 	int xCur;
+	int tInd;
+	int movsInd[NUMOFPARALLELMOVES];
+	int iSkip;
+	int iTMCnt;
 #ifdef USE_THREAD
 	pthread_t ptIds[NUMOFTHREADS];
 	int iTRes[NUMOFTHREADS];
@@ -671,9 +677,48 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		return DO_ERROR;
 	}
 
+	if(hint == FBHINT_STATICEVALONLY) {
+		return valPWStatic;
+	}
+
 	curDepth += 1;
 	iMaxPosVal = 0; iMaxNegVal = 0; iMaxPosInd = -1; iMaxNegInd = -1;
-	iMCnt = moves_get(cbC,movs,0);
+	iMCnt = moves_get(cbC,movsInitial,0);
+
+	for(iCur = 0; iCur < iMCnt; iCur+=1) {
+		char sTMov[32];
+		movsInd[iCur] = iCur;
+		memcpy(sTMov,movsInitial[iCur],10);
+		movsEval[iCur] = move_process(cbC,sTMov,curDepth,maxDepth,secs,movNum,iCur,movsNBMoves[iCur], FBHINT_STATICEVALONLY);
+	}
+	for(jCur = 0; jCur < iMCnt-1; jCur++) {
+		for(iCur = 0; iCur < (iMCnt-1-jCur); iCur+=1) {
+			if(movsEval[movsInd[iCur]] > movsEval[movsInd[iCur+1]]) {
+				continue;
+			} else {
+				tInd = movsInd[iCur];
+				movsInd[iCur] = movsInd[iCur+1];
+				movsInd[iCur+1] = tInd;
+			}
+		}
+	}
+	iSkip = 0;
+	if(cbC->sideToMove == STM_WHITE) {
+		for(jCur = 0; jCur < iMCnt; jCur++) {
+			if(movsEval[movsInd[jCur]] == DO_ERROR) {
+				iSkip++;
+				continue;
+			}
+			memcpy(movs[jCur-iSkip],movsInitial[movsInd[jCur]],10);
+		}
+	} else {
+		for(jCur = iMCnt-1; jCur >= 0; jCur--) {
+			memcpy(movs[iMCnt-1-jCur],movsInitial[movsInd[jCur]],10);
+		}
+	}
+	iMCnt = iMCnt - iSkip;
+	//fprintf(stderr,"INFO:TEMP:Check here\n");
+
 #ifdef USE_THREAD
 	iTResSingle = pthread_attr_init(&attr);
 	if(iTResSingle != 0)
@@ -682,6 +727,15 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	if (iTResSingle != 0)
 		handle_error_en(iTResSingle,"attr_setstacksize");
 #endif
+	iTMCnt = iMCnt;
+	if(curDepth > 2) {
+		if(curDepth < 8)
+			iTMCnt = 4;
+		else
+			iTMCnt = 2;
+	}
+	if(iMCnt > iTMCnt)
+		iMCnt = iTMCnt;
 	for(jCur = 0; jCur < iMCnt; jCur+=NUMOFTHREADS) {
 		for(iCur = jCur; iCur < (jCur+NUMOFTHREADS); iCur++) {
 			if(iCur >= iMCnt) {
@@ -698,6 +752,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			mpH[xCur].movNum = movNum;
 			mpH[xCur].altMovNum = iCur;
 			mpH[xCur].sNextBestMoves = movsNBMoves[iCur];
+			mpH[xCur].hint = FBHINT_NORMAL;
 #ifdef USE_THREAD
 			if(curDepth <= THREAD_DEPTH)
 			{
@@ -899,7 +954,7 @@ int process_go(char *sCmd)
 	}
 	bzero(sNextBestMoves,MOVES_BUFSIZE);
 	gMovesCnt = 0;
-	cb_findbest(&gb,0,gGameDepth,0,gStartMoveNum,sNextBestMoves);
+	cb_findbest(&gb,0,gGameDepth,0,gStartMoveNum,sNextBestMoves, FBHINT_NORMAL);
 #ifdef USE_HASHTABLE
 	free(gHashTable);
 #endif

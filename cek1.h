@@ -82,6 +82,9 @@ typedef unsigned long long u64;
 #define NUMOFTHREADS 2
 #define THREAD_DEPTH 2
 
+#define FBHINT_NORMAL 0
+#define FBHINT_STATICEVALONLY 1
+
 struct cb {
 	u64 wk,wq,wr,wb,wn,wp;
 	u64 bk,bq,br,bb,bn,bp;
@@ -92,7 +95,7 @@ struct cb {
 	int bkCanKsC, bkCanQsC;
 };
 
-int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves);
+int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves, int hint);
 
 #endif
 
