@@ -627,6 +627,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	int movsInd[NUMOFPARALLELMOVES];
 	int iSkip;
 	int iTMCnt;
+	char *possibleBlundMove = NULL;
 #ifdef USE_THREAD
 	pthread_t ptIds[NUMOFTHREADS];
 	int iTRes[NUMOFTHREADS];
@@ -703,6 +704,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		}
 	}
 	iSkip = 0;
+	possibleBlundMove = NULL;
 	if(cbC->sideToMove == STM_WHITE) {
 		for(jCur = 0; jCur < iMCnt; jCur++) {
 			if(movsEval[movsInd[jCur]] == DO_ERROR) {
@@ -711,9 +713,14 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			}
 			memcpy(movs[jCur-iSkip],movsInitial[movsInd[jCur]],10);
 		}
+		if(iMCnt > 1)
+			possibleBlundMove = movsInitial[movsInd[iMCnt-1]];
 	} else {
 		for(jCur = iMCnt-1; jCur >= 0; jCur--) {
 			memcpy(movs[iMCnt-1-jCur],movsInitial[movsInd[jCur]],10);
+			if((movsEval[movsInd[jCur]] == DO_ERROR) && (jCur != (iMCnt-1)) && (possibleBlundMove == NULL)) {
+				possibleBlundMove = movsInitial[movsInd[jCur+1]];
+			}
 		}
 	}
 	iMCnt = iMCnt - iSkip;
@@ -729,8 +736,12 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 #endif
 	iTMCnt = iMCnt;
 	if(curDepth > 2) {
-		if(curDepth < 8)
+		if(curDepth < 6)
+			iTMCnt = 6;
+		else if(curDepth < 8)
 			iTMCnt = 4;
+		else if(curDepth < 10)
+			iTMCnt = 3;
 		else
 			iTMCnt = 2;
 	}

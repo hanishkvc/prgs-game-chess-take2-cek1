@@ -51,8 +51,12 @@ typedef unsigned long long u64;
 
 #define VALUE_KING_ATTACKED (VALUE_KING*2)
 
-#define WEIGHTAGE_THREAT 8
-#define WEIGHTAGE_PROTECTION 4
+// May be for side corresponding to OrigSideToMove logic should use a conservative strategy
+// i.e threat weightage is smaller than protection weightage (say 4 and 8)
+// AND for the opponent/other side the logic should use a balanced/even or aggressive strategy
+// (say 8 and 8 or 8 and 4)
+#define WEIGHTAGE_THREAT 6
+#define WEIGHTAGE_PROTECTION 8
 #define WEIGHTAGE_SCALE 8
 #define WT_DIRECT 2
 #define WT_INDIRECT 1

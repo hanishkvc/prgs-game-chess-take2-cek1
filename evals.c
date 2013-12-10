@@ -361,6 +361,12 @@ int cb_evalpw_king_underattack(struct cb *cbC)
 	return ((valW-valB)/EVALSKINGUNDERATTACK_DIV);
 }
 
+
+// TODO: MAYBE
+// A Pawn towards center or opposite end is more valuable than pawn at start pos
+// A Knight towards side is less valuable than knight towards the center.
+// All pieces in their start pos may be less valuable than towards center in beginning
+// and mid game.
 int cb_evalpw_mat(struct cb *cbC)
 {
 	int valPW = 0;
