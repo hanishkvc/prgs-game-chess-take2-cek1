@@ -1026,7 +1026,7 @@ int process_uci()
 	if(strncmp(sCmd,"position",8) == 0) {
 		dbgs_log(fLogM,"%d:GOT:%s\n",myPID,sCmd);
 		if(process_position(&gb,sCmd) != 0)
-			send_resp("info string error parsing fen");
+			send_resp("info string error parsing position");
 	}
 	if(strncmp(sCmd,"setoption",9) == 0) {
 		process_setoption(sCmd);

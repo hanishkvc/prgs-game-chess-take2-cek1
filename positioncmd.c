@@ -1,3 +1,58 @@
+void process_fen_castle(struct cb *cbC, char *fenCastle)
+{
+	char cCur;
+
+	cbC->wkCanKsC =  SM_FALSE;
+	cbC->wkCanQsC =  SM_FALSE;
+	cbC->bkCanKsC =  SM_FALSE;
+	cbC->bkCanQsC =  SM_FALSE;
+	while((cCur=*fenCastle) != '\0') {
+		if(cCur == 'K') {
+			cbC->wkCanKsC = SM_TRUE;
+		} else if(cCur == 'Q') {
+			cbC->wkCanQsC = SM_TRUE;
+		} else if(cCur == 'k') {
+			cbC->bkCanKsC = SM_TRUE;
+		} else if(cCur == 'q') {
+			cbC->bkCanQsC = SM_TRUE;
+		}
+		fenCastle++;
+	}
+}
+
+
+int process_position_moves(struct cb *cbC)
+{
+	char *movStr;
+	int iCnt = 0;
+
+	send_resp("info string position moves");
+	iCnt = (gStartMoveNum-1)*2;
+	if(cbC->sideToMove == STM_BLACK)
+		iCnt += 1;
+
+	while((movStr=strtok(NULL," ")) != NULL) {
+		if((iCnt%2) == 0) {
+			gStartMoveNum = (iCnt/2)+1;
+			cbC->sideToMove=STM_WHITE;
+		} else {
+			cbC->sideToMove=STM_BLACK;
+		}
+		if(mvhlpr_domoveh_oncb(cbC,movStr) != 0) {
+			dbg_log(fLog,"FIXME:process_position_startpos:something wrong with the move\n");
+			exit(-1);
+		}
+		if(cbC->sideToMove == STM_WHITE)
+			cbC->sideToMove = STM_BLACK;
+		else
+			cbC->sideToMove = STM_WHITE;
+		cb_print(cbC);
+		iCnt++;
+	}
+
+	cbC->origSideToMove = cbC->sideToMove;
+	return 0;
+}
 
 int process_position_fen(struct cb *cbC, char *sCmd)
 {
@@ -6,6 +61,10 @@ int process_position_fen(struct cb *cbC, char *sCmd)
 	int r,f;
 	char *fenMisc;
 	char *fenMoveNum;
+	char *fenCastle;
+	char *fenDash;
+	char *movStr;
+	int iRet;
 
 	if(strncmp(strtok(sCmd," "),"position",8) != 0)
 		return -1;
@@ -16,12 +75,15 @@ int process_position_fen(struct cb *cbC, char *sCmd)
 		return -3;
 	if((fenSTM = strtok(NULL," ")) == NULL)
 		return -4;
-	if((fenMisc = strtok(NULL,"-")) == NULL)
+	if((fenCastle = strtok(NULL," ")) == NULL)
 		return -5;
-	if((fenMisc = strtok(NULL," ")) == NULL)
+	process_fen_castle(cbC,fenCastle);
+	if((fenDash = strtok(NULL," ")) == NULL)
 		return -6;
-	if((fenMoveNum = strtok(NULL," ")) == NULL)
+	if((fenMisc = strtok(NULL," ")) == NULL)
 		return -7;
+	if((fenMoveNum = strtok(NULL," ")) == NULL)
+		return -8;
 
 	gStartMoveNum = strtol(fenMoveNum,NULL,10);
 
@@ -124,6 +186,13 @@ int process_position_fen(struct cb *cbC, char *sCmd)
 		fenStr++;
 	}
 	cb_print(cbC);
+
+	if((movStr = strtok(NULL," ")) == NULL)
+		return 0;
+	if((iRet=strncmp(movStr,"moves",5)) != 0)
+		return -9;
+	process_position_moves(cbC);
+	cb_print(cbC);
 	return 0;
 }
 
@@ -131,7 +200,6 @@ int process_position_startpos(struct cb *cbC, char *sCmd)
 {
 	char *movStr;
 	int f;
-	int iCnt = 0;
 
 	if(strncmp(strtok(sCmd," "),"position",8) != 0)
 		return -1;
@@ -165,32 +233,13 @@ int process_position_startpos(struct cb *cbC, char *sCmd)
 	cb_print(cbC);
 
 	if((movStr = strtok(NULL," ")) == NULL)
-		return -3;
+		return 0;
 	if(strncmp(movStr,"moves",5) != 0)
-		return -4;
+		return -3;
 
 	gStartMoveNum = 1;
 
-	while((movStr=strtok(NULL," ")) != NULL) {
-		if((iCnt%2) == 0) {
-			gStartMoveNum = (iCnt/2)+1;
-			cbC->sideToMove=STM_WHITE;
-		} else {
-			cbC->sideToMove=STM_BLACK;
-		}
-		if(mvhlpr_domoveh_oncb(cbC,movStr) != 0) {
-			dbg_log(fLog,"FIXME:process_position_startpos:something wrong with the move\n");
-			exit(-1);
-		}
-		if(cbC->sideToMove == STM_WHITE)
-			cbC->sideToMove = STM_BLACK;
-		else
-			cbC->sideToMove = STM_WHITE;
-		cb_print(cbC);
-		iCnt++;
-	}
-
-	cbC->origSideToMove = cbC->sideToMove;
+	process_position_moves(cbC);
 	cb_print(cbC);
 	return 0;
 }
