@@ -47,7 +47,7 @@ typedef unsigned long long u64;
 #define VBISHOP 300
 #define VKNIGHT 300
 #define VPAWN 100
-#define VKING ((VQUEEN+VROOK+VBISHOP+VKNIGHT+VPAWN)/4)
+#define VKING ((VQUEEN+VROOK+VBISHOP+VKNIGHT+VPAWN)*10)
 
 #define VKING_ATTACKED (VKING*2)
 
@@ -100,6 +100,7 @@ struct cb {
 	char sMoves[MOVES_BUFSIZE];
 	int wkCanKsC, wkCanQsC;
 	int bkCanKsC, bkCanQsC;
+	int bk_killed, wk_killed;
 };
 
 int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves, int hint);

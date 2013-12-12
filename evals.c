@@ -372,18 +372,27 @@ int cb_evalpw_mat(struct cb *cbC)
 	int valPW = 0;
 	int valB = 0;
 	int valW = 0;
+	int valTemp = 0;
 
 	valB += __builtin_popcountll(cbC->bp)*VPAWN;
 	valB += __builtin_popcountll(cbC->br)*VROOK;
 	valB += __builtin_popcountll(cbC->bn)*VKNIGHT;
 	valB += __builtin_popcountll(cbC->bb)*VBISHOP;
 	valB += __builtin_popcountll(cbC->bq)*VQUEEN;
+	valTemp = __builtin_popcountll(cbC->bk)*VKING;
+	valB += valTemp;
+	if(valTemp == 0)
+		cbC->bk_killed = 1;
 
 	valW += __builtin_popcountll(cbC->wp)*VPAWN;
 	valW += __builtin_popcountll(cbC->wr)*VROOK;
 	valW += __builtin_popcountll(cbC->wn)*VKNIGHT;
 	valW += __builtin_popcountll(cbC->wb)*VBISHOP;
 	valW += __builtin_popcountll(cbC->wq)*VQUEEN;
+	valTemp = __builtin_popcountll(cbC->wk)*VKING;
+	valW += valTemp;
+	if(valTemp == 0)
+		cbC->wk_killed = 1;
 
 	valPW = (valW-valB)/EVALSMAT_DIV;
 #ifdef DEBUG_EVALPRINT
@@ -812,8 +821,8 @@ int cb_evalpw(struct cb *cbC)
 	int valKingAttacked = 0;
 
 	valMat = cb_evalpw_mat(cbC);
-	valTandP = cb_evalpw_threatsANDprotection(cbC);
-	valKingAttacked = cb_evalpw_king_underattack(cbC);
+	//valTandP = cb_evalpw_threatsANDprotection(cbC);
+	//valKingAttacked = cb_evalpw_king_underattack(cbC);
 	// eval_misc
 
 	valPW = valMat + valTandP + valKingAttacked;

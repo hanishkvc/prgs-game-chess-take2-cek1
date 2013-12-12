@@ -648,6 +648,9 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 #endif
 
 	lDTime = diff_clocktime(&gtsStart);
+	if((cbC->wk_killed != 0) || (cbC->bk_killed != 0)) {
+		return valPWStatic;
+	}
 	//*depthReached = curDepth;
 	//The check for king underattack has to be thought thro and updated if required.
 	if((curDepth == maxDepth) || (cbC->wk_underattack > 1) || (cbC->bk_underattack > 1)) {
@@ -897,7 +900,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		iMaxVal = iMaxVal+1;
 	}
 
-	iMaxVal += valPWStatic;
+	//iMaxVal += valPWStatic;
 
 #ifdef CORRECTVALFOR_SIDETOMOVE 
 	// DONE:TOTHINK:TOCHECK: Orig sideToMove or current sideToMove, assuming UCI expects current
