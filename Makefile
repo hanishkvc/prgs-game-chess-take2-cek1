@@ -27,6 +27,7 @@ cek1: cek1.c cek1.h moves.c evals.c generate_movebbs.c positioncmd.c positionhas
 
 install-base: cek1
 	cp cek1 ~/local/bin/		|| /bin/true
+	cp cek1_xg ~/local/bin/		|| /bin/true
 	cp cek1_fast ~/local/bin/	|| /bin/true
 	cp cek1_fastmt ~/local/bin/	|| /bin/true
 	cp cek1_fastmtbm ~/local/bin/	|| /bin/true

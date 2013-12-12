@@ -326,3 +326,14 @@ NOTE: A nice set of defines to help debug move selection logic
 NORM_ADDOPTS = -DDEBUG_UNWINDSUMMARYPRINT -DDEBUG_UNWIND_SELECTION -DDEBUG_EVALSUMMARYPRINT
 This reduces the speed by atleast ~100KN/sec, but worth it
 for debugging issues with move selection logic.
+
+*********************** 20131211
+
+* As there is different weightage related to direct threat and indirect threat.
+  THere should be different weightage related to whether a protection is required
+  or not (depending on the piece being protected needs that protection or not).
+  The current direct and indirect protection logic should have a lower weightage
+  than this context based protection required or not based calculation. TOTHINK
+
+* Also wrt InDirect weightage, the farther/more pieces inbetween - less should be
+  the points/weightage given.

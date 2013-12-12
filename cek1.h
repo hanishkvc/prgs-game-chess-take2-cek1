@@ -55,14 +55,17 @@ typedef unsigned long long u64;
 // i.e threat weightage is smaller than protection weightage (say 4 and 8)
 // AND for the opponent/other side the logic should use a balanced/even or aggressive strategy
 // (say 8 and 8 or 8 and 4)
-#define WEIGHTAGE_THREAT 6
-#define WEIGHTAGE_PROTECTION 8
+#define WEIGHTAGE_THREAT 8
+#define WEIGHTAGE_PROTECTION 6
 #define WEIGHTAGE_SCALE 8
-#define WT_DIRECT 2
+#define WT_DIRECT 1
 #define WT_INDIRECT 1
 
+#define DIRMULT(V) (V*1)
+#define INDMULT(V) ((V*1)/6)
+
 #define EVALSMAT_DIV 1
-#define EVALSTANDP_DIV 100
+#define EVALSTANDP_DIV 1
 #define EVALSKINGUNDERATTACK_DIV 100
 // OverAchiever Value Multiplier
 #define OAVMULT(V) ((V*5)/4)

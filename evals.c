@@ -431,10 +431,10 @@ int cb_eval_tANDp_fromknights(struct cb *cbC, char activeSide)
 	if(activeSide == STM_WHITE) {
 		cSBB = cbC->wn;
 		weightage1 = WEIGHTAGE_THREAT; // threats_given
-		weightage2 = WEIGHTAGE_PROTECTION; // protection_provided
+		weightage2 = WEIGHTAGE_PROTECTION/2; // protection_provided
 	} else {
 		cSBB = cbC->bn;
-		weightage1 = WEIGHTAGE_PROTECTION; // protection_provided
+		weightage1 = WEIGHTAGE_PROTECTION/2; // protection_provided
 		weightage2 = WEIGHTAGE_THREAT; // threats_given
 	}
 	while((sPos = ffsll(cSBB)) != 0) {
@@ -480,9 +480,9 @@ int eval_lineattack(struct cb *cbC, int sPos, u64 dBB, int pieceValue, int wDire
 	while((dPos = ffsll(dBB)) != 0) {
 		dPos -= 1;
 		if(evalhlpr_lineattack(cbC,sPos,dPos,-1) == ATTACK_YES) {
-			iVal += pieceValue*wDirect;
+			iVal += DIRMULT(pieceValue*wDirect);
 		} else {
-			iVal += pieceValue*wIndirect;
+			iVal += INDMULT(pieceValue*wIndirect);
 		}
 		dBB &= ~(1ULL << dPos);			
 	}
@@ -497,9 +497,9 @@ int eval_diagattack(struct cb *cbC, int sPos, u64 dBB, int pieceValue, int wDire
 	while((dPos = ffsll(dBB)) != 0) {
 		dPos -= 1;
 		if(evalhlpr_diagattack(cbC,sPos,dPos,-1) == ATTACK_YES) {
-			iVal += pieceValue*wDirect;
+			iVal += DIRMULT(pieceValue*wDirect);
 		} else {
-			iVal += pieceValue*wIndirect;
+			iVal += INDMULT(pieceValue*wIndirect);
 		}
 		dBB &= ~(1ULL << dPos);			
 	}
