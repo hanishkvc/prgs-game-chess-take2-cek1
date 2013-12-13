@@ -43,7 +43,7 @@ pid_t myPID = 0;
 
 struct cb gb;
 struct timespec gtsStart, gtsDiff;
-int gMovesCnt = 0;
+u64 gMovesCnt = 0;
 int gStartMoveNum = 0;
 int gUCIOption = 0;
 int gGameDepth = 3;
@@ -665,7 +665,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		else
 			strcpy(sTemp,"");
 #ifdef DEBUG_LEAFPRINT
-		dbg_log(fLog,"INFO:info score cp %d depth %d nodes %d time %ld pv %s %s\n",
+		dbg_log(fLog,"INFO:info score cp %d depth %d nodes %lld time %ld pv %s %s\n",
 				val,curDepth,gMovesCnt,lDTime,cb_2longnot(cbC->sMoves,s2LN),sTemp);
 #endif
 		if((cbC->wk_underattack > 1) || (cbC->bk_underattack > 1))
@@ -682,7 +682,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	if( ((cbC->sideToMove == STM_BLACK) && (cbC->wk_underattack)) ||
 			((cbC->sideToMove == STM_WHITE) && (cbC->bk_underattack)) ) {
 #ifdef DEBUG_LEAFPRINT
-		dbg_log(fLog,"info score cp %d depth %d nodes %d time %ld pv %s string EntersCheckINVALIDMOVE\n",
+		dbg_log(fLog,"info score cp %d depth %d nodes %lld time %ld pv %s string EntersCheckINVALIDMOVE\n",
 				val,curDepth,gMovesCnt,lDTime,cb_2longnot(cbC->sMoves,s2LN));
 #endif
 		return DO_ERROR;
@@ -942,11 +942,11 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	{
 		if(iMaxInd == -1) {
 			if(curDepth <= 2) {
-			send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %ld pv %s string %s - %s\n",
+			send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %lld time %ld pv %s string %s - %s\n",
 				val,maxDepth-curDepth+1,gMovesCnt,lDTime,cb_2longnot(cbC->sMoves,s2LN),sNextBestMoves,"NO VALID MOVE");
 			} else {
 #ifdef DEBUG_UNWINDSUMMARYPRINT
-			dbg_log(fLog,"INFO:info score cp %d depth %d nodes %d time %ld pv %s string %s - %s\n",
+			dbg_log(fLog,"INFO:info score cp %d depth %d nodes %lld time %ld pv %s string %s - %s\n",
 				val,maxDepth-curDepth+1,gMovesCnt,lDTime,cb_2longnot(cbC->sMoves,s2LN),sNextBestMoves,"NO VALID MOVE");
 #endif
 			}
@@ -962,16 +962,16 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 						gHashTable->HashClashCnt,gHashTable->HashHitCnt,gHashTable->ValMismatchCnt,gHashTable->ValMatchCnt,
 						gHashTable->BetterEvaldCnt,gHashTable->CanBetterEvalCnt,gHashTable->WCnt+gHashTable->BCnt);
 #endif
-				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %ld multipv 1 pv %s\n",
+				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %lld time %ld multipv 1 pv %s\n",
 					val,maxDepth-curDepth+1,gMovesCnt,lDTime,sNextBestMoves); //FIXED: Changed to maxDepth, using generic formula
 				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"bestmove %s\n",cb_2longnot(movs[iMaxInd],s2LN));
 			} else if(curDepth == 2){
-				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %d time %ld pv %s %s\n",
+				send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info score cp %d depth %d nodes %lld time %ld pv %s %s\n",
 					val,maxDepth-curDepth+1,gMovesCnt,lDTime,cb_2longnot(cbC->sMoves,s2LN),sNextBestMoves);
 			} else { 
 				//FIXED: Changed to Amount of depth unwinded
 #ifdef DEBUG_UNWINDSUMMARYPRINT
-				dbg_log(fLog,"INFO:info score cp %d depth %d nodes %d time %ld pv %s %s\n",
+				dbg_log(fLog,"INFO:info score cp %d depth %d nodes %lld time %ld pv %s %s\n",
 					val,maxDepth-curDepth+1,gMovesCnt,lDTime,cb_2longnot(cbC->sMoves,s2LN),sNextBestMoves);
 #endif
 			}

@@ -375,7 +375,7 @@ int moves_get(struct cb *cbC, char movs[512][32], int iCur)
 	iDiff = (iNew-iCur);
 	gMovesCnt += iDiff;
 #ifdef DEBUG_MOVESGETCNTPRINT
-	dbg_log(fLog,"INFO:moves_get: NewMoves[%d], AllTotalMovesTillNow[%d]\n",iDiff,gMovesCnt);
+	dbg_log(fLog,"INFO:moves_get: NewMoves[%d], AllTotalMovesTillNow[%lld]\n",iDiff,gMovesCnt);
 #endif
 	return iNew;
 }
