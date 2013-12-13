@@ -30,6 +30,17 @@ int moves_forpawnattacks(struct cb *cbC, char movs[512][32], int iCur)
 			movs[iCur][2] = 'x';
 			movs[iCur][3] = posD;
 			movs[iCur][4] = 0;
+			if(((posD >= 0) && (posD < 8)) || ((posD >= 56) && (posD < 64))) {
+				movs[iCur][5] = 0;
+				memcpy(movs[iCur+1],movs[iCur],6);
+				memcpy(movs[iCur+2],movs[iCur],6);
+				memcpy(movs[iCur+3],movs[iCur],6);
+				movs[iCur][4] = SM_PROMOTE2QUEEN;
+				movs[iCur+1][4] = SM_PROMOTE2KNIGHT;
+				movs[iCur+2][4] = SM_PROMOTE2ROOK;
+				movs[iCur+3][4] = SM_PROMOTE2BISHOP;
+				iCur += 3;
+			}
 			iCur += 1;
 			bbD &= ~(1ULL << posD);			
 		}
@@ -76,11 +87,23 @@ int moves_forpawnnormal(struct cb *cbC, char movs[512][32], int iCur)
 
 			if(abs(posS-posD) > 8) {
 				if(evalhlpr_lineattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
-#ifdef DEBUG_MOVEGENPRINT					
+#ifdef DEBUG_MOVEGENPRINT
 					dbg_log(fLog,"INFO:moves_forpawnnormal: DROPPING mov[%s] as others inbetween\n",movs[iCur]);
 #endif
 					movs[iCur][0] = 0;
 					continue;
+				}
+			} else {
+				if(((posD >= 0) && (posD < 8)) || ((posD >= 56) && (posD < 64))) {
+					movs[iCur][5] = 0;
+					memcpy(movs[iCur+1],movs[iCur],6);
+					memcpy(movs[iCur+2],movs[iCur],6);
+					memcpy(movs[iCur+3],movs[iCur],6);
+					movs[iCur][4] = SM_PROMOTE2QUEEN;
+					movs[iCur+1][4] = SM_PROMOTE2KNIGHT;
+					movs[iCur+2][4] = SM_PROMOTE2ROOK;
+					movs[iCur+3][4] = SM_PROMOTE2BISHOP;
+					iCur += 3;
 				}
 			}
 
