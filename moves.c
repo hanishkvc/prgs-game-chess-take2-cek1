@@ -356,6 +356,8 @@ int moves_forking(struct cb *cbC, char movs[512][32], int iCur)
 	return iCur;
 }
 
+#define TRACK_GLOBALMOVECNT 1
+
 int moves_get(struct cb *cbC, char movs[512][32], int iCur)
 {
 	int iNew,iDiff;
@@ -372,10 +374,12 @@ int moves_get(struct cb *cbC, char movs[512][32], int iCur)
 		dbg_log(fLog,"FIXME:moves_get: List overflow ????\n");
 		exit(200);
 	}
+#ifdef TRACK_GLOBALMOVECNT
 	iDiff = (iNew-iCur);
 	gMovesCnt += iDiff;
 #ifdef DEBUG_MOVESGETCNTPRINT
 	dbg_log(fLog,"INFO:moves_get: NewMoves[%d], AllTotalMovesTillNow[%lld]\n",iDiff,gMovesCnt);
+#endif
 #endif
 	return iNew;
 }

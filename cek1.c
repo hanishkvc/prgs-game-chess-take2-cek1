@@ -916,7 +916,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		}
 	}
 	
-#ifndef USE_ABPRUNING
+#ifdef USE_MOVELISTEVALAGING
 	// PURPOSEFULLY degrade the value by a small value of 1, so that 
 	// if there are two moves at a given position with same value ideally (in the long run) at a given level, 
 	// we should select the one which achieves the desired result faster i.e with less moves.
@@ -1043,6 +1043,9 @@ int process_uci()
 #endif
 #ifdef USE_ABPRUNING
 	strcat(sPNBuf,"AB");
+#endif
+#ifdef USE_MOVELISTEVALAGING
+	strcat(sPNBuf,"EA");
 #endif
 
 	if(strncmp(sCmd,"uci",3) == 0) {
