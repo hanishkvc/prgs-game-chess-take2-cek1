@@ -847,14 +847,14 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 				if(movsEval[iCur] > bestW) {
 					bestW = movsEval[iCur];
 				}
-				if(movsEval[iCur] > bestB) {
+				if(movsEval[iCur] >= bestB) {
 					bShortCircuitSearch = 1;
 				}
 			} else {
 				if(movsEval[iCur] < bestB) {
 					bestB = movsEval[iCur];
 				}
-				if(movsEval[iCur] < bestW) {
+				if(movsEval[iCur] <= bestW) {
 					bShortCircuitSearch = 1;
 				}
 			}
@@ -916,6 +916,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		}
 	}
 	
+#ifndef USE_ABPRUNING
 	// PURPOSEFULLY degrade the value by a small value of 1, so that 
 	// if there are two moves at a given position with same value ideally (in the long run) at a given level, 
 	// we should select the one which achieves the desired result faster i.e with less moves.
@@ -925,6 +926,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	} else {
 		iMaxVal = iMaxVal+1;
 	}
+#endif
 
 	//iMaxVal += valPWStatic;
 
