@@ -92,6 +92,9 @@ typedef unsigned long long u64;
 #define FBHINT_NORMAL 0
 #define FBHINT_STATICEVALONLY 1
 
+#define MAXWHITEEVAL INT_MAX
+#define MAXBLACKEVAL INT_MIN
+
 struct cb {
 	u64 wk,wq,wr,wb,wn,wp;
 	u64 bk,bq,br,bb,bn,bp;
@@ -103,7 +106,7 @@ struct cb {
 	int bk_killed, wk_killed;
 };
 
-int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves, int hint);
+int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves, int hint, int bestW, int bestB);
 
 #endif
 

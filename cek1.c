@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include <errno.h>
+#include <limits.h>
 
 #ifdef USE_THREAD
 #include <pthread.h>
@@ -501,7 +502,8 @@ void cb_cmov2smov(char *cMov, char *sMov)
 
 #include "positionhash.c"
 
-int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int secs, int movNum, int altMovNum,char *sNextBestMoves, int hint)
+int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int secs, int movNum, int altMovNum,char *sNextBestMoves, int hint,
+			int bestW, int bestB)
 {
 	struct cb cbN;
 	int iRes;
@@ -569,7 +571,7 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 		return iVal;
 	}
 #endif
-	iRes = cb_findbest(&cbN,curDepth,maxDepth,secs,movNum,sNBMoves,hint);
+	iRes = cb_findbest(&cbN,curDepth,maxDepth,secs,movNum,sNBMoves,hint,bestW,bestB);
 	strcat(sNextBestMoves,sNBMoves); // FIXME: CAN BE REMOVED, CROSSVERIFY i.e sNBMoves can be replaced with sNextBestMoves in findbest
 	return iRes;
 }
@@ -595,6 +597,7 @@ struct moveprocessHlpr {
 	int altMovNum;
 	char *sNextBestMoves;
 	int hint;
+	int bestW, bestB;
 	int iRes;
 };
 
@@ -602,11 +605,12 @@ void *moveprocess_hlpr(void *arg)
 {
 	struct moveprocessHlpr *mpH;
 	mpH = arg;
-	mpH->iRes = move_process(mpH->cbC,mpH->sMov,mpH->curDepth,mpH->maxDepth,mpH->secs,mpH->movNum,mpH->altMovNum,mpH->sNextBestMoves, mpH->hint);
+	mpH->iRes = move_process(mpH->cbC,mpH->sMov,mpH->curDepth,mpH->maxDepth,mpH->secs,mpH->movNum,mpH->altMovNum,mpH->sNextBestMoves, mpH->hint,
+					mpH->bestW, mpH->bestB);
 	return (void*)0;
 }
 
-int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves, int hint)
+int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves, int hint, int bestW, int bestB)
 {
 	int valPWStatic;
 	int val;
@@ -622,6 +626,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	char movsNBMoves[NUMOFPARALLELMOVES][MOVES_BUFSIZE];
 	struct moveprocessHlpr mpH[NUMOFTHREADS];
 	int xCur;
+	int bShortCircuitSearch = 0;
 #ifdef USE_BMPRUNING
 	char movsInitial[NUMOFPARALLELMOVES][32];
 	int tInd;
@@ -696,7 +701,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		char sTMov[32];
 		movsInd[iCur] = iCur;
 		memcpy(sTMov,movsInitial[iCur],10);
-		movsEval[iCur] = move_process(cbC,sTMov,curDepth,maxDepth,secs,movNum,iCur,movsNBMoves[iCur], FBHINT_STATICEVALONLY);
+		movsEval[iCur] = move_process(cbC,sTMov,curDepth,maxDepth,secs,movNum,iCur,movsNBMoves[iCur], FBHINT_STATICEVALONLY,bestW,bestB);
 	}
 	for(jCur = 0; jCur < iMCnt-1; jCur++) {
 		for(iCur = 0; iCur < (iMCnt-1-jCur); iCur+=1) {
@@ -759,7 +764,8 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	if(iMCnt > iTMCnt)
 		iMCnt = iTMCnt;
 #endif
-	for(jCur = 0; jCur < iMCnt; jCur+=NUMOFTHREADS) {
+	bShortCircuitSearch = 0;
+	for(jCur = 0; (jCur < iMCnt) && (bShortCircuitSearch == 0); jCur+=NUMOFTHREADS) {
 		for(iCur = jCur; iCur < (jCur+NUMOFTHREADS); iCur++) {
 			if(iCur >= iMCnt) {
 				continue;
@@ -776,6 +782,8 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			mpH[xCur].altMovNum = iCur;
 			mpH[xCur].sNextBestMoves = movsNBMoves[iCur];
 			mpH[xCur].hint = FBHINT_NORMAL;
+			mpH[xCur].bestW = bestW;
+			mpH[xCur].bestB = bestB;
 #ifdef USE_THREAD
 			if(curDepth <= THREAD_DEPTH)
 			{
@@ -833,6 +841,24 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 				iMaxNegInd = iCur;
 				strcpy(sMaxNegNBMoves,movsNBMoves[iCur]);
 			}
+
+#ifdef USE_ABPRUNING
+			if(cbC->sideToMove == STM_WHITE) {
+				if(movsEval[iCur] > bestW) {
+					bestW = movsEval[iCur];
+				}
+				if(movsEval[iCur] > bestB) {
+					bShortCircuitSearch = 1;
+				}
+			} else {
+				if(movsEval[iCur] < bestB) {
+					bestB = movsEval[iCur];
+				}
+				if(movsEval[iCur] < bestW) {
+					bShortCircuitSearch = 1;
+				}
+			}
+#endif
 		}
 	}
 
@@ -977,7 +1003,7 @@ int process_go(char *sCmd)
 	}
 	bzero(sNextBestMoves,MOVES_BUFSIZE);
 	gMovesCnt = 0;
-	cb_findbest(&gb,0,gGameDepth,0,gStartMoveNum,sNextBestMoves, FBHINT_NORMAL);
+	cb_findbest(&gb,0,gGameDepth,0,gStartMoveNum,sNextBestMoves, FBHINT_NORMAL,MAXBLACKEVAL,MAXWHITEEVAL);
 #ifdef USE_HASHTABLE
 	free(gHashTable);
 #endif
@@ -1012,6 +1038,9 @@ int process_uci()
 #endif
 #ifdef USE_BMPRUNING
 	strcat(sPNBuf,"BM");
+#endif
+#ifdef USE_ABPRUNING
+	strcat(sPNBuf,"AB");
 #endif
 
 	if(strncmp(sCmd,"uci",3) == 0) {
