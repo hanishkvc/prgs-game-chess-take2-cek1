@@ -367,6 +367,9 @@ int cb_evalpw_king_underattack(struct cb *cbC)
 // A Knight towards side is less valuable than knight towards the center.
 // All pieces in their start pos may be less valuable than towards center in beginning
 // and mid game.
+
+#define NOTE_SINGLEKING_ONLY 1
+
 int cb_evalpw_mat(struct cb *cbC)
 {
 	int valPW = 0;
@@ -381,8 +384,12 @@ int cb_evalpw_mat(struct cb *cbC)
 	valB += __builtin_popcountll(cbC->bq)*VQUEEN;
 	valTemp = __builtin_popcountll(cbC->bk)*VKING;
 	valB += valTemp;
+#ifdef NOTE_SINGLEKING_ONLY
+	cbC->bk_killed = valTemp ^ VKING;
+#else
 	if(valTemp == 0)
 		cbC->bk_killed = 1;
+#endif
 
 	valW += __builtin_popcountll(cbC->wp)*VPAWN;
 	valW += __builtin_popcountll(cbC->wr)*VROOK;
@@ -391,8 +398,12 @@ int cb_evalpw_mat(struct cb *cbC)
 	valW += __builtin_popcountll(cbC->wq)*VQUEEN;
 	valTemp = __builtin_popcountll(cbC->wk)*VKING;
 	valW += valTemp;
+#ifdef NOTE_SINGLEKING_ONLY
+	cbC->wk_killed = valTemp ^ VKING;
+#else
 	if(valTemp == 0)
 		cbC->wk_killed = 1;
+#endif
 
 	valPW = (valW-valB)/EVALSMAT_DIV;
 #ifdef DEBUG_EVALPRINT
