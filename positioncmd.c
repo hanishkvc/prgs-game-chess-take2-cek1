@@ -26,7 +26,7 @@ int process_position_moves(struct cb *cbC)
 	char *movStr;
 	int iCnt = 0;
 
-	send_resp("info string position moves");
+	dbg_log(fLog,"info string position moves");
 	iCnt = (gStartMoveNum-1)*2;
 	if(cbC->sideToMove == STM_BLACK)
 		iCnt += 1;

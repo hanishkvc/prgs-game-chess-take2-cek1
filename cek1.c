@@ -527,12 +527,13 @@ int mvhlpr_domoveh_oncb(struct cb *cbC, char *sMov)
 void cb_cmov2smov(char *cMov, char *sMov)
 {
 	char sTemp[8];
-	char sDest[8];
+	char sDest[16];
 	sDest[0] = cMov[0]; sDest[1] = 0;
 	strcat(&sDest[1],cb_bbpos2strloc(cMov[1],sTemp));
 	sDest[3] = cMov[2]; sDest[4] = 0;
 	strcat(&sDest[4],cb_bbpos2strloc(cMov[3],sTemp));
 	if(cMov[4] != SM_NORMAL) {
+		cMov[5] = 0;
 		if((cMov[4] != SM_KINGSIDECASTLE) && (cMov[4] != SM_QUEENSIDECASTLE))
 			strcat(&sDest[6],&cMov[4]);
 	}
@@ -564,6 +565,8 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 
 	iRes = move_validate(cbC, sMov);
 	if(iRes == DO_ERROR) {
+		fprintf(stderr,"BUG:move_process\n");
+		exit(-3);
 #ifdef DEBUG_MOVEPROCESSVALIDATE
 		cb_cmov2smov(sMov,sMov);
 		dbg_log(fLog,"INFO:move_process: Move[%s] Dropped/Error\n",sMov);
@@ -615,6 +618,10 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 #endif
 	iRes = cb_findbest(&cbN,curDepth,maxDepth,secs,movNum,sNBMoves,hint,bestW,bestB);
 	strcat(sNextBestMoves,sNBMoves); // FIXME: CAN BE REMOVED, CROSSVERIFY i.e sNBMoves can be replaced with sNextBestMoves in findbest
+	if(cbN.wk_killed)
+		return MAXBLACKEVAL;
+	else if(cbN.bk_killed)
+		return MAXWHITEEVAL;
 	return iRes;
 }
 
@@ -865,6 +872,14 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 #endif
 			if(movsEval[iCur] == DO_ERROR)
 				continue;
+			else if((movsEval[iCur] == MAXBLACKEVAL) || (movsEval[iCur] == MAXWHITEEVAL))
+				return movsEval[iCur];
+			else if(movsEval[iCur] == MAXBLACKEVAL)
+				//return movsEval[iCur]+1;
+				return DO_ERROR;
+			else if(movsEval[iCur] == MAXWHITEEVAL)
+				//return movsEval[iCur]-1;
+				return DO_ERROR;
 			if(iMaxPosInd == -1) {
 				iMaxPosInd = iCur;
 				iMaxPosVal = movsEval[iCur];
@@ -1066,9 +1081,13 @@ int process_uci()
 	char sCmdBuf[UCICMDBUFSIZE];
 	char *sCmd;
 	char sTemp[S1KTEMPBUFSIZE];
-	char sPNBuf[16];
+	char sPNBuf[32];
 
 	sCmd = fgets(sCmdBuf, S1KTEMPBUFSIZE, stdin);
+	if(sCmd == NULL) {
+		dbg_log(fLog,"WARN:process_uci:fgets NULL\n");
+		exit(3);
+	}
 	dbg_log(fLog,"GOT:%s\n",sCmd);
 	fflush(fLog);
 
@@ -1120,6 +1139,7 @@ int process_uci()
 		dbg_log(fLog,"QUITING\n");
 		exit(2);
 	}
+	dbg_log(fLog,"DONE:%s\n",sCmd);
 	fflush(fLog);
 	return 0;
 }
