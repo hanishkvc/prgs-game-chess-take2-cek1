@@ -7,9 +7,11 @@ DBG_ADDOPTS = -DDEBUG_UNWINDLOWLVLSUMMARYPRINT
 DBG_OPTS= ${DBG_MISCOPTS} ${DBG_ADDOPTS}
 NORM_ADDOPTS = ${BASE_OPTS} -DDEBUG_UNWINDSUMMARYPRINT -DDEBUG_UNWIND_SELECTION -DDEBUG_EVALSUMMARYPRINT -DDEBUG_SMPRINT
 FAST_ADDOPTS = ${BASE_OPTS} -DDEBUG_SMPRINT
+#FASTAB_OPTS= -DDEBUG_SMPRINT -DUSE_ABPRUNING -DUSE_ABSHORTKILLED
 FASTAB_OPTS= -DDEBUG_SMPRINT -DUSE_ABPRUNING
 #HT_OPTS= -DUSE_HASHTABLE -DDEBUG_HTPRINT -DDEBUG_HTSUMMARYPRINT
 HT_OPTS= ${BASE_OPTS} -DUSE_HASHTABLE -DDEBUG_HTSUMMARYPRINT
+MT_OPTS= -DUSE_THREAD -lpthread -DNUMOFTHREADS=30
 
 cek1: cek1.c cek1.h moves.c evals.c generate_movebbs.c positioncmd.c positionhash.c
 	echo -n "#define PRG_VERSION \"CEK1 v" > __MAKE__PREFIX.h
@@ -20,13 +22,14 @@ cek1: cek1.c cek1.h moves.c evals.c generate_movebbs.c positioncmd.c positionhas
 	gcc -Wall -O2 -o cek1 cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${NORM_ADDOPTS}
 	gcc -Wall -g  -o cek1_xg cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${DBG_OPTS} ${BASE_OPTS}
 	gcc -Wall -O2 -o cek1_fast cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS}
-	gcc -Wall -O2 -o cek1_fastmt cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} -DUSE_THREAD -lpthread
-	gcc -Wall -O2 -o cek1_fastmtab cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FASTAB_OPTS} -DUSE_THREAD -lpthread
-	gcc -Wall -g -o cek1_fastmtabxg cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${DBG_OPTS} ${FASTAB_OPTS} -DUSE_THREAD -lpthread
+	gcc -Wall -O2 -o cek1_fastmt cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} ${MT_OPTS}
+	gcc -Wall -O2 -o cek1_fastmtab cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FASTAB_OPTS} ${MT_OPTS}
+	gcc -Wall -g -o cek1_fastmtabxg cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${DBG_OPTS} ${FASTAB_OPTS} ${MT_OPTS}
+	gcc -Wall -g -o cek1_fastab cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FASTAB_OPTS}
 	gcc -Wall -g -o cek1_fastabxg cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${DBG_OPTS} ${FASTAB_OPTS}
-	gcc -Wall -O2 -o cek1_fastmtbm cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} -DUSE_THREAD -lpthread -DUSE_BMPRUNING
-	gcc -Wall -g -o cek1_fastmtbmxg cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} -DUSE_THREAD -lpthread -DUSE_BMPRUNING
-	gcc -Wall -g -o cek1_fastmtxg cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} -DUSE_THREAD -lpthread
+	gcc -Wall -O2 -o cek1_fastmtbm cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} ${MT_OPTS} -DUSE_BMPRUNING
+	gcc -Wall -g -o cek1_fastmtbmxg cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} ${MT_OPTS} -DUSE_BMPRUNING
+	gcc -Wall -g -o cek1_fastmtxg cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} ${MT_OPTS}
 	gcc -Wall -O2 -o cek1_ht cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${HT_OPTS}
 	gcc -Wall -g  -pg -o cek1_htxg cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${HT_OPTS} ${DBG_OPTS}
 
@@ -37,6 +40,7 @@ install-base: cek1
 	cp cek1_fast ~/local/bin/	|| /bin/true
 	cp cek1_fastmt ~/local/bin/	|| /bin/true
 	cp cek1_fastmtxg ~/local/bin/	|| /bin/true
+	cp cek1_fastab ~/local/bin/	|| /bin/true
 	cp cek1_fastabxg ~/local/bin/	|| /bin/true
 	cp cek1_fastmtab ~/local/bin/	|| /bin/true
 	cp cek1_fastmtabxg ~/local/bin/	|| /bin/true
@@ -65,6 +69,7 @@ clean:
 	rm ./cek1_fastmtxg	|| /bin/true
 	rm ./cek1_fastmtab	|| /bin/true
 	rm ./cek1_fastmtabxg	|| /bin/true
+	rm ./cek1_fastab	|| /bin/true
 	rm ./cek1_fastabxg	|| /bin/true
 	rm ./cek1_fastmtbm	|| /bin/true
 	rm ./cek1_fastmtbmxg	|| /bin/true

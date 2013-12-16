@@ -19,6 +19,8 @@
 
 //#define USE_HASHTABLE 1
 
+//#define USE_ABSHORTKILLED 1
+
 #define HTFIND_STRICTMODE 0
 #define HTFIND_IGNORECURDEPTH 1
 
@@ -86,8 +88,11 @@ typedef unsigned long long u64;
 #define SM_FALSE 1
 #define SM_TRUE 0
 
-#define NUMOFTHREADS 2
-#define THREAD_DEPTH 2
+//#define NUMOFTHREADS 2
+#ifndef NUMOFTHREADS
+#define NUMOFTHREADS 1
+#endif
+#define THREAD_DEPTH 1
 
 #define FBHINT_NORMAL 0
 #define FBHINT_STATICEVALONLY 1

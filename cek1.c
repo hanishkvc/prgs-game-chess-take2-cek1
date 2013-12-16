@@ -618,6 +618,7 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 #endif
 	iRes = cb_findbest(&cbN,curDepth,maxDepth,secs,movNum,sNBMoves,hint,bestW,bestB);
 	strcat(sNextBestMoves,sNBMoves); // FIXME: CAN BE REMOVED, CROSSVERIFY i.e sNBMoves can be replaced with sNextBestMoves in findbest
+#ifdef USE_ABSHORTKILLED
 	// if [w|b]k_killed is set, it means the eval returned by cb_findbest is for the move just executed
 	// here before calling that cb_findbest.
 	if(cbN.wk_killed) {
@@ -635,6 +636,7 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 			exit(101);
 		}
 	}
+#endif
 	return iRes;
 }
 
@@ -890,6 +892,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			if(movsEval[iCur] == DO_ERROR) {
 				continue;
 			}
+#ifdef USE_ABSHORTKILLED
 			//if((movsEval[iCur] == MAXBLACKEVAL) || (movsEval[iCur] == MAXWHITEEVAL))
 			//	return movsEval[iCur];
 			// TODO: Have to also check about whose move it was and whose king was killed.
@@ -911,6 +914,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 					//continue;
 				}
 			}
+#endif
 			if(iMaxPosInd == -1) {
 				iMaxPosInd = iCur;
 				iMaxPosVal = movsEval[iCur];
