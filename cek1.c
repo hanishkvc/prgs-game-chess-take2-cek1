@@ -618,10 +618,23 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 #endif
 	iRes = cb_findbest(&cbN,curDepth,maxDepth,secs,movNum,sNBMoves,hint,bestW,bestB);
 	strcat(sNextBestMoves,sNBMoves); // FIXME: CAN BE REMOVED, CROSSVERIFY i.e sNBMoves can be replaced with sNextBestMoves in findbest
-	if(cbN.wk_killed)
-		return MAXBLACKEVAL;
-	else if(cbN.bk_killed)
-		return MAXWHITEEVAL;
+	// if [w|b]k_killed is set, it means the eval returned by cb_findbest is for the move just executed
+	// here before calling that cb_findbest.
+	if(cbN.wk_killed) {
+		if(cbN.sideToMove == STM_WHITE) // Black made a move which killed whites king, which means white shouldn't have played the previous level move or rather it was a illegal move
+			return MAXBLACKEVAL;
+		else {
+			fprintf(stderr,"BUG:100:FIXME:TOTHINK: Cann't occur, can it now ????\n");
+			exit(100);
+		}
+	} else if(cbN.bk_killed) {
+		if(cbN.sideToMove == STM_BLACK) // White made a move which killed blacks king, which means black shouldn't have played the previous level move or rather it was a illegal move
+			return MAXWHITEEVAL;
+		else {
+			fprintf(stderr,"BUG:101:FIXME:TOTHINK: Cann't occur, can it now ????\n");
+			exit(101);
+		}
+	}
 	return iRes;
 }
 
@@ -676,6 +689,8 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	struct moveprocessHlpr mpH[NUMOFTHREADS];
 	int xCur;
 	int bShortCircuitSearch = 0;
+	int bKingEntersCheck = 0;
+	int kingEntersCheckEval = 0;
 #ifdef USE_BMPRUNING
 	char movsInitial[NUMOFPARALLELMOVES][32];
 	int tInd;
@@ -814,6 +829,8 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		iMCnt = iTMCnt;
 #endif
 	bShortCircuitSearch = 0;
+	bKingEntersCheck = 0;
+	kingEntersCheckEval = 0;
 	for(jCur = 0; (jCur < iMCnt) && (bShortCircuitSearch == 0); jCur+=NUMOFTHREADS) {
 		for(iCur = jCur; iCur < (jCur+NUMOFTHREADS); iCur++) {
 			if(iCur >= iMCnt) {
@@ -870,16 +887,30 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 				movsEval[iCur] = mpH[xCur].iRes;
 			}
 #endif
-			if(movsEval[iCur] == DO_ERROR)
+			if(movsEval[iCur] == DO_ERROR) {
 				continue;
-			else if((movsEval[iCur] == MAXBLACKEVAL) || (movsEval[iCur] == MAXWHITEEVAL))
-				return movsEval[iCur];
-			else if(movsEval[iCur] == MAXBLACKEVAL)
-				//return movsEval[iCur]+1;
-				return DO_ERROR;
-			else if(movsEval[iCur] == MAXWHITEEVAL)
-				//return movsEval[iCur]-1;
-				return DO_ERROR;
+			}
+			//if((movsEval[iCur] == MAXBLACKEVAL) || (movsEval[iCur] == MAXWHITEEVAL))
+			//	return movsEval[iCur];
+			// TODO: Have to also check about whose move it was and whose king was killed.
+			// Currently this check is missing.
+			if(movsEval[iCur] == MAXBLACKEVAL) {
+				bKingEntersCheck = 1;
+				movsEval[iCur] = movsEval[iCur]+1;
+				kingEntersCheckEval = movsEval[iCur];
+				strcpy(sNextBestMoves,"WHITE_BLUNDER");
+				//return DO_ERROR;
+				//continue;
+			} else {
+				 if(movsEval[iCur] == MAXWHITEEVAL) {
+					bKingEntersCheck = 1;
+					movsEval[iCur] = movsEval[iCur]-1;
+					kingEntersCheckEval = movsEval[iCur];
+					strcpy(sNextBestMoves,"BLACK_BLUNDER");
+					//return DO_ERROR;
+					//continue;
+				}
+			}
 			if(iMaxPosInd == -1) {
 				iMaxPosInd = iCur;
 				iMaxPosVal = movsEval[iCur];
@@ -905,6 +936,15 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 					bestW = movsEval[iCur];
 				}
 				if(movsEval[iCur] >= bestB) {
+				// PrevLevel is B and it is searching for one of its moves' which provides the least value(which is also
+				// same has least gain to White and Max gain for Black).
+				// So for the Black's Move being evaluated currently, if a White move is found which gives a value larger
+				// (which is good for White) than what was the response for earlier Black Moves. Then NO WAY is this
+				// particular black move which is currently under study going to be selected. As this move is relatively
+				// bad for Black. So we can skip testing/evaluating rest of the whites' response moves - WHICH ALSO MEANS
+				// the best white move identified till now is not the best White Response Move in absolute terms for the
+				// given Black move under study currently, but is good enough for the decision to be taken that no further
+				// moves require to be tested.
 					bShortCircuitSearch = 1;
 				}
 			} else {
@@ -917,11 +957,25 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			}
 #endif
 		}
+		if( bKingEntersCheck == 1) {
+#ifdef DEBUG_LEAFPRINT
+			dbg_log(fLog,"INFO:%c:BLUNDER_BY_OPPONENT_DETECTED,Shorting unwinding for CBwithPrevMoves[%s],MyNewMoveEval[%d]\n",
+						cbC->sideToMove,cbC->sMoves,kingEntersCheckEval);
+#endif
+			return kingEntersCheckEval;
+			//return DO_ERROR;
+		}
 	}
 
 	// TODO:LATER:Maybe (to think) Send best value from the moves above or best N in multipv case
 
 #ifdef DEBUG_UNWIND_SELECTION
+	// This is to make the skipped moves if any printable, as well as easily identifiable in debug logs
+	for(; (jCur < iMCnt) && (bShortCircuitSearch == 1); jCur+=1) {
+			cb_cmov2smov(movs[jCur],movs[jCur]);
+			movsEval[jCur] = 111222333;
+	}
+
 	dbg_log(fLog,"DEBUG:findbest:%c:curDepth[%d] Pos[%s] unwind *** SelectFROM ***\n",cbC->sideToMove,curDepth,cbC->sMoves);
 	for(iCur = 0; iCur < iMCnt; iCur++) {
 		dbg_log(fLog,"DEBUG:%d:Move[%s],eval[%d],NBMoves[%s]\n",iCur,movs[iCur],movsEval[iCur],movsNBMoves[iCur]);

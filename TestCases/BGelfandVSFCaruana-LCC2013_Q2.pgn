@@ -1,0 +1,12 @@
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+
+1.d4 d6 2.Nf3 Nf6 3.c4 g6 4.Nc3 Bf5 5.d5 e5 6.dxe6 Bxe6 7.Nd4 Bd7 8.g3 Bg7 9.Bg2 Nc6 10.O-O O-O 11.Nc2 Rb8 12.Ne3 Re8 13.Ned5 Nxd5 14.cxd5 Ne5 15.Bf4 g5 16.Bxe5 Bxe5 17.Rc1 f5 18.e3 Qe7 19.Qh5 Qg7 20.Rc2 Re7 21.f4 Bf6 22.fxg5 Bxg5 23.e4 Re5 24.Kh1 Rf8 25.exf5 Rfxf5 26.Rxf5 Bxf5 27.Re2 
+    ( { [CEK1 v20131215_0010-NORMMTAB] 6:+1.00} 27.Re2 Rxe2 28.Qxe2 Bd7 29.Ne4 Bc1 30.Nxd6 )
+27...Rxe2 28.Qxe2 Bf6 29.Be4 Bd7 30.Qe3 Qg5 31.Qxg5+ *
+
