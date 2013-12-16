@@ -923,12 +923,20 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 				strcpy(sMaxPosNBMoves,movsNBMoves[iCur]);
 				strcpy(sMaxNegNBMoves,movsNBMoves[iCur]);
 			}
+#ifdef DO_FINDBEST_ONLYIFBETTER
 			if(movsEval[iCur] > iMaxPosVal) {
+#else
+			if(movsEval[iCur] >= iMaxPosVal) {
+#endif
 				iMaxPosVal = movsEval[iCur];
 				iMaxPosInd = iCur;
 				strcpy(sMaxPosNBMoves,movsNBMoves[iCur]);
 			}
+#ifdef DO_FINDBEST_ONLYIFBETTER
 			if(movsEval[iCur] < iMaxNegVal) {
+#else
+			if(movsEval[iCur] <= iMaxNegVal) {
+#endif
 				iMaxNegVal = movsEval[iCur];
 				iMaxNegInd = iCur;
 				strcpy(sMaxNegNBMoves,movsNBMoves[iCur]);
@@ -939,7 +947,11 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 				if(movsEval[iCur] > bestW) {
 					bestW = movsEval[iCur];
 				}
+#ifdef DO_ABPRUN_ONLYIFBETTER
+				if(movsEval[iCur] > bestB) {
+#else
 				if(movsEval[iCur] >= bestB) {
+#endif
 				// PrevLevel is B and it is searching for one of its moves' which provides the least value(which is also
 				// same has least gain to White and Max gain for Black).
 				// So for the Black's Move being evaluated currently, if a White move is found which gives a value larger
@@ -955,7 +967,11 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 				if(movsEval[iCur] < bestB) {
 					bestB = movsEval[iCur];
 				}
+#ifdef DO_ABPRUN_ONLYIFBETTER
+				if(movsEval[iCur] < bestW) {
+#else
 				if(movsEval[iCur] <= bestW) {
+#endif
 					bShortCircuitSearch = 1;
 				}
 			}
@@ -1162,6 +1178,9 @@ int process_uci()
 #endif
 #ifdef USE_ABPRUNING
 	strcat(sPNBuf,"AB");
+#endif
+#ifdef USE_ABSHORTKILLED
+	strcat(sPNBuf,"SK");
 #endif
 #ifdef USE_MOVELISTEVALAGING
 	strcat(sPNBuf,"EA");
