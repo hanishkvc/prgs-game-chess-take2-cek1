@@ -694,6 +694,10 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	int bShortCircuitSearch = 0;
 	int bKingEntersCheck = 0;
 	int kingEntersCheckEval = 0;
+#ifdef USE_ABPRUNING
+	char sABPNextBestMoves[MOVES_BUFSIZE];
+	int iABPEval;
+#endif
 #ifdef USE_BMPRUNING
 	char movsInitial[NUMOFPARALLELMOVES][32];
 	int tInd;
@@ -963,6 +967,8 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 				// given Black move under study currently, but is good enough for the decision to be taken that no further
 				// moves require to be tested.
 					bShortCircuitSearch = 1;
+					sprintf(sABPNextBestMoves,"%s %s", cb_2longnot(movs[iCur],s2LN), movsNBMoves[iCur]);
+					iABPEval = movsEval[iCur];
 				}
 			} else {
 				if(movsEval[iCur] < bestB) {
@@ -974,6 +980,8 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 				if(movsEval[iCur] <= bestW) {
 #endif
 					bShortCircuitSearch = 1;
+					sprintf(sABPNextBestMoves,"%s %s", cb_2longnot(movs[iCur],s2LN), movsNBMoves[iCur]);
+					iABPEval = movsEval[iCur];
 				}
 			}
 #endif
@@ -987,6 +995,13 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			//return DO_ERROR;
 		}
 	}
+
+#ifdef USE_ABPRUNING
+	if(bShortCircuitSearch) {
+		strncpy(sNextBestMoves,sABPNextBestMoves,MOVES_BUFSIZE);
+		return iABPEval;
+	}
+#endif
 
 	// TODO:LATER:Maybe (to think) Send best value from the moves above or best N in multipv case
 
