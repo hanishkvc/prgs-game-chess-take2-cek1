@@ -30,6 +30,8 @@
 //#define MOVELIST_ADDMOVENUM_SMOVES 1
 //#define MOVELIST_ADDMOVENUM_NBMOVES 1
 
+//#define DO_SENDPERIODICINFO 1
+
 #ifdef DO_ONLYIFBETTER_ALWAYS
 #define DO_FINDBEST_ONLYIFBETTER 1
 #define DO_ABPRUN_ONLYIFBETTER 1
@@ -81,6 +83,7 @@ typedef unsigned long long u64;
 #define EVALSMAT_DIV 1
 #define EVALSTANDP_DIV 1
 #define EVALSKINGUNDERATTACK_DIV 100
+#define EVALSPOS_DIV 1
 // OverAchiever Value Multiplier
 #define OAVMULT(V) ((V*5)/4)
 // UnderAchiever Value Multiplier

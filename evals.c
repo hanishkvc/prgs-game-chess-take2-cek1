@@ -1,6 +1,19 @@
 
+#define USE_POSEVAL 1
+#undef USE_POSKNIGHTEVAL
 
-u64 CBFILEMASK[8] = { 
+u64 CBRANKMASK[8] = {
+	0x00000000000000FFULL,
+	0x000000000000FF00ULL,
+	0x0000000000FF0000ULL,
+	0x00000000FF000000ULL,
+	0x000000FF00000000ULL,
+	0x0000FF0000000000ULL,
+	0x00FF000000000000ULL,
+	0xFF00000000000000ULL,
+};
+
+u64 CBFILEMASK[8] = {
 	0x0101010101010101ULL,
 	0x0202020202020202ULL,
 	0x0404040404040404ULL,
@@ -10,6 +23,17 @@ u64 CBFILEMASK[8] = {
 	0x4040404040404040ULL,
 	0x8080808080808080ULL,
 };
+
+u64 CBKNIGHTPOSMASK[8] = {
+	0xFF818181818181FFULL,
+	0x007E7E7E7E7E7E00ULL,
+};
+
+int CBKNIGHTPOSEVAL[2] = {
+	0,
+	20
+};
+
 
 #define ATTACK_YES 1
 #define ATTACK_NO 0
@@ -411,6 +435,37 @@ int cb_evalpw_mat(struct cb *cbC)
 #endif
 	return valPW;
 }
+
+
+int cb_evalpw_pos(struct cb *cbC)
+{
+	int valPW = 0;
+	int valB = 0;
+	int valW = 0;
+	int iCur;
+
+	for(iCur = 1; iCur < 8; iCur++) {
+		valW += __builtin_popcountll(cbC->wp & CBRANKMASK[iCur])*((VPAWN*(iCur-1))/10);
+	}
+	for(iCur = 6; iCur >= 0; iCur--) {
+		valB += __builtin_popcountll(cbC->bp & CBRANKMASK[iCur])*((VPAWN*(6-iCur))/10);
+	}
+#ifdef USE_POSKNIGHTEVAL
+	for(iCur = 0; iCur < 2; iCur++) {
+		valW += __builtin_popcountll(cbC->wn & CBKNIGHTPOSMASK[iCur])*CBKNIGHTPOSEVAL[iCur];
+	}
+	for(iCur = 0; iCur < 2; iCur++) {
+		valB += __builtin_popcountll(cbC->bn & CBKNIGHTPOSMASK[iCur])*CBKNIGHTPOSEVAL[iCur];
+	}
+#endif
+
+	valPW = (valW-valB)/EVALSPOS_DIV;
+#ifdef DEBUG_EVALPRINT
+	dbg_log(fLog,"INFO:evalpw_pos: valW[%d] - valB[%d]\n", valW, valB);
+#endif
+	return valPW;
+}
+
 
 // NOTE: GENERIC
 //
@@ -830,17 +885,21 @@ int cb_evalpw(struct cb *cbC)
 	int valMat = 0;
 	int valTandP = 0;
 	int valKingAttacked = 0;
+	int valPos = 0;
 
 	valMat = cb_evalpw_mat(cbC);
 	//valTandP = cb_evalpw_threatsANDprotection(cbC);
 	//valKingAttacked = cb_evalpw_king_underattack(cbC);
 	// eval_misc
+#ifdef USE_POSEVAL
+	valPos = cb_evalpw_pos(cbC);
+#endif
 
-	valPW = valMat + valTandP + valKingAttacked;
+	valPW = valMat + valTandP + valKingAttacked + valPos;
 
 #ifdef DEBUG_EVALSUMMARYPRINT	
-	dbg_log(fLog,"valMat[%d] + valTandP[%d] + valKingAttacked[%d] = valPW[%d] <=> Moves[%s]\n",
-				valMat, valTandP, valKingAttacked, valPW, cbC->sMoves);
+	dbg_log(fLog,"valMat[%d] + valTandP[%d] + valKingAttacked[%d] + valPos[%d] = valPW[%d] <=> Moves[%s]\n",
+				valMat, valTandP, valKingAttacked, valPos, valPW, cbC->sMoves);
 #endif
 	return valPW;
 }

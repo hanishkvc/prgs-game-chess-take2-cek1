@@ -43,6 +43,7 @@ pid_t myPID = 0;
 
 struct cb gb;
 struct timespec gtsStart, gtsDiff;
+long gPrevDTime = 0;
 u64 gMovesCnt = 0;
 int gStartMoveNum = 0;
 int gUCIOption = 0;
@@ -1069,6 +1070,12 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	val = iMaxVal;
 #endif
 	lDTime = diff_clocktime(&gtsStart);
+#ifdef DO_SENDPERIODICINFO
+	if((lDTime-gPrevDTime) >= 30000) {
+		send_resp_ex(sBuf,S1KTEMPBUFSIZE,"info depth %d nodes %lld\n", maxDepth-curDepth+1,gMovesCnt);
+		gPrevDTime = lDTime;
+	}
+#endif
 	//if(curDepth == 1) // TODO:TOTHINK: may avoid this check (Avoided, but still think thro when additional logic added)
 	{
 		if(iMaxInd == -1) {
@@ -1085,7 +1092,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 		else {
 			// Nodes simply mapped to total Moves generated for now, which may be correct or wrong, to check
 			if(curDepth == 1) {
-				dbgs_log(fLogM,"%d:SENT:%c:evalPW[%d],Depth[%d],Nodes[%d],Time[%d],Moves[%s]\n",
+				dbgs_log(fLogM,"%d:SENT:%c:evalPW[%d],Depth[%d],Nodes[%lld],Time[%d],Moves[%s]\n",
 						myPID,cbC->sideToMove,iMaxVal,maxDepth-curDepth+1,gMovesCnt,lDTime,sNextBestMoves);
 #ifdef DEBUG_HTSUMMARYPRINT
 				dbgs_log(fLogM,"%d:HTINFO:%c:CLASH[%d],HIT[%d],VALMISMATCH[%d],VALMATCH[%d],BETTEREVALD[%d],CANBETTEREVAL[%d],TableSize[%d]\n", 
