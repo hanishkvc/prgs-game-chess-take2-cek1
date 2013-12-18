@@ -959,16 +959,19 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 #endif
 				// PrevLevel is B and it is searching for one of its moves' which provides the least value(which is also
 				// same has least gain to White and Max gain for Black).
-				// So for the Black's Move being evaluated currently, if a White move is found which gives a value larger
-				// (which is good for White) than what was the response for earlier Black Moves. Then NO WAY is this
-				// particular black move which is currently under study going to be selected. As this move is relatively
-				// bad for Black. So we can skip testing/evaluating rest of the whites' response moves - WHICH ALSO MEANS
+				// So for the Black's Move being evaluated currently, if a White move is found in the current level
+				// which gives a value larger (which is good for White) than what was the response for earlier Black Moves.
+				// Then NO WAY is this particular black move which is currently under study going to be selected. As this
+				// move is relatively bad for Black. So we can skip testing/evaluating rest of the whites' response moves
+				// - WHICH ALSO MEANS
 				// the best white move identified till now is not the best White Response Move in absolute terms for the
 				// given Black move under study currently, but is good enough for the decision to be taken that no further
 				// moves require to be tested.
+					if(!bShortCircuitSearch) {
 					bShortCircuitSearch = 1;
 					sprintf(sABPNextBestMoves,"%s %s", cb_2longnot(movs[iCur],s2LN), movsNBMoves[iCur]);
 					iABPEval = movsEval[iCur];
+					}
 				}
 			} else {
 				if(movsEval[iCur] < bestB) {
@@ -979,9 +982,11 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 #else
 				if(movsEval[iCur] <= bestW) {
 #endif
+					if(!bShortCircuitSearch) {
 					bShortCircuitSearch = 1;
 					sprintf(sABPNextBestMoves,"%s %s", cb_2longnot(movs[iCur],s2LN), movsNBMoves[iCur]);
 					iABPEval = movsEval[iCur];
+					}
 				}
 			}
 #endif
