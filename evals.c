@@ -1,5 +1,6 @@
 
 #define USE_POSEVAL 1
+//#define USE_POSKNIGHTEVAL 1
 #undef USE_POSKNIGHTEVAL
 
 u64 CBRANKMASK[8] = {
@@ -465,15 +466,17 @@ int cb_evalpw_pos(struct cb *cbC)
 	if(cbC->gameState == GS_MID)
 		valPWPawn = valPWPawn >> 2;
 #ifdef USE_POSKNIGHTEVAL
-	valW = 0;
-	valB = 0;
-	for(iCur = 0; iCur < 2; iCur++) {
-		valW += __builtin_popcountll(cbC->wn & CBKNIGHTPOSMASK[iCur])*CBKNIGHTPOSEVAL[iCur];
+	if(cbC->gameState == GS_START) {
+		valW = 0;
+		valB = 0;
+		for(iCur = 0; iCur < 2; iCur++) {
+			valW += __builtin_popcountll(cbC->wn & CBKNIGHTPOSMASK[iCur])*CBKNIGHTPOSEVAL[iCur];
+		}
+		for(iCur = 0; iCur < 2; iCur++) {
+			valB += __builtin_popcountll(cbC->bn & CBKNIGHTPOSMASK[iCur])*CBKNIGHTPOSEVAL[iCur];
+		}
+		valPWKnight = (valW-valB);
 	}
-	for(iCur = 0; iCur < 2; iCur++) {
-		valB += __builtin_popcountll(cbC->bn & CBKNIGHTPOSMASK[iCur])*CBKNIGHTPOSEVAL[iCur];
-	}
-	valPWKnight = (valW-valB);
 #endif
 
 	valPW = (valPWPawn + valPWKnight)/EVALSPOS_DIV;
