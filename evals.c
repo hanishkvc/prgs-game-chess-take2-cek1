@@ -394,7 +394,7 @@ int cb_evalpw_king_underattack(struct cb *cbC)
 
 #define NOTE_SINGLEKING_ONLY 1
 
-int cb_evalpw_mat(struct cb *cbC)
+int cb_evalpw_mat(struct cb *cbC, int *iTotMat)
 {
 	int valPW = 0;
 	int valB = 0;
@@ -430,6 +430,15 @@ int cb_evalpw_mat(struct cb *cbC)
 #endif
 
 	valPW = (valW-valB)/EVALSMAT_DIV;
+
+	*iTotMat = valW+valB;
+	if(*iTotMat > MATTHRESHOLD_MIDGAME)
+		cbC->gameState = GS_START;
+	else if(*iTotMat > MATTHRESHOLD_ENDGAME)
+		cbC->gameState = GS_MID;
+	else
+		cbC->gameState = GS_END;
+
 #ifdef DEBUG_EVALPRINT
 	dbg_log(fLog,"INFO:evalpw_mat: valW[%d] - valB[%d]\n", valW, valB);
 #endif
@@ -443,6 +452,8 @@ int cb_evalpw_pos(struct cb *cbC)
 	int valB = 0;
 	int valW = 0;
 	int iCur;
+	int valPWKnight = 0;
+	int valPWPawn = 0;
 
 	for(iCur = 1; iCur < 8; iCur++) {
 		valW += __builtin_popcountll(cbC->wp & CBRANKMASK[iCur])*((VPAWN*(iCur-1))/10);
@@ -450,18 +461,24 @@ int cb_evalpw_pos(struct cb *cbC)
 	for(iCur = 6; iCur >= 0; iCur--) {
 		valB += __builtin_popcountll(cbC->bp & CBRANKMASK[iCur])*((VPAWN*(6-iCur))/10);
 	}
+	valPWPawn = (valW-valB);
+	if(cbC->gameState == GS_MID)
+		valPWPawn = valPWPawn >> 2;
 #ifdef USE_POSKNIGHTEVAL
+	valW = 0;
+	valB = 0;
 	for(iCur = 0; iCur < 2; iCur++) {
 		valW += __builtin_popcountll(cbC->wn & CBKNIGHTPOSMASK[iCur])*CBKNIGHTPOSEVAL[iCur];
 	}
 	for(iCur = 0; iCur < 2; iCur++) {
 		valB += __builtin_popcountll(cbC->bn & CBKNIGHTPOSMASK[iCur])*CBKNIGHTPOSEVAL[iCur];
 	}
+	valPWKnight = (valW-valB);
 #endif
 
-	valPW = (valW-valB)/EVALSPOS_DIV;
+	valPW = (valPWPawn + valPWKnight)/EVALSPOS_DIV;
 #ifdef DEBUG_EVALPRINT
-	dbg_log(fLog,"INFO:evalpw_pos: valW[%d] - valB[%d]\n", valW, valB);
+	dbg_log(fLog,"INFO:evalpw_pos: valPWPawn[%d], valPWKnight[%d]\n", valPWPawn, valPWKnight);
 #endif
 	return valPW;
 }
@@ -886,8 +903,9 @@ int cb_evalpw(struct cb *cbC)
 	int valTandP = 0;
 	int valKingAttacked = 0;
 	int valPos = 0;
+	int iTotalMaterial = 0;
 
-	valMat = cb_evalpw_mat(cbC);
+	valMat = cb_evalpw_mat(cbC,&iTotalMaterial);
 	//valTandP = cb_evalpw_threatsANDprotection(cbC);
 	//valKingAttacked = cb_evalpw_king_underattack(cbC);
 	// eval_misc

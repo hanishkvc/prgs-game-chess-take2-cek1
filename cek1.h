@@ -69,6 +69,10 @@ typedef unsigned long long u64;
 
 #define VKING_ATTACKED (VKING*2)
 
+//#define MATTHRESHOLD_MIDGAME (VKING*2+VQUEEN*2+VROOK*2+VBISHOP*2+VKNIGHT*2+VPAWN*8)
+#define MATTHRESHOLD_MIDGAME (VKING*2+VQUEEN*2+VROOK*2+VBISHOP*2+VKNIGHT*2)
+#define MATTHRESHOLD_ENDGAME (VKING*2+VROOK*2+VBISHOP+VKNIGHT)
+
 // May be for side corresponding to OrigSideToMove logic should use a conservative strategy
 // i.e threat weightage is smaller than protection weightage (say 4 and 8)
 // AND for the opponent/other side the logic should use a balanced/even or aggressive strategy
@@ -117,6 +121,10 @@ typedef unsigned long long u64;
 #define MAXWHITEEVAL INT_MAX
 #define MAXBLACKEVAL INT_MIN
 
+#define GS_START	0
+#define GS_MID		1
+#define GS_END		2
+
 struct cb {
 	u64 wk,wq,wr,wb,wn,wp;
 	u64 bk,bq,br,bb,bn,bp;
@@ -126,6 +134,7 @@ struct cb {
 	int wkCanKsC, wkCanQsC;
 	int bkCanKsC, bkCanQsC;
 	int bk_killed, wk_killed;
+	int gameState;
 };
 
 int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves, int hint, int bestW, int bestB);
