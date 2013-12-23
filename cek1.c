@@ -619,6 +619,11 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 #endif
 	iRes = cb_findbest(&cbN,curDepth,maxDepth,secs,movNum,sNBMoves,hint,bestW,bestB);
 	strcat(sNextBestMoves,sNBMoves); // FIXME: CAN BE REMOVED, CROSSVERIFY i.e sNBMoves can be replaced with sNextBestMoves in findbest
+#ifdef DO_HANDLEKILLED
+	if(cbN.wk_killed || cbN.bk_killed) {
+		iRes = iRes*(maxDepth-curDepth+1);
+	}
+#endif
 #ifdef USE_ABSHORTKILLED
 	// if [w|b]k_killed is set, it means the eval returned by cb_findbest is for the move just executed
 	// here before calling that cb_findbest.
@@ -696,7 +701,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	int kingEntersCheckEval = 0;
 #ifdef USE_ABPRUNING
 	char sABPNextBestMoves[MOVES_BUFSIZE];
-	int iABPEval;
+	int iABPEval = 0;
 #endif
 #ifdef USE_BMPRUNING
 	char movsInitial[NUMOFPARALLELMOVES][32];
