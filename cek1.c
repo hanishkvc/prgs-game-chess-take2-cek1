@@ -283,6 +283,7 @@ int move_validate(struct cb *cbC, char *sMov)
 
 void mvhlpr_domovel_oncb(struct cb *cbC, char mPiece, int mSPos, int mDPos, int hint)
 {
+	int bEnPasFlagSet = 0;
 	
 	if(cbC->sideToMove == STM_WHITE) {
 		if(mPiece == 'K') {
@@ -323,6 +324,15 @@ void mvhlpr_domovel_oncb(struct cb *cbC, char mPiece, int mSPos, int mDPos, int 
 #else
 			if(hint == SM_NORMAL) {
 				cbC->wp |= (1ULL << mDPos);
+				if((abs(mDPos-mSPos)/8) == 2) {
+					cbC->bCanEnPas = (mDPos%8)+1;
+					bEnPasFlagSet = 1;
+				}
+				if((cbC->wCanEnPas) && ((mSPos%8) != (mDPos%8))) {
+					if((40+(cbC->wCanEnPas-1)) == mDPos) {
+						cbC->bp &= ~(1ULL << (mDPos-8));
+					}
+				}
 			} else if(hint == SM_PROMOTE2QUEEN) {
 				cbC->wq |= (1ULL << mDPos);
 			} else if(hint == SM_PROMOTE2ROOK) {
@@ -379,6 +389,15 @@ void mvhlpr_domovel_oncb(struct cb *cbC, char mPiece, int mSPos, int mDPos, int 
 #else
 			if(hint == SM_NORMAL) {
 				cbC->bp |= (1ULL << mDPos);
+				if((abs(mDPos-mSPos)/8) == 2) {
+					cbC->wCanEnPas = (mDPos%8)+1;
+					bEnPasFlagSet = 1;
+				}
+				if((cbC->bCanEnPas) && ((mSPos%8) != (mDPos%8))) {
+					if((16+(cbC->bCanEnPas-1)) == mDPos) {
+						cbC->wp &= ~(1ULL << (mDPos+8));
+					}
+				}
 			} else if(hint == SM_PROMOTE2QUEEN) {
 				cbC->bq |= (1ULL << mDPos);
 			} else if(hint == SM_PROMOTE2ROOK) {
@@ -397,7 +416,12 @@ void mvhlpr_domovel_oncb(struct cb *cbC, char mPiece, int mSPos, int mDPos, int 
 		cbC->wb &= ~(1ULL << mDPos);
 		cbC->wp &= ~(1ULL << mDPos);
 	}
-
+#ifdef ENABLE_SM
+	if(bEnPasFlagSet != 1) {
+		cbC->wCanEnPas = 0;
+		cbC->bCanEnPas = 0;
+	}
+#endif
 }
 
 int mvhlpr_domoveh_oncb(struct cb *cbC, char *sMov)

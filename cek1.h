@@ -135,6 +135,7 @@ struct cb {
 	int bkCanKsC, bkCanQsC;
 	int bk_killed, wk_killed;
 	int gameState;
+	int bCanEnPas, wCanEnPas;
 };
 
 int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves, int hint, int bestW, int bestB);
