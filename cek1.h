@@ -117,6 +117,7 @@ typedef unsigned long long u64;
 
 #define FBHINT_NORMAL 0
 #define FBHINT_STATICEVALONLY 1
+#define FBHINT_QUICK 2
 
 #define MAXWHITEEVAL INT_MAX
 #define MAXBLACKEVAL INT_MIN

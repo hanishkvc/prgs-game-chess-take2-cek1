@@ -641,7 +641,10 @@ int move_process(struct cb *cbC, char *sMov, int curDepth, int maxDepth, int sec
 		return iVal;
 	}
 #endif
-	iRes = cb_findbest(&cbN,curDepth,maxDepth,secs,movNum,sNBMoves,hint,bestW,bestB);
+	if(hint == FBHINT_QUICK)
+		iRes = cb_qfindbest(&cbN,curDepth,maxDepth,secs,movNum,sNBMoves,hint,bestW,bestB);
+	else
+		iRes = cb_findbest(&cbN,curDepth,maxDepth,secs,movNum,sNBMoves,hint,bestW,bestB);
 	strcat(sNextBestMoves,sNBMoves); // FIXME: CAN BE REMOVED, CROSSVERIFY i.e sNBMoves can be replaced with sNextBestMoves in findbest
 #ifdef DO_HANDLEKILLED
 	if(cbN.wk_killed || cbN.bk_killed) {
@@ -756,6 +759,8 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	if((cbC->wk_killed != 0) || (cbC->bk_killed != 0)) {
 		return valPWStatic;
 	}
+
+#if 0
 	//*depthReached = curDepth;
 	//The check for king underattack has to be thought thro and updated if required.
 	if((curDepth == maxDepth) || (cbC->wk_underattack > 1) || (cbC->bk_underattack > 1)) {
@@ -772,6 +777,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			return DO_ERROR;
 		return valPWStatic;
 	}
+#endif
 
 	// sideToMove is actually nextSideToMove from symantic perspective
 	// No point of checking what is the best move for the next side to move,
@@ -883,7 +889,10 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			mpH[xCur].movNum = movNum;
 			mpH[xCur].altMovNum = iCur;
 			mpH[xCur].sNextBestMoves = movsNBMoves[iCur];
-			mpH[xCur].hint = FBHINT_NORMAL;
+			if(curDepth >= maxDepth)
+				mpH[xCur].hint = FBHINT_QUICK;
+			else
+				mpH[xCur].hint = FBHINT_NORMAL;
 			mpH[xCur].bestW = bestW;
 			mpH[xCur].bestB = bestB;
 #ifdef USE_THREAD
@@ -1169,6 +1178,252 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	{
 	phash_find(gHashTable,cbC,iMaxVal,sNextBestMoves,curDepth,HTFIND_ADD);
 	}
+#endif
+	return iMaxVal; 
+}
+
+int cb_qfindbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves, int hint, int bestW, int bestB)
+{
+	int valPWStatic;
+	int val;
+	char sBuf[S1KTEMPBUFSIZE];
+	char movs[NUMOFPARALLELMOVES][32];
+	int movsEval[NUMOFPARALLELMOVES];
+	int iMCnt, iCur, jCur;
+	int iMaxPosVal,iMaxPosInd,iMaxNegVal,iMaxNegInd;
+	int iMaxVal, iMaxInd;
+	char sMaxPosNBMoves[MOVES_BUFSIZE],sMaxNegNBMoves[MOVES_BUFSIZE];
+	char s2LN[MOVES_BUFSIZE];
+	long lDTime = 0;
+	char movsNBMoves[NUMOFPARALLELMOVES][MOVES_BUFSIZE];
+	struct moveprocessHlpr mpH[NUMOFTHREADS];
+	int xCur;
+	int bShortCircuitSearch = 0;
+	int kingEntersCheckEval = 0;
+#ifdef USE_ABPRUNING
+	char sABPNextBestMoves[MOVES_BUFSIZE];
+	int iABPEval = 0;
+#endif
+#ifdef USE_BMPRUNING
+	char movsInitial[NUMOFPARALLELMOVES][32];
+	int tInd;
+	int movsInd[NUMOFPARALLELMOVES];
+	int iSkip;
+	int iTMCnt;
+	char *possibleBlundMove = NULL;
+#endif
+
+	valPWStatic = cb_evalpw(cbC);
+#ifdef CORRECTVALFOR_SIDETOMOVE
+	// FIXED: Should use the original sideToMove (i.e curDepth = 0) info and not the current sideToMove (curDepth > 0)
+	// Have to add a variable to struct cb to store the sideToMoveORIG
+	val = cb_valpw2valpstm(cbC->origSideToMove,valPWStatic); 
+#else
+	val = valPWStatic;
+#endif
+
+	lDTime = diff_clocktime(&gtsStart);
+	if((cbC->wk_killed != 0) || (cbC->bk_killed != 0)) {
+		return valPWStatic;
+	}
+
+	curDepth += 1;
+	iMaxPosVal = 0; iMaxNegVal = 0; iMaxPosInd = -1; iMaxNegInd = -1;
+#ifdef USE_BMPRUNING
+	iMCnt = moves_get(cbC,movsInitial,0);
+
+	for(iCur = 0; iCur < iMCnt; iCur+=1) {
+		char sTMov[32];
+		movsInd[iCur] = iCur;
+		memcpy(sTMov,movsInitial[iCur],10);
+		movsEval[iCur] = move_process(cbC,sTMov,curDepth,maxDepth,secs,movNum,iCur,movsNBMoves[iCur], FBHINT_STATICEVALONLY,bestW,bestB);
+	}
+	for(jCur = 0; jCur < iMCnt-1; jCur++) {
+		for(iCur = 0; iCur < (iMCnt-1-jCur); iCur+=1) {
+			if(movsEval[movsInd[iCur]] > movsEval[movsInd[iCur+1]]) {
+				continue;
+			} else {
+				tInd = movsInd[iCur];
+				movsInd[iCur] = movsInd[iCur+1];
+				movsInd[iCur+1] = tInd;
+			}
+		}
+	}
+	iSkip = 0;
+	possibleBlundMove = NULL;
+	if(cbC->sideToMove == STM_WHITE) {
+		for(jCur = 0; jCur < iMCnt; jCur++) {
+			if(movsEval[movsInd[jCur]] == DO_ERROR) {
+				iSkip++;
+				continue;
+			}
+			memcpy(movs[jCur-iSkip],movsInitial[movsInd[jCur]],10);
+		}
+		if(iMCnt > 1)
+			possibleBlundMove = movsInitial[movsInd[iMCnt-1]];
+	} else {
+		for(jCur = iMCnt-1; jCur >= 0; jCur--) {
+			memcpy(movs[iMCnt-1-jCur],movsInitial[movsInd[jCur]],10);
+			if((movsEval[movsInd[jCur]] == DO_ERROR) && (jCur != (iMCnt-1)) && (possibleBlundMove == NULL)) {
+				possibleBlundMove = movsInitial[movsInd[jCur+1]];
+			}
+		}
+	}
+	iMCnt = iMCnt - iSkip;
+#else
+	iMCnt = moves_get(cbC,movs,0);
+#endif
+
+
+#ifdef USE_BMPRUNING
+	iTMCnt = iMCnt;
+	if(curDepth > 2) {
+		if(curDepth < 6)
+			iTMCnt = 6;
+		else if(curDepth < 8)
+			iTMCnt = 4;
+		else if(curDepth < 10)
+			iTMCnt = 3;
+		else
+			iTMCnt = 2;
+	}
+	if(iMCnt > iTMCnt)
+		iMCnt = iTMCnt;
+#endif
+	bShortCircuitSearch = 0;
+	kingEntersCheckEval = 0;
+	for(jCur = 0; (jCur < iMCnt) && (bShortCircuitSearch == 0); jCur+=NUMOFTHREADS) {
+		for(iCur = jCur; iCur < (jCur+NUMOFTHREADS); iCur++) {
+			if(iCur >= iMCnt) {
+				continue;
+			}
+			xCur=iCur-jCur;
+			strcpy(movsNBMoves[iCur],"");
+			mpH[xCur].cbC = cbC;
+			mpH[xCur].sMov = movs[iCur];
+			mpH[xCur].curDepth = curDepth;
+			mpH[xCur].maxDepth = maxDepth;
+			mpH[xCur].secs = secs;
+			mpH[xCur].movNum = movNum;
+			mpH[xCur].altMovNum = iCur;
+			mpH[xCur].sNextBestMoves = movsNBMoves[iCur];
+			mpH[xCur].hint = FBHINT_QUICK;
+			mpH[xCur].bestW = bestW;
+			mpH[xCur].bestB = bestB;
+			{
+				moveprocess_hlpr(&mpH[xCur]);
+				movsEval[iCur] = mpH[xCur].iRes;
+			}
+		}
+
+		for(iCur = jCur; iCur < (jCur+NUMOFTHREADS); iCur++) {
+			if(iCur >= iMCnt) {
+				continue;
+			}
+			if(movsEval[iCur] == DO_ERROR) {
+				continue;
+			}
+			if(iMaxPosInd == -1) {
+				iMaxPosInd = iCur;
+				iMaxPosVal = movsEval[iCur];
+				iMaxNegInd = iCur;
+				iMaxNegVal = movsEval[iCur];
+				strcpy(sMaxPosNBMoves,movsNBMoves[iCur]);
+				strcpy(sMaxNegNBMoves,movsNBMoves[iCur]);
+			}
+#ifdef DO_FINDBEST_ONLYIFBETTER
+			if(movsEval[iCur] > iMaxPosVal) {
+#else
+			if(movsEval[iCur] >= iMaxPosVal) {
+#endif
+				iMaxPosVal = movsEval[iCur];
+				iMaxPosInd = iCur;
+				strcpy(sMaxPosNBMoves,movsNBMoves[iCur]);
+			}
+#ifdef DO_FINDBEST_ONLYIFBETTER
+			if(movsEval[iCur] < iMaxNegVal) {
+#else
+			if(movsEval[iCur] <= iMaxNegVal) {
+#endif
+				iMaxNegVal = movsEval[iCur];
+				iMaxNegInd = iCur;
+				strcpy(sMaxNegNBMoves,movsNBMoves[iCur]);
+			}
+
+#ifdef USE_ABPRUNING
+			if(cbC->sideToMove == STM_WHITE) {
+				if(movsEval[iCur] > bestW) {
+					bestW = movsEval[iCur];
+				}
+#ifdef DO_ABPRUN_ONLYIFBETTER
+				if(movsEval[iCur] > bestB) {
+#else
+				if(movsEval[iCur] >= bestB) {
+#endif
+					if(!bShortCircuitSearch) {
+					bShortCircuitSearch = 1;
+					sprintf(sABPNextBestMoves,"%s %s", cb_2longnot(movs[iCur],s2LN), movsNBMoves[iCur]);
+					iABPEval = movsEval[iCur];
+					}
+				}
+			} else {
+				if(movsEval[iCur] < bestB) {
+					bestB = movsEval[iCur];
+				}
+#ifdef DO_ABPRUN_ONLYIFBETTER
+				if(movsEval[iCur] < bestW) {
+#else
+				if(movsEval[iCur] <= bestW) {
+#endif
+					if(!bShortCircuitSearch) {
+					bShortCircuitSearch = 1;
+					sprintf(sABPNextBestMoves,"%s %s", cb_2longnot(movs[iCur],s2LN), movsNBMoves[iCur]);
+					iABPEval = movsEval[iCur];
+					}
+				}
+			}
+#endif
+		}
+	}
+
+#ifdef USE_ABPRUNING
+	if(bShortCircuitSearch) {
+		strncpy(sNextBestMoves,sABPNextBestMoves,MOVES_BUFSIZE);
+		return iABPEval;
+	}
+#endif
+
+	if(cbC->sideToMove == STM_WHITE) {
+		if(iMaxPosInd == -1) {
+			//iMaxVal = VALPW_WHITESTUCK_GOODFORBLACK;
+			iMaxVal = bestW;
+			iMaxInd = -1;
+			strcpy(sNextBestMoves,"WHITE_NOP");
+		} else {
+			iMaxVal = iMaxPosVal;
+			iMaxInd = iMaxPosInd;
+			sprintf(sNextBestMoves,"%s %s", cb_2longnot(movs[iMaxInd],s2LN), sMaxPosNBMoves);
+		}
+	} else {
+		if(iMaxNegInd == -1) {
+			//iMaxVal = VALPW_BLACKSTUCK_GOODFORWHITE;
+			iMaxVal = bestB;
+			iMaxInd = -1;
+			strcpy(sNextBestMoves,"BLACK_NOP");
+		} else {
+			iMaxVal = iMaxNegVal;
+			iMaxInd = iMaxNegInd;
+			sprintf(sNextBestMoves,"%s %s", cb_2longnot(movs[iMaxInd],s2LN), sMaxNegNBMoves);
+		}
+	}
+	
+
+#ifdef CORRECTVALFOR_SIDETOMOVE 
+	// DONE:TOTHINK:TOCHECK: Orig sideToMove or current sideToMove, assuming UCI expects current
+	// Rather UCI expects the eval score to be wrt the original sideToMove, when it gave the go command
+	val = cb_valpw2valpstm(cbC->origSideToMove,iMaxVal);
+#else
+	val = iMaxVal;
 #endif
 	return iMaxVal; 
 }
