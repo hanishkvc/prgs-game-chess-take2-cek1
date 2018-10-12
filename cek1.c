@@ -779,7 +779,6 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 			return DO_ERROR;
 		return valPWStatic;
 	}
-#endif
 
 	// sideToMove is actually nextSideToMove from symantic perspective
 	// No point of checking what is the best move for the next side to move,
@@ -795,6 +794,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 #endif
 		return DO_ERROR;
 	}
+#endif
 
 	if(hint == FBHINT_STATICEVALONLY) {
 		return valPWStatic;

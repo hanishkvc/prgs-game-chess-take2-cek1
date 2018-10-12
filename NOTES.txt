@@ -384,8 +384,8 @@ white perspective always, the performance against Toga and Stockfish
 improved, compared to the logic temporarily tried as mentioned in last
 para.
 
-However the way check is handled there definitely seems to be some issues
-also almost 5 years back, it was around that, that I was refactoring
+However the way king check is handled there definitely seems to be some
+issues also almost 5 years back, it was around that, that I was refactoring
 the code, but sadly for myself, I didn't get time at that time to continue
 further then.
 
@@ -396,7 +396,7 @@ corner cases in my logic exposed. Here Stockfish was running with depth
 of 4 or 5 and CEK1 at depth of 6
 
 In general if cek1 has a depth advantage of around 2 compared to competition
-it seems to do reasonably well.
+it seems to do reasonably ok.
 
 
 
