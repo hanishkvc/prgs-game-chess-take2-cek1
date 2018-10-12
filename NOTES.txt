@@ -337,3 +337,25 @@ for debugging issues with move selection logic.
 
 * Also wrt InDirect weightage, the farther/more pieces inbetween - less should be
   the points/weightage given.
+
+
+********************** 20181012
+
+Relooking at this logic after almost 5 years, so dont remember things
+correctly now
+
+fastmtab is the version to run, if I am not wrong, out of all the
+different versions and their options which I am compiling
+
+fastmtabxg is the debug version of the same potentially
+
+Also I stopped looking at the logic, when I was about to do a major
+refactoring of the logic at that time. A part of which I had started then.
+So it is in a kind of trishanku swarga i.e neither here nor there kind of
+mess now. And I have forgotten the intricacies of the logic now and the
+thought with which I had started that refactoring.
+
+NOT SURE if I had refactored out that qfindbest to help with identify
+danger to king in a better way or to evaluate the last board position
+in a depth first search in a better way or a combination or ... now
+stupid me, why I stopped spending time on it then !!!!!!

@@ -96,6 +96,8 @@ void send_resp(char *sBuf)
 	fflush(stdout);
 	dbg_log(fLog,"SENT:%s",sBuf);
 	fflush(fLog);
+	dbg_log(fLogM,"SENT:%s",sBuf);
+	fflush(fLogM);
 }
 
 int cb_strloc2bbpos(char *sMov)
@@ -1475,6 +1477,8 @@ int process_uci()
 	}
 	dbg_log(fLog,"GOT:%s\n",sCmd);
 	fflush(fLog);
+	dbgs_log(fLogM,"%d:GOT:%s\n",myPID,sCmd);
+	fflush(fLogM);
 
 #ifdef USE_HASHTABLE
 	strcpy(sPNBuf,"HT");
@@ -1497,20 +1501,19 @@ int process_uci()
 	strcat(sPNBuf,"EA");
 #endif
 
-	if(strncmp(sCmd,"uci",3) == 0) {
+	if(strncmp(sCmd,"ucinewgame",10) == 0) {
+	} else if(strncmp(sCmd,"uci",3) == 0) {
 		send_resp_ex(sTemp,S1KTEMPBUFSIZE,"id name %s-%s\n",PRG_VERSION,sPNBuf);
 		send_resp("id author hkvc\n");
 		send_resp("option name Ponder type check default true\n");
 		send_resp("option name Hash type spin default 1 min 1 max 100\n");
 		send_resp("option name depth type spin default 3 min 1 max 100\n");
 		send_resp("uciok\n");
-		dbgs_log(fLogM,"%d:GOT:uci\n",myPID);
 	}
 	if(strncmp(sCmd,"isready",7) == 0) {
 		send_resp("readyok\n");
 	}
 	if(strncmp(sCmd,"position",8) == 0) {
-		dbgs_log(fLogM,"%d:GOT:%s\n",myPID,sCmd);
 		if(process_position(&gb,sCmd) != 0)
 			send_resp("info string error parsing position");
 	}

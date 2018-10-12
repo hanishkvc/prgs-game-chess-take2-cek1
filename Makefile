@@ -17,8 +17,8 @@ cek1: cek1.c cek1.h moves.c evals.c generate_movebbs.c positioncmd.c positionhas
 	echo -n "#define PRG_VERSION \"CEK1 v" > __MAKE__PREFIX.h
 	date +%Y%m%d_%H%M\" > __MAKE__DT.h
 	cat __MAKE__PREFIX.h __MAKE__DT.h > makeheader.h
-	gcc -Wall -O2 -o cek1_pw cek1.c ${BASE4A_OPTS}
-	gcc -Wall -g  -o cek1_pwxg cek1.c ${BASE4A_OPTS} ${DBG_OPTS} ${BASE_OPTS}
+	#gcc -Wall -O2 -o cek1_pw cek1.c ${BASE4A_OPTS}
+	#gcc -Wall -g  -o cek1_pwxg cek1.c ${BASE4A_OPTS} ${DBG_OPTS} ${BASE_OPTS}
 	gcc -Wall -O2 -o cek1 cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${NORM_ADDOPTS}
 	gcc -Wall -g  -o cek1_xg cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${DBG_OPTS} ${BASE_OPTS}
 	gcc -Wall -O2 -o cek1_fast cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS}
@@ -30,8 +30,8 @@ cek1: cek1.c cek1.h moves.c evals.c generate_movebbs.c positioncmd.c positionhas
 	gcc -Wall -O2 -o cek1_fastmtbm cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} ${MT_OPTS} -DUSE_BMPRUNING
 	gcc -Wall -g -o cek1_fastmtbmxg cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} ${MT_OPTS} -DUSE_BMPRUNING
 	gcc -Wall -g -o cek1_fastmtxg cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${FAST_ADDOPTS} ${MT_OPTS}
-	gcc -Wall -O2 -o cek1_ht cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${HT_OPTS}
-	gcc -Wall -g  -pg -o cek1_htxg cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${HT_OPTS} ${DBG_OPTS}
+	#gcc -Wall -O2 -o cek1_ht cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${HT_OPTS}
+	#gcc -Wall -g  -pg -o cek1_htxg cek1.c ${BASE4A_OPTS} -DCORRECTVALFOR_SIDETOMOVE ${HT_OPTS} ${DBG_OPTS}
 
 
 install-base: cek1
