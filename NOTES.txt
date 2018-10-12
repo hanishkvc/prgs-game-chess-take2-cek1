@@ -359,3 +359,46 @@ NOT SURE if I had refactored out that qfindbest to help with identify
 danger to king in a better way or to evaluate the last board position
 in a depth first search in a better way or a combination or ... now
 stupid me, why I stopped spending time on it then !!!!!!
+
+******************* 20181012 p2
+
+TOTHINK: Should findbest and qfindbest return the eval result number from
+the perspective of white or black or the current side in that given depth
+in the depth first eval quest or the side at 0th depth which started that
+depth first eval quest.
+
+I have forgotten at one level what I had decided originally. So now I am
+getting confused at certain places as to whether the code is doing the
+right thing or not.
+
+So in qfindbest temporarly I have changed to return eval result from the
+side which started the depth first eval quest in the first place, but not
+sure I did the right thing or not.
+
+On running from sample tests with other engines like toga and stockfish
+and seeing the results, and then thinking thro once again I think the
+(q)findbest logics should return the eval value from whites perspective
+and other logics in the code are written to work with this assumption.
+So based on same on returning the logic back to return eval value from
+white perspective always, the performance against Toga and Stockfish
+improved, compared to the logic temporarily tried as mentioned in last
+para.
+
+However the way check is handled there definitely seems to be some issues
+also almost 5 years back, it was around that, that I was refactoring
+the code, but sadly for myself, I didn't get time at that time to continue
+further then.
+
+Also the value given to pinning of opponent doesn't seem proper, and or
+some other issue in eval and search logic is there. The test game against
+stockfish saved as 2100- under TestCases/games/20181012 has some revealing
+corner cases in my logic exposed. Here Stockfish was running with depth
+of 4 or 5 and CEK1 at depth of 6
+
+In general if cek1 has a depth advantage of around 2 compared to competition
+it seems to do reasonably well.
+
+
+
+
+

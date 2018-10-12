@@ -1206,14 +1206,6 @@ int cb_qfindbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNu
 	char sABPNextBestMoves[MOVES_BUFSIZE];
 	int iABPEval = 0;
 #endif
-#ifdef USE_BMPRUNING
-	char movsInitial[NUMOFPARALLELMOVES][32];
-	int tInd;
-	int movsInd[NUMOFPARALLELMOVES];
-	int iSkip;
-	int iTMCnt;
-	char *possibleBlundMove = NULL;
-#endif
 
 	valPWStatic = cb_evalpw(cbC);
 #ifdef CORRECTVALFOR_SIDETOMOVE
@@ -1229,69 +1221,14 @@ int cb_qfindbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNu
 		return valPWStatic;
 	}
 
+	if (curDepth > maxDepth) {
+		return valPWStatic;
+	}
+
 	curDepth += 1;
 	iMaxPosVal = 0; iMaxNegVal = 0; iMaxPosInd = -1; iMaxNegInd = -1;
-#ifdef USE_BMPRUNING
-	iMCnt = moves_get(cbC,movsInitial,0);
-
-	for(iCur = 0; iCur < iMCnt; iCur+=1) {
-		char sTMov[32];
-		movsInd[iCur] = iCur;
-		memcpy(sTMov,movsInitial[iCur],10);
-		movsEval[iCur] = move_process(cbC,sTMov,curDepth,maxDepth,secs,movNum,iCur,movsNBMoves[iCur], FBHINT_STATICEVALONLY,bestW,bestB);
-	}
-	for(jCur = 0; jCur < iMCnt-1; jCur++) {
-		for(iCur = 0; iCur < (iMCnt-1-jCur); iCur+=1) {
-			if(movsEval[movsInd[iCur]] > movsEval[movsInd[iCur+1]]) {
-				continue;
-			} else {
-				tInd = movsInd[iCur];
-				movsInd[iCur] = movsInd[iCur+1];
-				movsInd[iCur+1] = tInd;
-			}
-		}
-	}
-	iSkip = 0;
-	possibleBlundMove = NULL;
-	if(cbC->sideToMove == STM_WHITE) {
-		for(jCur = 0; jCur < iMCnt; jCur++) {
-			if(movsEval[movsInd[jCur]] == DO_ERROR) {
-				iSkip++;
-				continue;
-			}
-			memcpy(movs[jCur-iSkip],movsInitial[movsInd[jCur]],10);
-		}
-		if(iMCnt > 1)
-			possibleBlundMove = movsInitial[movsInd[iMCnt-1]];
-	} else {
-		for(jCur = iMCnt-1; jCur >= 0; jCur--) {
-			memcpy(movs[iMCnt-1-jCur],movsInitial[movsInd[jCur]],10);
-			if((movsEval[movsInd[jCur]] == DO_ERROR) && (jCur != (iMCnt-1)) && (possibleBlundMove == NULL)) {
-				possibleBlundMove = movsInitial[movsInd[jCur+1]];
-			}
-		}
-	}
-	iMCnt = iMCnt - iSkip;
-#else
 	iMCnt = moves_get(cbC,movs,0);
-#endif
 
-
-#ifdef USE_BMPRUNING
-	iTMCnt = iMCnt;
-	if(curDepth > 2) {
-		if(curDepth < 6)
-			iTMCnt = 6;
-		else if(curDepth < 8)
-			iTMCnt = 4;
-		else if(curDepth < 10)
-			iTMCnt = 3;
-		else
-			iTMCnt = 2;
-	}
-	if(iMCnt > iTMCnt)
-		iMCnt = iTMCnt;
-#endif
 	bShortCircuitSearch = 0;
 	kingEntersCheckEval = 0;
 	for(jCur = 0; (jCur < iMCnt) && (bShortCircuitSearch == 0); jCur+=NUMOFTHREADS) {
@@ -1427,7 +1364,7 @@ int cb_qfindbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNu
 #else
 	val = iMaxVal;
 #endif
-	return iMaxVal; 
+	return iMaxVal;
 }
 
 
