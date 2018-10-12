@@ -9,12 +9,34 @@
 [Time "20:07:00"]
 [PlyCount "98"]
 
-1. a4 d5 2. d4 e6 3. c3 Nf6 4. b4 Nc6 5. b5 Nb8 6. h4 a6 7. bxa6 Nxa6 8. g4 Bd6
-9. e3 O-O 10. g5 Ne8 11. f4 Nb8 12. Ba3 Nc6 13. h5 Bxa3 14. Nxa3 Ne7 15. Qb3
-Qd7 16. Nb1 Nf5 17. Kf2 Ned6 18. Qb4 Ne4+ 19. Kf3 e5 20. dxe5 Ne7 21. Rh4 f6
-22. exf6 Nf5 23. Rh1 Re8 24. fxg7 c5 25. Qb3 Rd8 26. Bh3 Kxg7 27. h6+ Kh8 28.
-c4 dxc4 29. Qb2+ c3 30. Nxc3 Nh4+ 31. Ke2 Qd3+ 32. Ke1 Qxc3+ 33. Qxc3+ Nxc3 34.
-Bxc8 Ng2+ 35. Kf2 Rd2+ 36. Kf1 Rxc8 37. Ra3 Nd5 38. Rh3 c4 39. e4 Re8 40. f5
-Rxe4 41. Nf3 Nge3+ 42. Rxe3 Nxe3+ 43. Ke1 Rc2 44. Nd2 Re5 45. f6 Ng2+ 46. Kd1
-Ra2 47. Nf3 Ree2 48. f7 Ne3+ 49. Kc1 Ra1# 0-1
+1. a4 d5 2. d4 e6 3. c3 Nf6 4. b4 Nc6 5. b5 Nb8 6. h4 a6 7. bxa6 Nxa6 8. g4
+({Better is} 8. Nf3 Ne4 {-0.67/2}) 8... Bd6 9. e3 O-O 10. g5 Ne8 ({Better is}
+10... Ne4 11. Nf3 {-1.60/2}) 11. f4 Nb8 12. Ba3 Nc6 13. h5 Bxa3 14. Nxa3 Ne7
+({Better is} 14... Nd6 15. Nf3 {-0.87/2}) 15. Qb3 ({Better is} 15. h6 Nd6 16.
+hxg7 Kxg7 {-0.02/2}) 15... Qd7 16. Nb1 ({Better is} 16. Nf3 Qxa4 17. Qxa4 Rxa4
+{-0.48/2}) 16... Nf5 17. Kf2 Ned6 18. Qb4 ({Better is} 18. Nd2 b6 {-1.01/2})
+18... Ne4+ 19. Kf3 e5 20. dxe5 Ne7 ({Better is} 20... Nfg3 21. Bh3 {-2.21/2})
+21. Rh4 f6 ({Better is} 21... Nf5 22. Rh2 {-1.90/2}) 22. exf6 Nf5 23. Rh1
+({Better is} 23. Rh2 gxf6 24. Nd2 fxg5 25. Nxe4 dxe4+ 26. Qxe4 gxf4 27. exf4
+{-1.21/2}) 23... Re8 ({Better is} 23... Nd4+ 24. exd4 Qg4+ 25. Ke3 Qg3+ 26. Nf3
+Qf2+ 27. Kd3 Nc5+ 28. dxc5 Bf5+ 29. Qe4 Bxe4# {-#32767}) 24. fxg7 c5 ({Better
+is} 24... Nfd6 25. Bh3 Qxg7 26. Bxc8 Raxc8 {-0.68/2}) 25. Qb3 ({Better is} 25.
+Qb5 Qf7 {-0.13/2}) 25... Rd8 ({Better is} 25... Nd4+ 26. exd4 Qg4+ 27. Ke3 Qg3+
+28. Ke2 Bg4+ 29. Nf3 Bxf3+ 30. Kd3 c4+ 31. Kc2 cxb3+ 32. Kxb3 Bxh1 {-12.96/2})
+26. Bh3 Kxg7 27. h6+ Kh8 28. c4 dxc4 29. Qb2+ ({Better is} 29. Bxf5 Qxf5 30.
+Qb2+ c3 31. Nxc3 Nxg5+ 32. Kf2 {-0.52/2}) 29... c3 30. Nxc3 ({Better is} 30.
+Qb6 Qd5 31. Bxf5 Bxf5 {-1.16/2}) 30... Nh4+ 31. Ke2 ({Better is} 31. Ke2 Qd3+
+32. Ke1 Nxc3 33. Bxc8 Qxe3+ 34. Ne2 Nf3+ 35. Kf1 {-1.89/2}) 31... Qd3+ 32. Ke1
+({Better is} 32. Ke1 Qxe3+ 33. Nce2+ Rd4 34. Rh2 Bxh3 35. Ra3 Ng2+ 36. Rxg2
+{-2.65/4}) 32... Qxc3+ ({Better is} 32... Nxc3 33. Ne2 Nf3+ 34. Kf2 {-3.35/2})
+33. Qxc3+ Nxc3 34. Bxc8 Ng2+ 35. Kf2 Rd2+ 36. Kf1 ({Better is} 36. Kg3 Rxc8 37.
+Nf3 Ne4+ 38. Kh3 {-1.71/2}) 36... Rxc8 37. Ra3 ({Better is} 37. Rh3 Rcd8
+{-2.58/2}) 37... Nd5 ({Better is} 37... Nxe3+ 38. Ke1 Rc2 39. Rb3 {-3.64/2})
+38. Rh3 ({Better is} 38. Rh3 Rd8 {-2.36/2}) 38... c4 ({Better is} 38... Re8 39.
+Ne2 Ngxe3+ 40. Ke1 {-3.90/2}) 39. e4 ({Better is} 39. Ne2 c3 40. Kf2 {-2.35/2})
+39... Re8 40. f5 Rxe4 41. Nf3 ({Better is} 41. Nf3 Nge3+ 42. Ke1 {-3.85/2})
+41... Nge3+ 42. Rxe3 Nxe3+ 43. Ke1 Rc2 ({Better is} 43... Rd1+ 44. Ke2 c3 45.
+g6 {-5.01/2}) 44. Nd2 ({Better is} 44. Nd2 Re8 {-4.48/2}) 44... Re5 45. f6 Ng2+
+({Better is} 45... Kg8 46. Rf3 {-5.03/2}) 46. Kd1 ({Better is} 46. Kd1 Ne1
+{-4.09/2}) 46... Ra2 47. Nf3 Ree2 48. f7 Ne3+ 49. Kc1 Ra1# 0-1
 

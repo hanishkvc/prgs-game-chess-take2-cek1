@@ -393,7 +393,7 @@ Also the value given to pinning of opponent doesn't seem proper, and or
 some other issue in eval and search logic is there. The test game against
 stockfish saved as 2100- under TestCases/games/20181012 has some revealing
 corner cases in my logic exposed. Here Stockfish was running with depth
-of 4 or 5 and CEK1 at depth of 6
+of 4 and CEK1 at depth of 6
 
 In general if cek1 has a depth advantage of around 2 compared to competition
 it seems to do reasonably ok.
