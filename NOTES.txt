@@ -384,6 +384,10 @@ white perspective always, the performance against Toga and Stockfish
 improved, compared to the logic temporarily tried as mentioned in last
 para.
 
+NOTE: Rather only when communicating to the UCI GUI, a conversion maybe
+required, looking at what I was doing originally and inturn have reverted
+back to after above experiment.
+
 However the way king check is handled there definitely seems to be some
 issues also almost 5 years back, it was around that, that I was refactoring
 the code, but sadly for myself, I didn't get time at that time to continue
@@ -397,6 +401,29 @@ of 4 and CEK1 at depth of 6
 
 In general if cek1 has a depth advantage of around 2 compared to competition
 it seems to do reasonably ok.
+
+
+****************** 20181013 P1
+
+Have to look at parsing arguments sent to go command like depth wtime etc
+and inturn handle them suitably.
+
+Have undefd (rather commented out) USE_EVALPOS, thus the eval function is
+a simple material based (potentially centipawn) value now.
+
+It appears like my engine and other engines are using the depth differently.
+In my logic, each movement of a piece whether my side or the opponent side
+is considered as individual depths. While the other engines seem to be
+using a pair of self and opponent moves as a single depth (i.e instead of
+my two depths for such a situation). If so it would mean that I would have
+to limit the opponents to half the depth of what I am using. OR ELSE change
+my logic to also mirror other engines behaviour. RATHER i have to check
+the UCI protocol documentation once to see what they consider as depth.
+
+Also have to see, if I can speed up the move generation logic further.
+That could be acting as a bottle neck in my case. Also I have to introduce
+a proper fast hash based cross check logic to avoid re-evaluation of already
+evald positions.
 
 
 
