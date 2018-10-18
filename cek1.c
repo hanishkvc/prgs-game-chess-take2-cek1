@@ -1187,8 +1187,6 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 int cb_qfindbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum, char *sNextBestMoves, int hint, int bestW, int bestB)
 {
 	int valPWStatic;
-	int val;
-	char sBuf[S1KTEMPBUFSIZE];
 	char movs[NUMOFPARALLELMOVES][32];
 	int movsEval[NUMOFPARALLELMOVES];
 	int iMCnt, iCur, jCur;
@@ -1201,20 +1199,12 @@ int cb_qfindbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNu
 	struct moveprocessHlpr mpH[NUMOFTHREADS];
 	int xCur;
 	int bShortCircuitSearch = 0;
-	int kingEntersCheckEval = 0;
 #ifdef USE_ABPRUNING
 	char sABPNextBestMoves[MOVES_BUFSIZE];
 	int iABPEval = 0;
 #endif
 
 	valPWStatic = cb_evalpw(cbC);
-#ifdef CORRECTVALFOR_SIDETOMOVE
-	// FIXED: Should use the original sideToMove (i.e curDepth = 0) info and not the current sideToMove (curDepth > 0)
-	// Have to add a variable to struct cb to store the sideToMoveORIG
-	val = cb_valpw2valpstm(cbC->origSideToMove,valPWStatic); 
-#else
-	val = valPWStatic;
-#endif
 
 	lDTime = diff_clocktime(&gtsStart);
 	if((cbC->wk_killed != 0) || (cbC->bk_killed != 0)) {
@@ -1230,7 +1220,6 @@ int cb_qfindbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNu
 	iMCnt = moves_get(cbC,movs,0);
 
 	bShortCircuitSearch = 0;
-	kingEntersCheckEval = 0;
 	for(jCur = 0; (jCur < iMCnt) && (bShortCircuitSearch == 0); jCur+=NUMOFTHREADS) {
 		for(iCur = jCur; iCur < (jCur+NUMOFTHREADS); iCur++) {
 			if(iCur >= iMCnt) {
@@ -1356,14 +1345,6 @@ int cb_qfindbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNu
 		}
 	}
 	
-
-#ifdef CORRECTVALFOR_SIDETOMOVE 
-	// DONE:TOTHINK:TOCHECK: Orig sideToMove or current sideToMove, assuming UCI expects current
-	// Rather UCI expects the eval score to be wrt the original sideToMove, when it gave the go command
-	val = cb_valpw2valpstm(cbC->origSideToMove,iMaxVal);
-#else
-	val = iMaxVal;
-#endif
 	return iMaxVal;
 }
 
@@ -1436,6 +1417,13 @@ int process_uci()
 #endif
 #ifdef USE_MOVELISTEVALAGING
 	strcat(sPNBuf,"EA");
+#endif
+#ifdef USE_POSEVAL
+#ifdef USE_POSKNIGHTEVAL
+	strcat(sPNBuf,"EPK");
+#else
+	strcat(sPNBuf,"EP");
+#endif
 #endif
 
 	if(strncmp(sCmd,"ucinewgame",10) == 0) {
