@@ -748,17 +748,10 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 	pthread_attr_t attr;
 #endif
 
-	valPWStatic = cb_evalpw(cbC);
-#ifdef CORRECTVALFOR_SIDETOMOVE
-	// FIXED: Should use the original sideToMove (i.e curDepth = 0) info and not the current sideToMove (curDepth > 0)
-	// Have to add a variable to struct cb to store the sideToMoveORIG
-	val = cb_valpw2valpstm(cbC->origSideToMove,valPWStatic); 
-#else
-	val = valPWStatic;
-#endif
-
+	cb_check_kingkilled(cbC);
 	lDTime = diff_clocktime(&gtsStart);
 	if((cbC->wk_killed != 0) || (cbC->bk_killed != 0)) {
+		valPWStatic = cb_evalpw(cbC);
 		return valPWStatic;
 	}
 
@@ -797,6 +790,7 @@ int cb_findbest(struct cb *cbC, int curDepth, int maxDepth, int secs, int movNum
 #endif
 
 	if(hint == FBHINT_STATICEVALONLY) {
+		valPWStatic = cb_evalpw(cbC);
 		return valPWStatic;
 	}
 

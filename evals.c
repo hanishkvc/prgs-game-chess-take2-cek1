@@ -1,5 +1,5 @@
 
-#define USE_POSEVAL 1
+//#define USE_POSEVAL 1
 //#define USE_POSKNIGHTEVAL 1
 #undef USE_POSKNIGHTEVAL
 
@@ -384,6 +384,19 @@ int cb_evalpw_king_underattack(struct cb *cbC)
 	dbg_log(fLog,"INFO:kingunderattack: valW[%d] - valB[%d]\n", valW, valB);
 #endif
 	return ((valW-valB)/EVALSKINGUNDERATTACK_DIV);
+}
+
+
+void cb_check_kingkilled(struct cb *cbC)
+{
+	int valTemp;
+
+	valTemp = __builtin_popcountll(cbC->bk)*VKING;
+	if(valTemp == 0)
+		cbC->bk_killed = 1;
+	valTemp = __builtin_popcountll(cbC->wk)*VKING;
+	if(valTemp == 0)
+		cbC->wk_killed = 1;
 }
 
 
