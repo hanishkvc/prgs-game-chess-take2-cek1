@@ -140,23 +140,21 @@ int moves_forbishop(struct cb *cbC, char movs[512][32], int iCur)
 			posD -= 1;
 			bbD &= ~(1ULL << posD);			
 
+			if(evalhlpr_diagattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
+#ifdef DEBUG_MOVEGENPRINT
+				dbg_log(fLog,"INFO:moves_forbishop: DROPPING mov %d->%d as others inbetween\n", posS, posD);
+#endif
+				continue;
+			} else {
+#ifdef DEBUG_MOVEGENPRINT
+				dbg_log(fLog,"INFO:moves_forbishop: DOING mov %d->%d no blockage inbetween\n", posS, posD);
+#endif
+			}
 			movs[iCur][0] = 'B';
 			movs[iCur][1] = posS;
 			movs[iCur][2] = '-';
 			movs[iCur][3] = posD;
 			movs[iCur][4] = 0;
-
-			if(evalhlpr_diagattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
-#ifdef DEBUG_MOVEGENPRINT				
-				dbg_log(fLog,"INFO:moves_forbishop: DROPPING mov[%s] as others inbetween\n",movs[iCur]);
-#endif
-				movs[iCur][0] = 0;
-				continue;
-			} else {
-#ifdef DEBUG_MOVEGENPRINT				
-				dbg_log(fLog,"INFO:moves_forbishop: DOING mov[%s] no blockage inbetween\n",movs[iCur]);
-#endif
-			}
 
 			iCur += 1;
 		}
@@ -191,19 +189,25 @@ int moves_forrook(struct cb *cbC, char movs[512][32], int iCur)
 			posD -= 1;
 			bbD &= ~(1ULL << posD);			
 
+			if(evalhlpr_lineattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
+#ifdef DEBUG_MOVEGENPRINT
+				// this movs setup added here TEMP to only show that mov[%s] wouldn't have worked,
+				// and the new %d->%d related logic is what will give proper values
+				movs[iCur][0] = 'R';
+				movs[iCur][1] = posS;
+				movs[iCur][2] = '-';
+				movs[iCur][3] = posD;
+				movs[iCur][4] = 0;
+				dbg_log(fLog,"INFO:moves_forrook: DROPPING mov[%s] %d->%d as others inbetween\n", movs[iCur], posS, posD);
+				strncpy(movs[iCur],"",32);
+#endif
+				continue;
+			}
 			movs[iCur][0] = 'R';
 			movs[iCur][1] = posS;
 			movs[iCur][2] = '-';
 			movs[iCur][3] = posD;
 			movs[iCur][4] = 0;
-
-			if(evalhlpr_lineattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
-#ifdef DEBUG_MOVEGENPRINT				
-				dbg_log(fLog,"INFO:moves_forrook: DROPPING mov[%s] as others inbetween\n",movs[iCur]);
-#endif
-				strncpy(movs[iCur],"",32);
-				continue;
-			}
 
 			iCur += 1;
 		}
@@ -240,19 +244,17 @@ int moves_forqueen(struct cb *cbC, char movs[512][32], int iCur)
 			posD -= 1;
 			bbD &= ~(1ULL << posD);			
 
+			if(evalhlpr_lineattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
+#ifdef DEBUG_MOVEGENPRINT
+				dbg_log(fLog,"INFO:moves_forqueen: DROPPING mov %d->%d as others inbetween\n", posS, posD);
+#endif
+				continue;
+			}
 			movs[iCur][0] = 'Q';
 			movs[iCur][1] = posS;
 			movs[iCur][2] = '-';
 			movs[iCur][3] = posD;
 			movs[iCur][4] = 0;
-
-			if(evalhlpr_lineattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
-#ifdef DEBUG_MOVEGENPRINT				
-				dbg_log(fLog,"INFO:moves_forqueen: DROPPING mov[%s] as others inbetween\n",movs[iCur]);
-#endif
-				strncpy(movs[iCur],"",32);
-				continue;
-			}
 
 			iCur += 1;
 		}
@@ -269,19 +271,17 @@ int moves_forqueen(struct cb *cbC, char movs[512][32], int iCur)
 			posD -= 1;
 			bbD &= ~(1ULL << posD);			
 
+			if(evalhlpr_diagattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
+#ifdef DEBUG_MOVEGENPRINT
+				dbg_log(fLog,"INFO:moves_forqueen: DROPPING mov %d->%d as others inbetween\n", posS, posD);
+#endif
+				continue;
+			}
 			movs[iCur][0] = 'Q';
 			movs[iCur][1] = posS;
 			movs[iCur][2] = '-';
 			movs[iCur][3] = posD;
 			movs[iCur][4] = 0;
-
-			if(evalhlpr_diagattack(cbC,posS,posD,LINEATTACK_HINT_PAWNSTART2CHECKINBETWEEN) != ATTACK_YES) {
-#ifdef DEBUG_MOVEGENPRINT				
-				dbg_log(fLog,"INFO:moves_forqueen: DROPPING mov[%s] as others inbetween\n",movs[iCur]);
-#endif
-				strncpy(movs[iCur],"",32);
-				continue;
-			}
 
 			iCur += 1;
 		}
