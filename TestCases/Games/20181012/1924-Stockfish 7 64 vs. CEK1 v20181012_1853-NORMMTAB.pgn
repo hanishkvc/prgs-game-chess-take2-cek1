@@ -1,0 +1,17 @@
+[Event "Local Event"]
+[Site "Local Site"]
+[Date "2018.10.12"]
+[Round "1"]
+[White "Stockfish 7 64"]
+[Black "CEK1 v20181012_1853-NORMMTAB"]
+[Result "1/2-1/2"]
+[ECO "C16"]
+[Time "19:18:00"]
+[PlyCount "67"]
+
+1. d4 e6 2. e4 d5 3. Nc3 Bb4 4. e5 f5 5. Bd2 Nc6 6. a3 Bxc3 7. bxc3 g6 8. Rb1
+Qe7 9. Nf3 Qxa3 10. Rb3 Qf8 11. c4 a5 12. Rb5 dxc4 13. h4 b6 14. Bc3 Na7 15.
+Rb2 b5 16. Bd2 h5 17. g3 c6 18. Bxa5 Qa3 19. Bg2 Qxb2 20. Ng5 b4 21. Bb6 Bd7
+22. O-O Qa3 23. Bc5 Qa4 24. Qb1 b3 25. Qb2 Qa2 26. Qc1 bxc2 27. Qf4 Qb2 28. Qd2
+c3 29. Qe3 Nh6 30. Qf4 Nf7 31. Bf3 Nh6 32. Bg2 Nf7 33. Bf3 Nh6 34. Bg2 1/2-1/2
+

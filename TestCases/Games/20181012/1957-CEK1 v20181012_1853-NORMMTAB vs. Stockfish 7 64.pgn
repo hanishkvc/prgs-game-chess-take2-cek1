@@ -1,0 +1,21 @@
+[Event "Local Event"]
+[Site "Local Site"]
+[Date "2018.10.12"]
+[Round "1"]
+[White "CEK1 v20181012_1853-NORMMTAB"]
+[Black "Stockfish 7 64"]
+[Result "1-0"]
+[ECO "A00"]
+[Time "19:27:00"]
+[PlyCount "113"]
+
+1. a4 e5 2. d4 Qf6 3. dxe5 Qe6 4. f4 Qc6 5. b3 Be7 6. h4 Qg6 7. Qd3 d5 8. h5
+Qc6 9. c3 f6 10. a5 Nh6 11. Qg3 Nf5 12. Qd3 fxe5 13. fxe5 Rf8 14. g4 Nh4 15.
+Ba3 Bc5 16. Rxh4 Bf2+ 17. Kd1 Rh8 18. Rh1 d4 19. Nf3 dxc3 20. Qxc3 a6 21. Qxc6+
+Nxc6 22. Rh2 Be3 23. Bb2 h6 24. Bh3 Be6 25. b4 Bf4 26. Rh1 Nxb4 27. Na3 Nc6 28.
+Nb1 Nb4 29. Na3 Nc6 30. Nb1 O-O-O+ 31. Kc2 Bc4 32. g5+ Kb8 33. gxh6 Bxh6 34.
+Re1 Be3 35. Nc3 Rxh5 36. Bg4 Rh6 37. Bc1 Bf2 38. Rf1 Nb4+ 39. Kb1 Bg3 40. Bxh6
+Na2 41. Rxa2 gxh6 42. Rd2 Rg8 43. Bh3 b5 44. Rfd1 b4 45. Ne4 Bf4 46. e3 Bd5 47.
+Rxd5 Bxe3 48. e6 Re8 49. Nf6 c6 50. Nxe8 cxd5 51. e7 Bc5 52. Nd6 Ka7 53. Rxd5
+Bxd6 54. Rxd6 Kb7 55. e8=Q b3 56. Qe7+ Kb8 57. Rd8# 1-0
+

@@ -1,0 +1,23 @@
+[Event "Local Event"]
+[Site "Local Site"]
+[Date "2018.10.12"]
+[Round "1"]
+[White "Stockfish 7 64"]
+[Black "CEK1 v20181012_1853-NORMMTAB"]
+[Result "1/2-1/2"]
+[ECO "B01"]
+[Time "19:05:00"]
+[PlyCount "135"]
+
+1. e4 d5 2. Qe2 dxe4 3. h4 f5 4. d3 exd3 5. Qd1 Qd5 6. Be3 e5 7. Qxd3 c6 8.
+Qxd5 cxd5 9. f4 d4 10. Bd2 Nc6 11. fxe5 Nxe5 12. Be2 Nf6 13. Rh3 Kf7 14. Nf3
+Nxf3+ 15. Rxf3 h6 16. Rf4 Ne4 17. g4 Bd6 18. Rxf5+ Bxf5 19. gxf5 Bg3+ 20. Kf1
+Bxh4 21. Bf3 Ng3+ 22. Kg2 Nxf5 23. Bd5+ Kf6 24. Kf3 Ne7 25. Bxb7 Rab8 26. Be4
+Rxb2 27. Bc1 Rbb8 28. c3 dxc3 29. Nxc3 h5 30. Bd2 a5 31. Ne2 a4 32. Rh1 Bg5 33.
+Bc3+ Kf7 34. Be5 Rb5 35. Bc3 a3 36. Nd4 Rc5 37. Bb4 Rc4 38. Bxe7 Kxe7 39. Rg1
+Bd2 40. Rxg7+ Kf6 41. Rd7 Rc3+ 42. Kg2 Rg8+ 43. Kf1 Rc1+ 44. Kf2 Be1+ 45. Ke3
+h4 46. Ne2 Ra1 47. Nd4 Rxa2 48. Rd6+ Kg5 49. Nf3+ Kh5 50. Bh7 Bf2+ 51. Ke4 Rg2
+52. Kd5 h3 53. Bd3 h2 54. Nxh2 Rxh2 55. Rc6 Kg4 56. Rg6+ Kf3 57. Be4+ Ke3 58.
+Ke5 Kd2 59. Rg2 Rxg2 60. Bxg2 Rb2 61. Be4 a2 62. Kf4 a1=Q 63. Kg4 Kc1 64. Kf5
+Kd1 65. Kg5 Kc1 66. Kf5 Kd1 67. Kg5 Kc1 68. Kf5 1/2-1/2
+

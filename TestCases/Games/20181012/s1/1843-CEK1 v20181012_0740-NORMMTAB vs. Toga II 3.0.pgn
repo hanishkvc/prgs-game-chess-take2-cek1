@@ -1,0 +1,18 @@
+[Event "Local Event"]
+[Site "Local Site"]
+[Date "2018.10.12"]
+[Round "1"]
+[White "CEK1 v20181012_0740-NORMMTAB"]
+[Black "Toga II 3.0"]
+[Result "0-1"]
+[ECO "A00"]
+[Time "18:40:00"]
+[PlyCount "66"]
+
+1. a4 d5 2. d4 Nf6 3. f3 Nc6 4. g4 h5 5. b4 hxg4 6. fxg4 Bxg4 7. b5 Nb4 8. c3
+Qd6 9. Ba3 Rxh2 10. Rxh2 Qxh2 11. Nf3 Qg3+ 12. Kd2 Ne4+ 13. Kc1 Nf2 14. Qe1
+Bxf3 15. Qd2 Ne4 16. Qd1 Qf4+ 17. Kb2 Nf2 18. Qd2 Nbd3+ 19. exd3 Nd1+ 20. Kc1
+Qf5 21. c4 Bg4 22. Be2 Nf2 23. Nc3 Bxe2 24. Nxe2 Nxd3+ 25. Kc2 dxc4 26. Ng3 Qf3
+27. Nf1 Rd8 28. Nh2 Qe4 29. Rg1 Rxd4 30. Qa5 Ne1+ 31. Kb2 Qc2+ 32. Ka1 Rd1+ 33.
+Bc1 Rxc1# 0-1
+

@@ -1,0 +1,17 @@
+[Event "Local Event"]
+[Site "Local Site"]
+[Date "2018.10.12"]
+[Round "1"]
+[White "CEK1 v20181012_0740-NORMMTAB"]
+[Black "C Hanish Menon"]
+[Result "1-0"]
+[ECO "A00"]
+[TimeControl "300+0"]
+[Time "17:48:00"]
+[WhiteClock "0:03:52.719"]
+[BlackClock "23:59:59.833"]
+[PlyCount "25"]
+
+1. a4 f6 2. e3 Nc6 3. c3 f5 4. d3 e6 5. b3 Nge7 6. e4 Rb8 7. exf5 Ra8 8. Qh5+
+Ng6 9. fxg6 hxg6 10. Qxg6+ Ke7 11. Bg5+ Kd6 12. Bxd8 Ne5 13. Qg3 1-0
+
