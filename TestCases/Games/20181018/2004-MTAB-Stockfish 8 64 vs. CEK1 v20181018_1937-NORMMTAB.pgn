@@ -1,0 +1,15 @@
+[Event "Local Event"]
+[Site "Local Site"]
+[Date "2018.10.18"]
+[Round "1"]
+[White "Stockfish 8 64"]
+[Black "CEK1 v20181018_1937-NORMMTAB"]
+[Result "1-0"]
+[ECO "A00"]
+[Time "19:47:00"]
+[PlyCount "35"]
+
+1. Nc3 Nc6 2. e3 a5 3. e4 Nb4 4. a3 Nc6 5. Nf3 Nb8 6. Bc4 Nc6 7. d3 Nb8 8. Bg5
+a4 9. O-O c6 10. Ne5 d5 11. exd5 Qa5 12. Nxf7 Kxf7 13. Qf3+ Kg6 14. dxc6 Nxc6
+15. Bf7+ Kxg5 16. Qh5+ Kf4 17. Nd5+ Qxd5 18. g3# 1-0
+

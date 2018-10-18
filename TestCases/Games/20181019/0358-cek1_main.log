@@ -1,0 +1,606 @@
+SENT:CEK1 v20181019_0219
+25823:GOT:uci
+
+SENT:id name CEK1 v20181019_0219-NORMMTAB
+SENT:id author hkvc
+SENT:option name Ponder type check default true
+SENT:option name Hash type spin default 1 min 1 max 100
+SENT:option name depth type spin default 3 min 1 max 100
+SENT:uciok
+25823:GOT:setoption name depth value 6
+
+25823:GOT:setoption name Ponder value false
+
+25823:GOT:isready
+
+SENT:readyok
+25823:GOT:ucinewgame
+
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp 500 depth 5 nodes 1210429949 time 17097 pv Nb4a6  Nf3d4 f6g5 Nd4c6 Qd8c8 Nc6a5 Qc8c4 
+SENT:info score cp -300 depth 5 nodes 1251415202 time 18609 pv Nb4c6  d5c6 Kd7c8 Rd2d8 Kc8d8 Qh2h1 f6g5 
+SENT:info score cp 400 depth 5 nodes 1381689266 time 19129 pv Nb4d3  c2d3 Bg4f3 g2f3 f6g5 Qh2h1 Ra5b5 
+SENT:info score cp 200 depth 5 nodes 1535729030 time 21305 pv Nh1f2  a3b4 Nf2e4 b4a5 f6g5 Rd2d1 Bg4f3 
+SENT:info score cp 200 depth 5 nodes 1744133082 time 24588 pv Nh1g3  a3b4 Ng3e4 b4a5 f6g5 Rd2d1 Bg4f3 
+SENT:info score cp 400 depth 5 nodes 1775034430 time 24076 pv Nb4a2  Nf3e5 f6e5 Kb1a2 Nh1f2 Rd2f2 Ra5b5 
+SENT:info score cp 500 depth 5 nodes 1883949263 time 27452 pv Nb4c2  Nf3e5 f6e5 Kb1c2 Nh1f2 Rd2f2 Ra5b5 
+SENT:info score cp -200 depth 5 nodes 2025406852 time 33059 pv Nb4d5  Rd2d5 Kd7c8 Rd5d8 Kc8d8 Qh2h1 f6g5 
+25823:SENT:b:evalPW[-500],Depth[6],Nodes[3952585024],Time[89448],Moves[Nb4c2 Nf3e5 f6e5 Kb1c2 Nh1f2 Rd2f2 Ra5b5 ]
+SENT:info score cp 500 depth 6 nodes 3952585024 time 89448 multipv 1 pv Nb4c2 Nf3e5 f6e5 Kb1c2 Nh1f2 Rd2f2 Ra5b5 
+SENT:bestmove Nb4c2
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp 200 depth 5 nodes 1008864911 time 14197 pv Nh1g3  b2b4 Bg4f3 b4a5 Bf3d1 Qh2g3 Bd1c2 
+SENT:info score cp 200 depth 5 nodes 1297108758 time 18561 pv g7g6  b2b4 Bg4f3 b4a5 Bf3d1 Qh2h1 Bd1c2 
+SENT:info score cp -100 depth 5 nodes 1433719917 time 19109 pv f6f5  Nf3e5 Kd7c8 Qh2h1 f5f4 Ne5g4 h5g4 
+SENT:info score cp 200 depth 5 nodes 1523939268 time 20061 pv e7e6  Nf3e5 Kd7c8 Ne5g4 h5g4 Qh2h1 f6g5 
+SENT:info score cp 300 depth 5 nodes 1724771302 time 23424 pv f6g5  Nf3e5 Kd7c8 Ne5c6 Qd8d7 Nc6a5 Qd7b5 
+SENT:info score cp 100 depth 5 nodes 1801642691 time 24148 pv e7e5  Nf3e5 Kd7c8 Ne5g4 h5g4 Qh2h1 f6g5 
+SENT:info score cp 300 depth 5 nodes 1844111826 time 25096 pv Nh1f2  Nf3d4 f6g5 Nd4c6 Qd8a8 Nc6a5 Qa8a5 
+SENT:info score cp -104000 depth 5 nodes 1851596354 time 25235 pv Kd7c6  d5c6 
+SENT:info score cp 400 depth 5 nodes 2327629087 time 35115 pv Bg4f3  g2f3 f6g5 h4g5 Nh1f2 Rc2f2 Ra5b5 
+25823:SENT:b:evalPW[-400],Depth[6],Nodes[3325728477],Time[63447],Moves[Bg4f3 g2f3 f6g5 h4g5 Nh1f2 Rc2f2 Ra5b5 ]
+SENT:info score cp 400 depth 6 nodes 3325728477 time 63447 multipv 1 pv Bg4f3 g2f3 f6g5 h4g5 Nh1f2 Rc2f2 Ra5b5 
+SENT:bestmove Bg4f3
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -102500 depth 5 nodes 964069136 time 13249 pv Kd7c6  d5c6 
+SENT:info score cp 200 depth 5 nodes 981363153 time 13465 pv f6f5  g2f3 Nh1f2 Nb5d4 Nf2d1 Nd4f5 Nd1b2 
+SENT:info score cp 200 depth 5 nodes 1023099403 time 14054 pv g7g6  g2f3 Nh1f2 b2b4 Nf2g4 f3g4 Ra5b5 
+SENT:info score cp 200 depth 5 nodes 1186825270 time 16201 pv e7e6  Bf4c7 Qd8a8 d5e6 Kd7c6 Bc7a5 Kc6b5 
+SENT:info score cp 200 depth 5 nodes 1447976589 time 19250 pv Nh1g3  g2f3 f6f5 Nb5c3 Ra5c5 Bf4g3 Rc5c4 
+SENT:info score cp 500 depth 5 nodes 1467187424 time 19566 pv e7e5  g2f3 e5f4 Qh2h1 Qd8c8 Nb5c3 Qc8c4 
+SENT:info score cp 200 depth 5 nodes 1467821776 time 19582 pv Nh1f2  g2f3 f6f5 Nb5d4 Nf2d1 Nd4f5 Nd1b2 
+SENT:info score cp 300 depth 5 nodes 1471083821 time 20265 pv g7g5  g2f3 g5f4 b2b4 Ra5b5 Bc4b5 Nh1f2 
+25823:SENT:b:evalPW[-500],Depth[6],Nodes[2527133330],Time[48614],Moves[e7e5 g2f3 e5f4 Qh2h1 Qd8c8 Nb5c3 Qc8c4 ]
+SENT:info score cp 500 depth 6 nodes 2527133330 time 48614 multipv 1 pv e7e5 g2f3 e5f4 Qh2h1 Qd8c8 Nb5c3 Qc8c4 
+SENT:bestmove e7e5
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -103000 depth 5 nodes 996028097 time 13577 pv Kd7d6  Nb5d6 
+SENT:info score cp -103000 depth 5 nodes 1213932718 time 15862 pv Nh1g3  e6d7 
+SENT:info score cp -103000 depth 5 nodes 1368470519 time 17306 pv Nh1f2  e6d7 
+SENT:info score cp -103000 depth 5 nodes 1731530692 time 21010 pv g7g6  e6d7 
+SENT:info score cp -103000 depth 5 nodes 1811527587 time 21886 pv f6f5  e6d7 
+SENT:info score cp -103000 depth 5 nodes 1834215109 time 22194 pv g7g5  e6d7 
+SENT:info score cp 200 depth 5 nodes 1853315322 time 22579 pv Kd7c6  Bc4e2 Bf8c5 g2f3 Nh1f2 Nb5c3 Bc5a3 
+SENT:info score cp -102500 depth 5 nodes 1942146737 time 25899 pv Kd7e6  Bc4e6 
+25823:SENT:b:evalPW[-200],Depth[6],Nodes[3750454547],Time[68893],Moves[Kd7c6 Bc4e2 Bf8c5 g2f3 Nh1f2 Nb5c3 Bc5a3 ]
+SENT:info score cp 200 depth 6 nodes 3750454547 time 68893 multipv 1 pv Kd7c6 Bc4e2 Bf8c5 g2f3 Nh1f2 Nb5c3 Bc5a3 
+SENT:bestmove Kd7c6
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -103000 depth 5 nodes 1384813372 time 18422 pv Kc6d5  Bc4d5 
+SENT:info score cp -200 depth 5 nodes 2137069030 time 26347 pv Kc6c5  Rd2d8 Bf3e4 Kb1a1 Kc5c4 Qh2h1 Kc4b5 
+SENT:info score cp -101500 depth 5 nodes 2352804432 time 28571 pv Kc6b5  Bc4b5 
+SENT:info score cp -200 depth 5 nodes 2419648841 time 29359 pv Nh1f2  Rd2d8 Nf2g4 Nb5d4 Kc6c5 Qh2h1 Kc5c4 
+SENT:info score cp -200 depth 5 nodes 2597094911 time 31504 pv g7g5  Rd2d8 Bf3e4 Kb1a1 g5f4 Qh2h1 Kc6b5 
+SENT:info score cp -400 depth 5 nodes 3109523288 time 38873 pv g7g6  Rd2d8 Bf3e4 Kb1a1 Nh1f2 Nb5c3 Be4g2 
+SENT:info score cp -400 depth 5 nodes 3157561863 time 39869 pv Nh1g3  Rd2d8 Bf3e4 Kb1a1 Ng3f5 Nb5c3 Nf5h4 
+SENT:info score cp -400 depth 5 nodes 3219389900 time 42577 pv f6f5  Rd2d8 Bf3e4 Kb1a1 Nh1f2 Nb5c3 Be4g2 
+SENT:info score cp 100 depth 5 nodes 6579767753 time 96824 pv Bf3d5  Bc4d5 Kc6c5 Nb5c3 Nh1f2 Rd2f2 Kc5d5 
+SENT:info score cp 0 depth 5 nodes 7062314425 time 102673 pv Bf8b4  a3b4 Bf3e4 Kb1a1 Ra5b5 Rd2d8 Rh8d8 
+SENT:info score cp -100 depth 5 nodes 7631434098 time 108822 pv Bf8a3  Rd2d8 Bf3e4 Kb1a1 Ba3b2 Ka1b2 Rh8d8 
+SENT:info score cp 400 depth 5 nodes 7841426146 time 111270 pv Bf3e4  Kb1a1 Qd8a8 Nb5c3 g7g5 Nc3e4 g5f4 
+SENT:info score cp 0 depth 5 nodes 8299937389 time 118371 pv Bf8e7  Rd2d8 Bf3e4 Kb1a1 Be7d8 Qh2h1 Kc6b5 
+SENT:info score cp 0 depth 5 nodes 8382106071 time 121852 pv Bf8c5  Rd2d8 Bf3e4 Kb1a1 Rh8d8 Qh2h1 Kc6b5 
+25823:SENT:b:evalPW[-400],Depth[6],Nodes[10669921718],Time[200886],Moves[Bf3e4 Kb1a1 Qd8a8 Nb5c3 g7g5 Nc3e4 g5f4 ]
+SENT:info score cp 400 depth 6 nodes 10669921718 time 200886 multipv 1 pv Bf3e4 Kb1a1 Qd8a8 Nb5c3 g7g5 Nc3e4 g5f4 
+SENT:bestmove Bf3e4
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -103000 depth 5 nodes 1326705075 time 18634 pv Kc6d5  Bc4d5 
+SENT:info score cp -101500 depth 5 nodes 1398730951 time 19482 pv Kc6b5  Bc4b5 
+SENT:info score cp -400 depth 5 nodes 2091176307 time 27383 pv Nh1g3  Rd2d8 Ng3f5 Nb5c3 Be4c2 Nc3a2 Nf5h4 
+SENT:info score cp -300 depth 5 nodes 2290073464 time 29651 pv Nh1f2  Rd2d8 Nf2g4 Qh2g3 g7g5 h4g5 Kc6b5 
+SENT:info score cp -300 depth 5 nodes 2692568207 time 34304 pv Kc6c5  Rd2d8 Kc5c4 e6e7 Bf8e7 Rd8h8 Kc4b5 
+SENT:info score cp -500 depth 5 nodes 3002701072 time 39009 pv f6f5  Rd2d8 g7g5 Nb5d4 Kc6c5 Qh2h1 g5f4 
+SENT:info score cp -500 depth 5 nodes 3006074633 time 39081 pv g7g6  Rd2d8 Nh1f2 e6e7 Bf8g7 Rd8h8 Bg7h8 
+SENT:info score cp -300 depth 5 nodes 3029267801 time 40026 pv g7g5  Rd2d8 g5f4 Qh2h1 Kc6c5 Rd8f8 Rh8f8 
+SENT:info score cp 100 depth 5 nodes 7177088379 time 113375 pv Be4d5  Bc4d5 Kc6c5 Nb5c3 Nh1f2 Rd2f2 Kc5d5 
+SENT:info score cp 100 depth 5 nodes 7427151238 time 116479 pv Be4d3  Bc4d3 Qd8d5 Nb5c3 Qd5d4 Qh2h1 Qd4d3 
+SENT:info score cp -200 depth 5 nodes 8473310979 time 129833 pv Bf8b4  a3b4 Be4d5 Rd2d5 Qd8a8 b4a5 Kc6d5 
+SENT:info score cp -100 depth 5 nodes 8726686212 time 139030 pv Bf8a3  Rd2d8 Ba3b2 Ka1b2 Rh8d8 Qh2h1 Kc6b5 
+SENT:info score cp 300 depth 5 nodes 12843255077 time 213132 pv Qd8a8  b2b4 Bf8b4 a3b4 Ra5b5 Bc4b5 Kc6b5 
+SENT:info score cp 300 depth 5 nodes 12949423394 time 214480 pv Qd8e8  b2b4 Bf8b4 a3b4 Ra5b5 Bc4b5 Kc6b5 
+SENT:info score cp 300 depth 5 nodes 13025495066 time 215536 pv Qd8c8  Qh2h1 Ra5b5 e6e7 Be4g2 e7f8q Bg2h1 
+SENT:info score cp 200 depth 5 nodes 13134423252 time 217756 pv Qd8b6  Bf4c7 Qb6e3 Bc7a5 Nh1g3 Rd2d1 Kc6b5 
+SENT:info score cp 300 depth 5 nodes 13172279694 time 219437 pv Qd8e7  b2b4 Ra5b5 Bc4b5 Kc6b5 Qh2h1 Kb5b4 
+25823:SENT:b:evalPW[-300],Depth[6],Nodes[13172279694],Time[219437],Moves[Qd8a8 b2b4 Bf8b4 a3b4 Ra5b5 Bc4b5 Kc6b5 ]
+SENT:info score cp 300 depth 6 nodes 13172279694 time 219437 multipv 1 pv Qd8a8 b2b4 Bf8b4 a3b4 Ra5b5 Bc4b5 Kc6b5 
+SENT:bestmove Qd8a8
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -103000 depth 5 nodes 779949922 time 12258 pv Kc6d5  Nc7d5 
+SENT:info score cp -200 depth 5 nodes 1221495211 time 17457 pv Kc6c5  Nc7a8 Kc5c4 Na8b6 Kc4b5 Qh2h1 Kb5b6 
+SENT:info score cp -400 depth 5 nodes 1372830901 time 18126 pv g7g6  Nc7a8 Nh1f2 e6e7 Bf8e7 Rd2f2 Ra5a8 
+SENT:info score cp -400 depth 5 nodes 1399197317 time 19577 pv Nh1g3  Nc7a8 Ng3f1 Bc4f1 Ra5a8 b2b3 a4b3 
+SENT:info score cp -103000 depth 5 nodes 1588482053 time 21233 pv Kc6b5  Nc7b5 
+SENT:info score cp -400 depth 5 nodes 1645224206 time 22369 pv f6f5  Nc7a8 Nh1f2 e6e7 Bf8e7 Rd2f2 Ra5a8 
+SENT:info score cp -100 depth 5 nodes 1831918914 time 26324 pv Nh1f2  Nc7a8 Nf2g4 e6e7 Ng4h2 e7e8q Ra5a8 
+SENT:info score cp -100 depth 5 nodes 1853347304 time 27440 pv g7g5  Nc7a8 g5f4 Na8b6 Nh1g3 Nb6c8 Be4g2 
+SENT:info score cp 300 depth 5 nodes 5015412694 time 99226 pv Qa8a7  Qh2h1 g7g5 Nc7b5 Qa7a6 h4g5 Kc6b5 
+25823:SENT:b:evalPW[-300],Depth[6],Nodes[5945277762],Time[117328],Moves[Qa8a7 Qh2h1 g7g5 Nc7b5 Qa7a6 h4g5 Kc6b5 ]
+SENT:info score cp 300 depth 6 nodes 5945277762 time 117328 multipv 1 pv Qa8a7 Qh2h1 g7g5 Nc7b5 Qa7a6 h4g5 Kc6b5 
+SENT:bestmove Qa8a7
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp 100 depth 5 nodes 1715841672 time 23491 pv Kc6c5  Bf4e3 Kc5c4 Be3a7 Ra5a7 Qh2h1 Ra7c7 
+SENT:info score cp -103000 depth 5 nodes 2194079644 time 28087 pv Kc6d5  Nc7d5 
+SENT:info score cp 100 depth 5 nodes 2237748243 time 28531 pv f6f5  Nc7d5 Nh1f2 Rd7a7 Ra5a7 Nd5c3 Be4g2 
+SENT:info score cp -103000 depth 5 nodes 2310419566 time 29327 pv Kc6b5  Nc7b5 
+SENT:info score cp 300 depth 5 nodes 2421537332 time 31163 pv Nh1f2  Nc7d5 Nf2g4 Rd7a7 Ra5a7 Qh2h1 Kc6d5 
+SENT:info score cp 200 depth 5 nodes 2436392386 time 31136 pv Nh1g3  Nc7d5 Ng3f1 Rd7a7 Nf1h2 Ra7a5 Kc6d5 
+SENT:info score cp 100 depth 5 nodes 2902153307 time 44314 pv g7g6  Nc7d5 Be4g2 Rd7a7 Ra5a7 Nd5f6 Bf8a3 
+SENT:info score cp 300 depth 5 nodes 2952151797 time 46265 pv g7g5  Nc7d5 g5f4 Rd7a7 Ra5a7 Nd5f4 Be4g2 
+SENT:info score cp 400 depth 5 nodes 5789702114 time 105169 pv Bf8a3  b2a3 Nh1f2 Nc7b5 Qa7a6 Rd7g7 Kc6b5 
+SENT:info score cp 500 depth 5 nodes 10609341063 time 202254 pv Qa7f2  e6e7 Bf8e7 Rd7e7 Be4g2 Re7g7 Kc6c7 
+25823:SENT:b:evalPW[-500],Depth[6],Nodes[13131764614],Time[437554],Moves[Qa7f2 e6e7 Bf8e7 Rd7e7 Be4g2 Re7g7 Kc6c7 ]
+SENT:info score cp 500 depth 6 nodes 13131764614 time 437554 multipv 1 pv Qa7f2 e6e7 Bf8e7 Rd7e7 Be4g2 Re7g7 Kc6c7 
+SENT:bestmove Qa7f2
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -104500 depth 5 nodes 1340628464 time 21014 pv Kc6d5  Nc7d5 
+SENT:info score cp -104500 depth 5 nodes 2377805255 time 32696 pv Kc6b5  Nc7b5 
+SENT:info score cp -104500 depth 5 nodes 3822061127 time 46042 pv Kc6d6  Bf4d6 
+SENT:info score cp 300 depth 5 nodes 4306691942 time 51030 pv Kc6b6  b2b4 Bf8b4 a3b4 Be4g2 Qh1b1 Kb6c7 
+SENT:info score cp 300 depth 5 nodes 4402771216 time 52130 pv g7g5  e6e7 Be4g2 Bc4b5 Ra5b5 e7f8q Bg2h1 
+SENT:info score cp 300 depth 5 nodes 4507056420 time 53663 pv g7g6  e6e7 Be4g2 Bc4b5 Ra5b5 e7f8q Bg2h1 
+SENT:info score cp 200 depth 5 nodes 4513390831 time 53811 pv Kc6c5  Bc4d5 Kc5b6 Nc7a8 Ra5a8 Bd5a8 Be4a8 
+SENT:info score cp 300 depth 5 nodes 4555066804 time 55643 pv f6f5  e6e7 Be4g2 Bc4b5 Ra5b5 e7f8q Bg2h1 
+SENT:info score cp 500 depth 5 nodes 6265322615 time 94888 pv Be4g2  Qh1c1 Ra5c5 Nc7a6 Rc5c4 Qc1c4 Kc6d7 
+25823:SENT:b:evalPW[-500],Depth[6],Nodes[15399511627],Time[444663],Moves[Be4g2 Qh1c1 Ra5c5 Nc7a6 Rc5c4 Qc1c4 Kc6d7 ]
+SENT:info score cp 500 depth 6 nodes 15399511627 time 444663 multipv 1 pv Be4g2 Qh1c1 Ra5c5 Nc7a6 Rc5c4 Qc1c4 Kc6d7 
+SENT:bestmove Be4g2
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -102500 depth 5 nodes 1194651684 time 17617 pv Kc6b5  Nc7b5 
+SENT:info score cp -104000 depth 5 nodes 1312522150 time 18265 pv Kc6d5  Nc7d5 
+SENT:info score cp -104000 depth 5 nodes 1531675762 time 21577 pv Kc6d6  Bf4d6 
+SENT:info score cp -104000 depth 5 nodes 2818906864 time 35559 pv f6f5  Bb5c6 
+SENT:info score cp 300 depth 5 nodes 2874406952 time 36887 pv Kc6b6  Qh1c1 Kb6b7 e6e7 Bf8e7 Rd7e7 Kb7c7 
+SENT:info score cp -104000 depth 5 nodes 2877647731 time 36843 pv g7g6  Bb5c6 
+SENT:info score cp -100 depth 5 nodes 2933984584 time 37699 pv Kc6c5  Qh1c1 Kc5b6 Bf4e3 Qf2e3 Qc1e3 Kb6b5 
+SENT:info score cp -104000 depth 5 nodes 2946345734 time 37219 pv g7g5  Bb5c6 
+SENT:info score cp 400 depth 5 nodes 4273860837 time 66559 pv Kc6b7  Nc7d5 Kb7c8 Qh1c1 Bf8c5 Rd7g7 Bg2d5 
+SENT:info score cp 800 depth 5 nodes 6317167651 time 112593 pv Ra5b5  Rd7d2 Bg2h1 Rd2f2 Rb5f5 Nc7b5 Kc6b5 
+25823:SENT:b:evalPW[-800],Depth[6],Nodes[8613465088],Time[175432],Moves[Ra5b5 Rd7d2 Bg2h1 Rd2f2 Rb5f5 Nc7b5 Kc6b5 ]
+SENT:info score cp 800 depth 6 nodes 8613465088 time 175432 multipv 1 pv Ra5b5 Rd7d2 Bg2h1 Rd2f2 Rb5f5 Nc7b5 Kc6b5 
+SENT:bestmove Ra5b5
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp 200 depth 5 nodes 2114794551 time 27131 pv Kc6b7  e6e7 Bg2h3 Nc7e6 Kb7c6 e7e8q Kc6d7 
+SENT:info score cp 400 depth 5 nodes 2262250254 time 29476 pv f6f5  Nc7b5 Kc6b5 e6e7 Bf8e7 Rd7e7 Qf2f4 
+SENT:info score cp -102500 depth 5 nodes 2380942637 time 30372 pv Kc6d5  Nc7d5 
+SENT:info score cp 400 depth 5 nodes 2598439882 time 32119 pv Kc6b6  Nc7b5 Kb6b5 e6e7 Bf8e7 Rd7e7 Qf2f4 
+SENT:info score cp 400 depth 5 nodes 2618121303 time 32124 pv g7g5  Nc7b5 g5f4 Nb5d4 Kc6c5 Nd4f5 Qf2b2 
+SENT:info score cp -102500 depth 5 nodes 2812770959 time 35307 pv Kc6d6  Bf4d6 
+SENT:info score cp 100 depth 5 nodes 3108455239 time 41626 pv Kc6c5  Qb1f5 Kc5b6 Qf5b5 Kb6a7 Bf4c1 Bf8a3 
+SENT:info score cp 400 depth 5 nodes 3201859249 time 44258 pv g7g6  Nc7b5 Kc6b5 e6e7 Bf8e7 Rd7e7 Qf2f4 
+SENT:info score cp 500 depth 5 nodes 4622189649 time 68346 pv Bg2d5  Nc7b5 Bd5e6 Rd7d1 Kc6b5 Bf4c1 Bf8a3 
+SENT:info score cp 700 depth 5 nodes 7269294576 time 133073 pv Rb5b3  e6e7 Bf8e7 Rd7e7 Qf2f4 Nc7a6 Rb3b2 
+SENT:info score cp 800 depth 5 nodes 8731898623 time 179224 pv Rb5b7  Nc7d5 Bg2d5 Qb1c1 Kc6b5 Rd7d5 Qf2f4 
+25823:SENT:b:evalPW[-800],Depth[6],Nodes[11785474409],Time[314670],Moves[Rb5b7 Nc7d5 Bg2d5 Qb1c1 Kc6b5 Rd7d5 Qf2f4 ]
+SENT:info score cp 800 depth 6 nodes 11785474409 time 314670 multipv 1 pv Rb5b7 Nc7d5 Bg2d5 Qb1c1 Kc6b5 Rd7d5 Qf2f4 
+SENT:bestmove Rb5b7
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -102500 depth 5 nodes 1437902066 time 20742 pv Kc6d5  Nc7d5 
+SENT:info score cp -102500 depth 5 nodes 2601550326 time 33004 pv Kc6b5  Nc7b5 
+SENT:info score cp -100 depth 5 nodes 2900762516 time 35700 pv f6f5  e7e8q Bf8c5 Qe8e6 Bc5d6 Bf4d6 Kc6d7 
+SENT:info score cp -100 depth 5 nodes 3128280806 time 38037 pv g7g5  e7e8q Bf8c5 Qe8e6 Bc5d6 Bf4d6 Kc6d7 
+SENT:info score cp -100 depth 5 nodes 3149123818 time 38293 pv g7g6  e7e8q Bf8c5 Qe8e6 Bc5d6 Bf4d6 Kc6d7 
+SENT:info score cp -102500 depth 5 nodes 3183171316 time 38797 pv Kc6d6  Bf4d6 
+SENT:info score cp 0 depth 5 nodes 3389713465 time 43453 pv Kc6c5  e7e8q Kc5c4 Nc7d5 Bg2d5 Rd7b7 Bd5b7 
+SENT:info score cp 0 depth 5 nodes 3454578321 time 46262 pv Kc6b6  e7e8q Kb6a5 Nc7d5 Bg2d5 Rd7d5 Qf2f4 
+SENT:info score cp 200 depth 5 nodes 5363722984 time 77106 pv Bg2h3  e7e8q Bh3d7 Qb1c1 Kc6b6 Qe8d7 Kb6c7 
+SENT:info score cp 400 depth 5 nodes 7473109337 time 121804 pv Rb7b2  Qb1b2 Qf2b2 Ka1b2 Kc6d7 e7f8q Rh8f8 
+SENT:info score cp 700 depth 5 nodes 7769396051 time 135706 pv Bf8e7  Rd7e7 Qf2f4 Nc7e6 Qf4h4 Re7b7 Kc6b7 
+25823:SENT:b:evalPW[-700],Depth[6],Nodes[9701480005],Time[240816],Moves[Bf8e7 Rd7e7 Qf2f4 Nc7e6 Qf4h4 Re7b7 Kc6b7 ]
+SENT:info score cp 700 depth 6 nodes 9701480005 time 240816 multipv 1 pv Bf8e7 Rd7e7 Qf2f4 Nc7e6 Qf4h4 Re7b7 Kc6b7 
+SENT:bestmove Bf8e7
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -103500 depth 5 nodes 1807249794 time 25723 pv Kc6d6  Bf4d6 
+SENT:info score cp 0 depth 5 nodes 2200691499 time 29691 pv Kc6c5  Bf4e3 Qf2e3 Re7e3 Kc5d4 Re3e1 Rb7c7 
+SENT:info score cp -103500 depth 5 nodes 2725501199 time 34452 pv Kc6d5  Nc7d5 
+SENT:info score cp -103500 depth 5 nodes 2753318667 time 34716 pv Kc6b5  Nc7b5 
+SENT:info score cp 0 depth 5 nodes 3082306131 time 38501 pv g7g5  Qb1c1 Kc6b6 Bf4e3 Qf2e3 Re7e3 Kb6c7 
+SENT:info score cp 0 depth 5 nodes 3260777041 time 41057 pv Kc6b6  Bf4e3 Qf2e3 Nc7d5 Kb6a5 Re7e3 Bg2d5 
+SENT:info score cp 0 depth 5 nodes 3318712216 time 42337 pv g7g6  Qb1c1 Kc6b6 Bf4e3 Qf2e3 Re7e3 Kb6c7 
+SENT:info score cp 0 depth 5 nodes 3615843885 time 55115 pv f6f5  Qb1c1 Kc6b6 Bf4e3 Qf2e3 Re7e3 Kb6c7 
+SENT:info score cp 300 depth 5 nodes 6586675764 time 95576 pv Bg2d5  Nc7d5 Rb7e7 Nd5e7 Kc6d7 Ne7d5 Qf2f4 
+SENT:info score cp 500 depth 5 nodes 9465598410 time 148427 pv Rb7b3  Nc7e6 f6f5 Bf4c1 Kc6d6 Re7g7 Kd6e6 
+SENT:info score cp 600 depth 5 nodes 12582473162 time 212748 pv Qf2f4  Qb1c2 Kc6b6 Qc2g2 Rb7c7 Re7c7 Kb6c7 
+25823:SENT:b:evalPW[-600],Depth[6],Nodes[15484499467],Time[333316],Moves[Qf2f4 Qb1c2 Kc6b6 Qc2g2 Rb7c7 Re7c7 Kb6c7 ]
+SENT:info score cp 600 depth 6 nodes 15484499467 time 333316 multipv 1 pv Qf2f4 Qb1c2 Kc6b6 Qc2g2 Rb7c7 Re7c7 Kb6c7 
+SENT:bestmove Qf2f4
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -300 depth 5 nodes 1020400540 time 16130 pv Kc6b5  Re7b7 Kb5a5 Ne6f4 Bg2b7 Nf4e2 f6f5 
+SENT:info score cp -300 depth 5 nodes 1083866344 time 17185 pv f6f5  Qb1c2 Kc6b5 Re7b7 Kb5a5 Ne6f4 Bg2b7 
+SENT:info score cp 0 depth 5 nodes 1115995066 time 17294 pv g7g5  Ne6f4 g5f4 Re7e6 Kc6c5 Re6f6 Rb7b2 
+SENT:info score cp -300 depth 5 nodes 1159627596 time 18050 pv g7g6  Qb1c2 Kc6b5 Re7b7 Kb5a5 Ne6f4 Bg2b7 
+SENT:info score cp -300 depth 5 nodes 1520772400 time 23123 pv Kc6b6  Re7b7 Kb6a5 Ne6f4 Bg2b7 Nf4e2 f6f5 
+SENT:info score cp -102000 depth 5 nodes 1534833485 time 23287 pv Kc6c5  Ne6c5 
+SENT:info score cp 0 depth 5 nodes 1573066682 time 24060 pv Kc6d6  Ne6f4 Rb7e7 Nf4g2 Re7e2 Ng2f4 Re2b2 
+SENT:info score cp -300 depth 5 nodes 1580023658 time 24167 pv Kc6d5  Ne6f4 Kd5c4 Nf4g6 f6f5 Ng6h8 Rb7e7 
+SENT:info score cp 100 depth 5 nodes 2614302984 time 46030 pv Bg2d5  Ne6f4 Rb7e7 Qb1c2 Kc6d6 Qc2a4 f6f5 
+SENT:info score cp 300 depth 5 nodes 2626012751 time 47489 pv Bg2e4  Ne6f4 Be4b1 Re7b7 g7g5 Ka1b1 Kc6b7 
+SENT:info score cp 500 depth 5 nodes 5367891407 time 105049 pv Qf4f1  Re7b7 Kc6b7 Qb1f1 Bg2f1 Ne6g7 f6f5 
+SENT:info score cp 600 depth 5 nodes 5593207099 time 109202 pv Qf4f2  Re7b7 Kc6b7 Ne6g7 f6f5 Ng7e6 Qf2b2 
+SENT:info score cp 700 depth 5 nodes 5634963118 time 111266 pv Qf4c4  Re7b7 Kc6b7 Ne6g7 Qc4g4 Ng7h5 Rh8h5 
+25823:SENT:b:evalPW[-700],Depth[6],Nodes[7340146301],Time[153435],Moves[Qf4c4 Re7b7 Kc6b7 Ne6g7 Qc4g4 Ng7h5 Rh8h5 ]
+SENT:info score cp 700 depth 6 nodes 7340146301 time 153435 multipv 1 pv Qf4c4 Re7b7 Kc6b7 Ne6g7 Qc4g4 Ng7h5 Rh8h5 
+SENT:bestmove Qf4c4
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -102500 depth 5 nodes 1055982671 time 17502 pv Kc6c5  Ne6c5 
+SENT:info score cp 300 depth 5 nodes 1241998914 time 20057 pv Kc6d5  Rg7b7 Kd5e6 Rb7b4 Bg2e4 Rb4c4 Be4b1 
+SENT:info score cp -102500 depth 5 nodes 1723251010 time 26152 pv Kc6c7  Ne6c7 
+SENT:info score cp -102500 depth 5 nodes 1862501868 time 27527 pv Kc6d7  Rg7d7 
+SENT:info score cp 500 depth 5 nodes 2020312799 time 29671 pv Kc6b5  Qb1f5 Kb5b6 Rg7g2 Rb7f7 Ne6d4 Qc4d4 
+SENT:info score cp 500 depth 5 nodes 2210516438 time 33271 pv f6f5  Rg7g2 Qc4e6 Qb1c2 Kc6b5 Ka1b1 f5f4 
+SENT:info score cp 500 depth 5 nodes 2400838439 time 37204 pv Kc6b6  Qb1g1 Kb6a5 b2b4 Ka5b5 Rg7g2 Qc4e6 
+SENT:info score cp 600 depth 5 nodes 2560116592 time 44061 pv Kc6d6  Rg7g2 Kd6e6 Rg2h2 f6f5 b2b3 a4b3 
+SENT:info score cp 700 depth 5 nodes 3647018250 time 65432 pv Bg2d5  Rg7b7 Kc6b7 Ne6g7 Qc4g4 Ng7h5 Rh8h5 
+SENT:info score cp 700 depth 5 nodes 3725396941 time 67260 pv Bg2e4  Rg7b7 Qc4e6 Qb1d1 Kc6b7 Qd1a4 f6f5 
+25823:SENT:b:evalPW[-700],Depth[6],Nodes[7695125574],Time[181087],Moves[Bg2e4 Rg7b7 Qc4e6 Qb1d1 Kc6b7 Qd1a4 f6f5 ]
+SENT:info score cp 700 depth 6 nodes 7695125574 time 181087 multipv 1 pv Bg2e4 Rg7b7 Qc4e6 Qb1d1 Kc6b7 Qd1a4 f6f5 
+SENT:bestmove Bg2e4
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -102500 depth 5 nodes 1409807518 time 21109 pv Kc6c7  Ne6c7 
+SENT:info score cp -102500 depth 5 nodes 1607872057 time 23151 pv Kc6c5  Ne6c5 
+SENT:info score cp -102500 depth 5 nodes 1664010223 time 24184 pv Kc6d7  Rg7d7 
+SENT:info score cp 500 depth 5 nodes 2249345242 time 32232 pv f6f5  Rg7g6 f5f4 Ne6d8 Kc6b5 Nd8b7 Be4g6 
+SENT:info score cp -102500 depth 5 nodes 2578126413 time 36480 pv Kc6d5  Qd1d5 
+SENT:info score cp -102500 depth 5 nodes 2912161275 time 41601 pv Kc6d6  Qd1d6 
+SENT:info score cp 600 depth 5 nodes 3124675795 time 46166 pv Kc6b5  Ne6d4 Kb5a6 b2b3 a4b3 Rg7b7 Ka6b7 
+SENT:info score cp 500 depth 5 nodes 3194192117 time 49622 pv Kc6b6  Rg7b7 Kb6b7 Qd1d7 Kb7a6 Ne6f4 f6f5 
+SENT:info score cp 700 depth 5 nodes 6454936315 time 120416 pv Rb7g7  Ne6g7 f6f5 Ng7h5 Be4c2 Qd1c1 Rh8h5 
+SENT:info score cp 800 depth 5 nodes 11329111934 time 307172 pv Qc4e6  Rg7b7 Kc6b7 b2b4 Be4c6 Ka1b1 f6f5 
+25823:SENT:b:evalPW[-800],Depth[6],Nodes[11337125919],Time[308007],Moves[Qc4e6 Rg7b7 Kc6b7 b2b4 Be4c6 Ka1b1 f6f5 ]
+SENT:info score cp 800 depth 6 nodes 11337125919 time 308007 multipv 1 pv Qc4e6 Rg7b7 Kc6b7 b2b4 Be4c6 Ka1b1 f6f5 
+SENT:bestmove Qc4e6
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -101500 depth 5 nodes 1019256183 time 18122 pv Kc6d7  Rg7d7 
+SENT:info score cp 200 depth 5 nodes 1204467171 time 20234 pv Kc6d5  Rg7b7 f6f5 Rb7b5 Kd5c6 Rb5b4 f5f4 
+SENT:info score cp -101500 depth 5 nodes 1211854242 time 20354 pv Kc6b5  Qa4b5 
+SENT:info score cp 700 depth 5 nodes 1520802921 time 25287 pv Kc6b6  Rg7b7 Kb6b7 Qa4b4 Kb7a6 a3a4 f6f5 
+SENT:info score cp -101500 depth 5 nodes 1634927115 time 27140 pv f6f5  Qa4c6 
+SENT:info score cp -101500 depth 5 nodes 1728077124 time 28183 pv Kc6c7  Rg7c7 
+SENT:info score cp 700 depth 5 nodes 1889695040 time 32323 pv Kc6d6  Rg7b7 Be4b7 Qa4b4 Kd6c6 a3a4 f6f5 
+SENT:info score cp 700 depth 5 nodes 1943273458 time 34335 pv Kc6c5  b2b4 Kc5c4 b4b5 Kc4c3 Rg7b7 Be4b7 
+25823:SENT:b:evalPW[-700],Depth[6],Nodes[7867817080],Time[190393],Moves[Kc6c5 b2b4 Kc5c4 b4b5 Kc4c3 Rg7b7 Be4b7 ]
+SENT:info score cp 700 depth 6 nodes 7867817080 time 190393 multipv 1 pv Kc6c5 b2b4 Kc5c4 b4b5 Kc4c3 Rg7b7 Be4b7 
+SENT:bestmove Kc6c5
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp 700 depth 5 nodes 1267622861 time 20846 pv Kc5d5  Rg3b3 Kd5c5 Rb3b7 Be4c6 Rb7b5 Kc5b5 
+SENT:info score cp -101500 depth 5 nodes 1334864541 time 21530 pv Kc5c6  Qa4c6 
+SENT:info score cp 700 depth 5 nodes 1335380746 time 21538 pv f6f5  Rg3c3 Kc5d5 Qa4c4 Kd5e5 Qc4e6 Ke5e6 
+SENT:info score cp -101500 depth 5 nodes 1458587508 time 23235 pv Kc5b4  a3b4 
+SENT:info score cp 700 depth 5 nodes 1578120240 time 25547 pv Kc5b6  Rg3b3 Kb6c5 Rb3b7 Be4c6 Rb7b5 Kc5b5 
+SENT:info score cp -101500 depth 5 nodes 1866604452 time 30043 pv Kc5c4  Qa4c4 
+SENT:info score cp -101500 depth 5 nodes 1940529084 time 31628 pv Kc5d4  Qa4d4 
+SENT:info score cp -101500 depth 5 nodes 1940530445 time 31628 pv Kc5b5  Qa4b5 
+SENT:info score cp 800 depth 5 nodes 3047651052 time 53711 pv Be4h1  b2b4 Kc5b6 b4b5 f6f5 Ka1b1 Kb6b5 
+SENT:info score cp 800 depth 5 nodes 3186770916 time 56547 pv Kc5d6  Rg3g1 Kd6c5 b2b4 Kc5c4 b4b5 Kc4b5 
+SENT:info score cp 800 depth 5 nodes 3250987101 time 59795 pv Be4d5  b2b4 Kc5c4 b4b5 Kc4c5 b5b6 Kc5b6 
+25823:SENT:b:evalPW[-800],Depth[6],Nodes[7945929927],Time[188017],Moves[Kc5d6 Rg3g1 Kd6c5 b2b4 Kc5c4 b4b5 Kc4b5 ]
+SENT:info score cp 800 depth 6 nodes 7945929927 time 188017 multipv 1 pv Kc5d6 Rg3g1 Kd6c5 b2b4 Kc5c4 b4b5 Kc4b5 
+SENT:bestmove Kc5d6
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -101500 depth 5 nodes 1147897381 time 20514 pv Kd6c6  Qa4c6 
+SENT:info score cp -101500 depth 5 nodes 1183022903 time 21025 pv Kd6d7  Qa4d7 
+SENT:info score cp 100 depth 5 nodes 1209049421 time 21358 pv Kd6e7  Re3e4 f6f5 Re4e6 Ke7e6 b2b3 Rb7b3 
+SENT:info score cp 500 depth 5 nodes 1375778946 time 24363 pv Kd6c7  Re3e4 Qe6d6 b2b3 f6f5 Re4e1 Rb7b3 
+SENT:info score cp 300 depth 5 nodes 1672398014 time 29088 pv f6f5  Qa4d4 Kd6c7 Re3c3 Kc7b8 Qd4h8 Rb7b2 
+SENT:info score cp 700 depth 5 nodes 1786466985 time 30664 pv Kd6d5  Re3b3 Kd5c5 Rb3b7 Be4c6 Rb7b5 Kc5b5 
+SENT:info score cp -500 depth 5 nodes 1824120346 time 31344 pv Kd6e5  Qa4e4 Ke5d6 Qe4e6 Kd6c5 Qe6f6 Rb7b2 
+SENT:info score cp 500 depth 5 nodes 1858193914 time 32648 pv Kd6c5  Re3e4 Qe6d5 b2b4 Kc5d6 Re4e1 Rb7b4 
+SENT:info score cp 800 depth 5 nodes 8000818558 time 183336 pv Qe6e5  Re3e2 f6f5 Ka1a2 f5f4 b2b3 Rb7b3 
+25823:SENT:b:evalPW[-800],Depth[6],Nodes[8908155586],Time[215860],Moves[Qe6e5 Re3e2 f6f5 Ka1a2 f5f4 b2b3 Rb7b3 ]
+SENT:info score cp 800 depth 6 nodes 8908155586 time 215860 multipv 1 pv Qe6e5 Re3e2 f6f5 Ka1a2 f5f4 b2b3 Rb7b3 
+SENT:bestmove Qe6e5
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp 800 depth 5 nodes 1115448617 time 21053 pv f6f5  Re2d2 Kd6c5 Ka1a2 f5f4 b2b3 Rb7b3 
+SENT:info score cp 800 depth 5 nodes 1220777004 time 22807 pv Kd6d5  Re2d2 Kd5c5 Ka1a2 f6f5 b2b3 Rb7b3 
+SENT:info score cp -101500 depth 5 nodes 1285604845 time 23671 pv Kd6d7  Qa4d7 
+SENT:info score cp 100 depth 5 nodes 1296114513 time 23871 pv Kd6e6  Re2e4 Ke6f5 Re4e5 f6e5 b2b3 Rb7b3 
+SENT:info score cp 500 depth 5 nodes 1716043240 time 31696 pv Kd6c5  Qa4e4 Qe5e4 Re2e4 f6f5 Re4e1 Rb7b2 
+SENT:info score cp 100 depth 5 nodes 1794098340 time 32864 pv Kd6e7  Re2e4 Ke7d6 Re4e5 f6e5 b2b3 Rb7b3 
+SENT:info score cp 500 depth 5 nodes 1801265605 time 33076 pv Kd6c7  Qa4c4 Kc7b6 Re2e4 Qe5a5 b2b3 Qa5a3 
+SENT:info score cp -101500 depth 5 nodes 1824776757 time 34064 pv Kd6c6  Qa4c6 
+25823:SENT:b:evalPW[-800],Depth[6],Nodes[7405686177],Time[195082],Moves[f6f5 Re2d2 Kd6c5 Ka1a2 f5f4 b2b3 Rb7b3 ]
+SENT:info score cp 800 depth 6 nodes 7405686177 time 195082 multipv 1 pv f6f5 Re2d2 Kd6c5 Ka1a2 f5f4 b2b3 Rb7b3 
+SENT:bestmove f6f5
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2 f6f5 e2d2
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp 700 depth 5 nodes 1119293354 time 20022 pv Kd6c7  Rd2d7 Kc7b6 Rd7b7 Kb6b7 b2b3 f5f4 
+SENT:info score cp -101500 depth 5 nodes 1160942524 time 20562 pv f5f4  Rd2d6 
+SENT:info score cp 800 depth 5 nodes 1239898351 time 21774 pv Kd6e7  Ka1a2 f5f4 b2b3 f4f3 b3b4 Rb7b4 
+SENT:info score cp 800 depth 5 nodes 1278555165 time 22510 pv Kd6e6  Ka1a2 f5f4 b2b3 f4f3 b3b4 Rb7b4 
+SENT:info score cp -101500 depth 5 nodes 1383128959 time 24459 pv Kd6d5  Rd2d5 
+SENT:info score cp -101500 depth 5 nodes 1533918146 time 27064 pv Kd6d7  Rd2d7 
+SENT:info score cp 700 depth 5 nodes 1697903849 time 31059 pv Kd6c5  Qa4a5 Rb7b5 Qa5c3 Kc5b6 Qc3e5 Rb5e5 
+SENT:info score cp -101500 depth 5 nodes 1712379187 time 31476 pv Kd6c6  Qa4c6 
+25823:SENT:b:evalPW[-800],Depth[6],Nodes[6147936547],Time[157668],Moves[Kd6e6 Ka1a2 f5f4 b2b3 f4f3 b3b4 Rb7b4 ]
+SENT:info score cp 800 depth 6 nodes 6147936547 time 157668 multipv 1 pv Kd6e6 Ka1a2 f5f4 b2b3 f4f3 b3b4 Rb7b4 
+SENT:bestmove Kd6e6
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2 f6f5 e2d2 d6e6 a4a6
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -101500 depth 5 nodes 893497698 time 17585 pv Ke6d5  Rd2d5 
+SENT:info score cp -101500 depth 5 nodes 1121533784 time 20693 pv Be4b1  Qa6e6 
+SENT:info score cp -101500 depth 5 nodes 1142152761 time 20393 pv Ke6d7  Rd2d7 
+SENT:info score cp 800 depth 5 nodes 1548213862 time 27160 pv Ke6e7  Ka1a2 f5f4 b2b3 f4f3 a3a4 Rb7b3 
+SENT:info score cp -101500 depth 5 nodes 1556093207 time 27020 pv Ke6d6  Rd2d6 
+SENT:info score cp -101500 depth 5 nodes 1735298764 time 30396 pv f5f4  Qa6e6 
+SENT:info score cp -101500 depth 5 nodes 1868851157 time 33467 pv Ke6f6  Qa6f6 
+SENT:info score cp 800 depth 5 nodes 1937174169 time 37711 pv Ke6f7  a3a4 f5f4 a4a5 f4f3 b2b3 Rb7b3 
+25823:SENT:b:evalPW[-800],Depth[6],Nodes[8091010747],Time[254298],Moves[Ke6e7 Ka1a2 f5f4 b2b3 f4f3 a3a4 Rb7b3 ]
+SENT:info score cp 800 depth 6 nodes 8091010747 time 254298 multipv 1 pv Ke6e7 Ka1a2 f5f4 b2b3 f4f3 a3a4 Rb7b3 
+SENT:bestmove Ke6e7
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2 f6f5 e2d2 d6e6 a4a6 e6e7 a6f1
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -101500 depth 5 nodes 936693663 time 17022 pv Ke7d8  Rd2d8 
+SENT:info score cp -101500 depth 5 nodes 1000191615 time 18217 pv Ke7d7  Rd2d7 
+SENT:info score cp -101500 depth 5 nodes 1020911724 time 18086 pv Ke7d6  Rd2d6 
+SENT:info score cp 800 depth 5 nodes 1307680047 time 24608 pv Ke7f7  a3a4 f5f4 Ka1a2 f4f3 b2b3 Rb7b3 
+SENT:info score cp 800 depth 5 nodes 1651469323 time 29656 pv Ke7e6  a3a4 f5f4 Ka1a2 f4f3 b2b3 Rb7b3 
+SENT:info score cp 800 depth 5 nodes 1683228036 time 29024 pv Ke7e8  a3a4 f5f4 Ka1a2 f4f3 b2b3 Rb7b3 
+SENT:info score cp 800 depth 5 nodes 1709420728 time 30232 pv Ke7f6  a3a4 f5f4 Ka1a2 f4f3 b2b3 Rb7b3 
+SENT:info score cp 800 depth 5 nodes 1738905247 time 31216 pv f5f4  a3a4 f4f3 Ka1a2 Ke7e6 b2b3 Rb7b3 
+25823:SENT:b:evalPW[-800],Depth[6],Nodes[6273212877],Time[155020],Moves[f5f4 a3a4 f4f3 Ka1a2 Ke7e6 b2b3 Rb7b3 ]
+SENT:info score cp 800 depth 6 nodes 6273212877 time 155020 multipv 1 pv f5f4 a3a4 f4f3 Ka1a2 Ke7e6 b2b3 Rb7b3 
+SENT:bestmove f5f4
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2 f6f5 e2d2 d6e6 a4a6 e6e7 a6f1 f5f4 f1c4
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -101500 depth 5 nodes 1431539519 time 24068 pv Ke7d6  Rd2d6 
+SENT:info score cp -101500 depth 5 nodes 1562293211 time 26480 pv Ke7d8  Rd2d8 
+SENT:info score cp 800 depth 5 nodes 1661419858 time 27072 pv f4f3  a3a4 Ke7f6 Ka1a2 Kf6f5 b2b3 Rb7b3 
+SENT:info score cp -101500 depth 5 nodes 1922063796 time 31031 pv Ke7f7  Qc4f7 
+SENT:info score cp -101500 depth 5 nodes 2227236297 time 35099 pv Ke7d7  Rd2d7 
+SENT:info score cp 700 depth 5 nodes 2462058178 time 39178 pv Ke7e8  Rd2e2 Rb7e7 Qc4c3 f4f3 Qc3e5 Re7e5 
+SENT:info score cp -101500 depth 5 nodes 2492150961 time 40514 pv Ke7e6  Qc4e6 
+SENT:info score cp 800 depth 5 nodes 2533686135 time 42534 pv Ke7f6  a3a4 f4f3 Ka1a2 Kf6f5 b2b3 Rb7b3 
+25823:SENT:b:evalPW[-800],Depth[6],Nodes[8392994942],Time[205051],Moves[f4f3 a3a4 Ke7f6 Ka1a2 Kf6f5 b2b3 Rb7b3 ]
+SENT:info score cp 800 depth 6 nodes 8392994942 time 205051 multipv 1 pv f4f3 a3a4 Ke7f6 Ka1a2 Kf6f5 b2b3 Rb7b3 
+SENT:bestmove f4f3
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2 f6f5 e2d2 d6e6 a4a6 e6e7 a6f1 f5f4 f1c4 f4f3 a1a2
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -101500 depth 5 nodes 1519372079 time 25888 pv Ke7d7  Rd2d7 
+SENT:info score cp -101500 depth 5 nodes 1863507419 time 29728 pv Ke7f7  Qc4f7 
+SENT:info score cp 700 depth 5 nodes 1931663475 time 30924 pv Ke7e8  Qc4c8 Ke8e7 Qc8c3 Ke7e6 Qc3e5 Ke6e5 
+SENT:info score cp -101500 depth 5 nodes 1940993610 time 30784 pv Ke7e6  Qc4e6 
+SENT:info score cp -101500 depth 5 nodes 2209217015 time 34655 pv Ke7d8  Rd2d8 
+SENT:info score cp -101500 depth 5 nodes 2360523473 time 36135 pv Ke7d6  Rd2d6 
+SENT:info score cp 800 depth 5 nodes 2591101648 time 43186 pv Ke7f6  b2b3 Kf6f5 a3a4 Kf5f4 b3b4 Rb7b4 
+SENT:info score cp 700 depth 5 nodes 2725072040 time 48825 pv f3f2  Rd2f2 Ke7d6 b2b3 Kd6d7 a3a4 Rb7b3 
+SENT:info score cp 1100 depth 5 nodes 3852186018 time 79705 pv Be4d5  Qc4d5 Qe5d5 Rd2d5 f3f2 Rd5h5 f2f1q 
+25823:SENT:b:evalPW[-1100],Depth[6],Nodes[8477073788],Time[202877],Moves[Be4d5 Qc4d5 Qe5d5 Rd2d5 f3f2 Rd5h5 f2f1q ]
+SENT:info score cp 1100 depth 6 nodes 8477073788 time 202877 multipv 1 pv Be4d5 Qc4d5 Qe5d5 Rd2d5 f3f2 Rd5h5 f2f1q 
+SENT:bestmove Be4d5
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2 f6f5 e2d2 d6e6 a4a6 e6e7 a6f1 f5f4 f1c4 f4f3 a1a2 e4d5 c4d5
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -103000 depth 5 nodes 2198727082 time 31268 pv Ke7d6  Qd5d6 
+SENT:info score cp -103000 depth 5 nodes 2588825033 time 36107 pv Ke7d7  Qd5d7 
+SENT:info score cp -500 depth 5 nodes 2834414375 time 38557 pv f3f2  Qd5e5 Ke7f7 Rd2f2 Kf7g8 b2b3 Rb7b3 
+SENT:info score cp -1000 depth 5 nodes 3233503826 time 43289 pv Ke7e8  Qd5e5 Ke8f7 Qe5d5 Kf7f6 Qd5b7 f3f2 
+SENT:info score cp -100 depth 5 nodes 3235064119 time 43313 pv Ke7f6  Qd5f3 Kf6e6 Qf3c6 Ke6f5 Qc6b7 Qe5b2 
+SENT:info score cp -103000 depth 5 nodes 3418150928 time 47193 pv Ke7d8  Qd5d8 
+SENT:info score cp -103000 depth 5 nodes 3547634957 time 50250 pv Ke7e6  Qd5e6 
+SENT:info score cp -103000 depth 5 nodes 3736620472 time 60756 pv Ke7f7  Qd5f7 
+SENT:info score cp 800 depth 5 nodes 4679983736 time 76398 pv Rb7b2  Ka2a1 Qe5d5 Rd2d5 f3f2 Ka1b2 f2f1q 
+SENT:info score cp 400 depth 5 nodes 5452129593 time 88003 pv Rb7b5  Qd5e5 Rb5e5 Rd2f2 Re5e2 Rf2e2 f3e2 
+25823:SENT:b:evalPW[-800],Depth[6],Nodes[10748287789],Time[230038],Moves[Rb7b2 Ka2a1 Qe5d5 Rd2d5 f3f2 Ka1b2 f2f1q ]
+SENT:info score cp 800 depth 6 nodes 10748287789 time 230038 multipv 1 pv Rb7b2 Ka2a1 Qe5d5 Rd2d5 f3f2 Ka1b2 f2f1q 
+SENT:bestmove Rb7b2
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2 f6f5 e2d2 d6e6 a4a6 e6e7 a6f1 f5f4 f1c4 f4f3 a1a2 e4d5 c4d5 b7b2 a2a1
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -102500 depth 5 nodes 1224914959 time 18161 pv Ke7d6  Qd5d6 
+SENT:info score cp -500 depth 5 nodes 1979553392 time 25363 pv f3f2  Qd5e5 Ke7f7 Ka1b2 Rh8e8 Qe5e8 Kf7e8 
+SENT:info score cp -102500 depth 5 nodes 2068434663 time 26167 pv Ke7d7  Qd5d7 
+SENT:info score cp -102500 depth 5 nodes 2123809621 time 27240 pv Ke7d8  Qd5d8 
+SENT:info score cp -102500 depth 5 nodes 2166631121 time 27283 pv Ke7e6  Qd5e6 
+SENT:info score cp -900 depth 5 nodes 2204261620 time 28124 pv Ke7e8  Qd5e5 Ke8f7 Ka1b2 Kf7g8 a3a4 f3f2 
+SENT:info score cp -102500 depth 5 nodes 2331896265 time 31232 pv Ke7f7  Qd5f7 
+SENT:info score cp 100 depth 5 nodes 2383085656 time 33260 pv Ke7f6  Qd5e5 Kf6e5 Ka1b2 Rh8a8 a3a4 Ra8a4 
+SENT:info score cp 700 depth 5 nodes 3059597556 time 45550 pv Rb2a2  Ka1a2 Qe5d5 Rd2d5 f3f2 Rd5h5 f2f1q 
+SENT:info score cp 700 depth 5 nodes 3621430495 time 56172 pv Rb2b1  Ka1b1 Qe5d5 Rd2d5 f3f2 Rd5h5 f2f1q 
+SENT:info score cp 500 depth 5 nodes 4100171703 time 64564 pv Rb2b5  Qd5e5 Rb5e5 Rd2f2 Re5e3 a3a4 Ke7d6 
+SENT:info score cp 800 depth 5 nodes 7754861264 time 146352 pv Qe5d5  Rd2d5 f3f2 Ka1b2 f2f1q a3a4 Ke7d6 
+25823:SENT:b:evalPW[-800],Depth[6],Nodes[8111705140],Time[155116],Moves[Qe5d5 Rd2d5 f3f2 Ka1b2 f2f1q a3a4 Ke7d6 ]
+SENT:info score cp 800 depth 6 nodes 8111705140 time 155116 multipv 1 pv Qe5d5 Rd2d5 f3f2 Ka1b2 f2f1q a3a4 Ke7d6 
+SENT:bestmove Qe5d5
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2 f6f5 e2d2 d6e6 a4a6 e6e7 a6f1 f5f4 f1c4 f4f3 a1a2 e4d5 c4d5 b7b2 a2a1 e5d5 d2d5
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp 0 depth 5 nodes 73045500 time 2455 pv Ke7e8  Ka1b2 f3f2 Rd5d1 Ke8e7 Rd1f1 Ke7d6 
+SENT:info score cp -102500 depth 5 nodes 119257801 time 3555 pv Ke7d7  Rd5d7 
+SENT:info score cp -102500 depth 5 nodes 120440465 time 3535 pv Ke7d8  Rd5d8 
+SENT:info score cp 500 depth 5 nodes 126839339 time 3411 pv Ke7f7  Ka1b2 Rh8b8 Rd5b5 Rb8b5 a3a4 f3f2 
+SENT:info score cp 500 depth 5 nodes 130319009 time 3335 pv Ke7f6  Ka1b2 Rh8b8 Rd5b5 Rb8b5 a3a4 f3f2 
+SENT:info score cp 600 depth 5 nodes 149355566 time 4715 pv Ke7e6  Rd5d1 Rb2h2 a3a4 f3f2 Rd1f1 Rh2h4 
+SENT:info score cp -102500 depth 5 nodes 154729273 time 4531 pv Ke7d6  Rd5d6 
+SENT:info score cp 600 depth 5 nodes 163994753 time 4011 pv f3f2  Rd5d1 Rb2c2 Rd1f1 Rh8a8 a3a4 Ra8a4 
+25823:SENT:b:evalPW[-600],Depth[6],Nodes[502636478],Time[14394],Moves[f3f2 Rd5d1 Rb2c2 Rd1f1 Rh8a8 a3a4 Ra8a4 ]
+SENT:info score cp 600 depth 6 nodes 502636478 time 14394 multipv 1 pv f3f2 Rd5d1 Rb2c2 Rd1f1 Rh8a8 a3a4 Ra8a4 
+SENT:bestmove f3f2
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2 f6f5 e2d2 d6e6 a4a6 e6e7 a6f1 f5f4 f1c4 f4f3 a1a2 e4d5 c4d5 b7b2 a2a1 e5d5 d2d5 f3f2 d5d1
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp -102500 depth 5 nodes 139629256 time 3083 pv Ke7d7  Rd1d7 
+SENT:info score cp 100 depth 5 nodes 142867206 time 3031 pv Ke7e6  Ka1b2 Rh8b8 Kb2c1 Rb8b3 Rd1f1 Rb3a3 
+SENT:info score cp 100 depth 5 nodes 143792738 time 3011 pv Ke7f6  Ka1b2 Rh8b8 Kb2c1 Rb8b3 Rd1f1 Rb3a3 
+SENT:info score cp 200 depth 5 nodes 176211287 time 4251 pv f2f1b  Ka1b2 Bf1g2 Kb2b3 Ke7e6 a3a4 Ke6d5 
+SENT:info score cp -102500 depth 5 nodes 197753360 time 4280 pv Ke7d6  Rd1d6 
+SENT:info score cp 200 depth 5 nodes 198229993 time 4292 pv f2f1n  Ka1b2 Nf1h2 Rd1e1 Ke7d6 a3a4 Nh2f1 
+SENT:info score cp 500 depth 5 nodes 227759515 time 6259 pv f2f1r  Rd1f1 Rb2e2 a3a4 Re2h2 a4a5 Rh2h4 
+SENT:info score cp 500 depth 5 nodes 251621229 time 8126 pv f2f1q  Rd1f1 Rb2e2 a3a4 Re2h2 a4a5 Rh2h4 
+SENT:info score cp 900 depth 5 nodes 368510484 time 11273 pv Rb2d2  Rd1b1 Rh8g8 Rb1f1 Rg8g1 Rf1f2 Rd2f2 
+SENT:info score cp 600 depth 5 nodes 372891451 time 11453 pv Rb2c2  Ka1b1 Rc2d2 Rd1f1 Rh8a8 a3a4 Ra8a4 
+SENT:info score cp 1000 depth 5 nodes 536992196 time 16309 pv Rb2e2  Rd1f1 Re2e1 Ka1a2 Re1f1 a3a4 Ke7d6 
+25823:SENT:b:evalPW[-1000],Depth[6],Nodes[683046289],Time[20121],Moves[Rb2e2 Rd1f1 Re2e1 Ka1a2 Re1f1 a3a4 Ke7d6 ]
+SENT:info score cp 1000 depth 6 nodes 683046289 time 20121 multipv 1 pv Rb2e2 Rd1f1 Re2e1 Ka1a2 Re1f1 a3a4 Ke7d6 
+SENT:bestmove Rb2e2
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2 f6f5 e2d2 d6e6 a4a6 e6e7 a6f1 f5f4 f1c4 f4f3 a1a2 e4d5 c4d5 b7b2 a2a1 e5d5 d2d5 f3f2 d5d1 b2e2 d1c1
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp 600 depth 5 nodes 151649868 time 3220 pv Ke7d7  Rc1d1 Kd7e6 Rd1f1 Rh8a8 a3a4 Ra8a4 
+SENT:info score cp 1000 depth 5 nodes 152513998 time 3236 pv Ke7e6  Rc1f1 Re2e1 Ka1a2 Re1f1 a3a4 Ke6d5 
+SENT:info score cp 500 depth 5 nodes 157454201 time 3344 pv f2f1b  Rc1f1 Ke7e6 a3a4 Re2h2 a4a5 Rh2h4 
+SENT:info score cp 500 depth 5 nodes 221555506 time 5175 pv f2f1n  Rc1f1 Ke7e6 a3a4 Re2h2 a4a5 Rh2h4 
+SENT:info score cp 600 depth 5 nodes 225524510 time 5111 pv Ke7d6  Rc1d1 Kd6e5 Rd1f1 Rh8a8 a3a4 Ra8a4 
+SENT:info score cp 500 depth 5 nodes 232810895 time 5032 pv f2f1r  Rc1f1 Ke7e6 a3a4 Re2h2 a4a5 Rh2h4 
+SENT:info score cp 1000 depth 5 nodes 234093068 time 5088 pv Ke7f6  Rc1f1 Re2e1 Ka1a2 Re1f1 a3a4 Kf6e5 
+SENT:info score cp 500 depth 5 nodes 260792445 time 8414 pv f2f1q  Rc1f1 Ke7e6 a3a4 Re2h2 a4a5 Rh2h4 
+SENT:info score cp 1300 depth 5 nodes 368000740 time 10169 pv Re2e1  Ka1b1 f2f1q a3a4 Ke7d6 Rc1e1 Qf1e1 
+25823:SENT:b:evalPW[-1300],Depth[6],Nodes[641203848],Time[18318],Moves[Re2e1 Ka1b1 f2f1q a3a4 Ke7d6 Rc1e1 Qf1e1 ]
+SENT:info score cp 1300 depth 6 nodes 641203848 time 18318 multipv 1 pv Re2e1 Ka1b1 f2f1q a3a4 Ke7d6 Rc1e1 Qf1e1 
+SENT:bestmove Re2e1
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2 f6f5 e2d2 d6e6 a4a6 e6e7 a6f1 f5f4 f1c4 f4f3 a1a2 e4d5 c4d5 b7b2 a2a1 e5d5 d2d5 f3f2 d5d1 b2e2 d1c1 e2e1 c1e1
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp 800 depth 5 nodes 12344754 time 1687 pv f2e1n  a3a4 Ne1g2 a4a5 Ng2h4 a5a6 Nh4g2 
+SENT:info score cp 800 depth 5 nodes 14373164 time 1631 pv f2e1b  Ka1a2 Ke7d6 a3a4 Kd6c5 a4a5 Be1h4 
+SENT:info score cp 1000 depth 5 nodes 30064054 time 1263 pv f2e1r  Ka1a2 Ke7d6 a3a4 Re1h1 a4a5 Rh1h4 
+SENT:info score cp -104000 depth 5 nodes 47381201 time 2863 pv f2f1n  Re1e7 
+SENT:info score cp 1400 depth 5 nodes 51584951 time 2743 pv f2e1q  Ka1a2 Ke7d6 a3a4 Kd6c5 a4a5 Qe1h4 
+SENT:info score cp -104000 depth 5 nodes 63814254 time 2335 pv f2f1b  Re1e7 
+SENT:info score cp -103000 depth 5 nodes 74249555 time 3847 pv f2f1r  Re1e7 
+SENT:info score cp -101000 depth 5 nodes 94414843 time 4068 pv f2f1q  Re1e7 
+25823:SENT:b:evalPW[-1400],Depth[6],Nodes[208464549],Time[9606],Moves[f2e1q Ka1a2 Ke7d6 a3a4 Kd6c5 a4a5 Qe1h4 ]
+SENT:info score cp 1400 depth 6 nodes 208464549 time 9606 multipv 1 pv f2e1q Ka1a2 Ke7d6 a3a4 Kd6c5 a4a5 Qe1h4 
+SENT:bestmove f2e1q
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2 f6f5 e2d2 d6e6 a4a6 e6e7 a6f1 f5f4 f1c4 f4f3 a1a2 e4d5 c4d5 b7b2 a2a1 e5d5 d2d5 f3f2 d5d1 b2e2 d1c1 e2e1 c1e1 f2e1q a1a2
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp 1400 depth 5 nodes 33412986 time 1055 pv Ke7d8  a3a4 Kd8c7 a4a5 Kc7c6 a5a6 Qe1h4 
+SENT:info score cp 1400 depth 5 nodes 45458460 time 1268 pv Ke7f8  a3a4 Kf8e7 a4a5 Ke7d6 a5a6 Qe1h4 
+SENT:info score cp 1400 depth 5 nodes 49472562 time 1384 pv Ke7e8  a3a4 Ke8d7 a4a5 Kd7c6 a5a6 Qe1h4 
+SENT:info score cp 1400 depth 5 nodes 55865520 time 2431 pv Ke7d7  Ka2b2 Kd7c6 a3a4 Kc6c5 a4a5 Qe1h4 
+SENT:info score cp 1400 depth 5 nodes 64339261 time 2151 pv Ke7e6  Ka2b2 Ke6d5 a3a4 Kd5c4 a4a5 Qe1h4 
+SENT:info score cp 1400 depth 5 nodes 68423083 time 2024 pv Ke7f6  Ka2b2 Kf6e5 a3a4 Ke5d4 a4a5 Qe1h4 
+SENT:info score cp 1400 depth 5 nodes 70301793 time 2144 pv Ke7f7  Ka2b2 Kf7e6 a3a4 Ke6d5 a4a5 Qe1h4 
+SENT:info score cp 1400 depth 5 nodes 70583731 time 2180 pv Ke7d6  Ka2b2 Kd6c5 a3a4 Kc5b4 a4a5 Kb4a5 
+SENT:info score cp 1500 depth 5 nodes 134254762 time 4059 pv Rh8a8  a3a4 Ke7d6 a4a5 Ra8a5 Ka2a1 Qe1h4 
+SENT:info score cp 1500 depth 5 nodes 158380379 time 5127 pv Rh8b8  a3a4 Rb8a8 a4a5 Ra8a5 Ka2a1 Qe1h4 
+25823:SENT:b:evalPW[-1500],Depth[6],Nodes[365602852],Time[11317],Moves[Rh8a8 a3a4 Ke7d6 a4a5 Ra8a5 Ka2a1 Qe1h4 ]
+SENT:info score cp 1500 depth 6 nodes 365602852 time 11317 multipv 1 pv Rh8a8 a3a4 Ke7d6 a4a5 Ra8a5 Ka2a1 Qe1h4 
+SENT:bestmove Rh8a8
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2 f6f5 e2d2 d6e6 a4a6 e6e7 a6f1 f5f4 f1c4 f4f3 a1a2 e4d5 c4d5 b7b2 a2a1 e5d5 d2d5 f3f2 d5d1 b2e2 d1c1 e2e1 c1e1 f2e1q a1a2 h8a8 a2b3
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp 1500 depth 5 nodes 91993156 time 3631 pv Ke7d8  a3a4 Kd8c7 a4a5 Ra8a5 Kb3a2 Qe1h4 
+SENT:info score cp 1500 depth 5 nodes 94094798 time 3567 pv Ke7e8  a3a4 Ke8d7 a4a5 Ra8a5 Kb3a2 Qe1h4 
+SENT:info score cp 1500 depth 5 nodes 146522409 time 4227 pv Ke7d6  a3a4 Kd6c5 a4a5 Ra8a5 Kb3a2 Qe1h4 
+SENT:info score cp 1500 depth 5 nodes 146750087 time 4219 pv Ke7f6  a3a4 Kf6e5 a4a5 Ra8a5 Kb3a2 Qe1h4 
+SENT:info score cp 1500 depth 5 nodes 150799922 time 4083 pv Ke7f8  a3a4 Kf8e7 a4a5 Ra8a5 Kb3a2 Qe1h4 
+SENT:info score cp 1500 depth 5 nodes 166107604 time 5447 pv Ke7e6  a3a4 Ke6d5 a4a5 Ra8a5 Kb3a2 Qe1h4 
+SENT:info score cp 1500 depth 5 nodes 169497132 time 5239 pv Ke7d7  a3a4 Kd7c6 a4a5 Ra8a5 Kb3a2 Qe1h4 
+SENT:info score cp 1500 depth 5 nodes 169966306 time 5179 pv Ke7f7  a3a4 Kf7e6 a4a5 Ra8a5 Kb3a2 Qe1h4 
+25823:SENT:b:evalPW[-1500],Depth[6],Nodes[871987837],Time[25284],Moves[Ke7d6 a3a4 Kd6c5 a4a5 Ra8a5 Kb3a2 Qe1h4 ]
+SENT:info score cp 1500 depth 6 nodes 871987837 time 25284 multipv 1 pv Ke7d6 a3a4 Kd6c5 a4a5 Ra8a5 Kb3a2 Qe1h4 
+SENT:bestmove Ke7d6
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2 f6f5 e2d2 d6e6 a4a6 e6e7 a6f1 f5f4 f1c4 f4f3 a1a2 e4d5 c4d5 b7b2 a2a1 e5d5 d2d5 f3f2 d5d1 b2e2 d1c1 e2e1 c1e1 f2e1q a1a2 h8a8 a2b3 e7d6 b3a2
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp 1500 depth 5 nodes 66927950 time 2271 pv Kd6e6  a3a4 Ke6d5 a4a5 Ra8a5 Ka2a1 Qe1h4 
+SENT:info score cp 1500 depth 5 nodes 70096602 time 2175 pv Kd6e7  a3a4 Ke7d6 a4a5 Ra8a5 Ka2a1 Qe1h4 
+SENT:info score cp 1500 depth 5 nodes 71758880 time 2119 pv Kd6c5  a3a4 Kc5b4 a4a5 Kb4a5 Ka2a1 Qe1h4 
+SENT:info score cp 1500 depth 5 nodes 75418674 time 2011 pv Kd6c6  a3a4 Kc6c5 a4a5 Ra8a5 Ka2a1 Qe1h4 
+SENT:info score cp 1500 depth 5 nodes 91123252 time 3495 pv Kd6e5  a3a4 Ke5d4 a4a5 Ra8a5 Ka2a1 Qe1h4 
+SENT:info score cp 1500 depth 5 nodes 95548554 time 3307 pv Kd6c7  a3a4 Kc7b6 a4a5 Kb6a5 Ka2a1 Qe1h4 
+SENT:info score cp 1500 depth 5 nodes 95799222 time 3291 pv Kd6d5  a3a4 Kd5c4 a4a5 Ra8a5 Ka2a1 Qe1h4 
+SENT:info score cp 1500 depth 5 nodes 95819890 time 3287 pv Kd6d7  a3a4 Kd7c6 a4a5 Ra8a5 Ka2a1 Qe1h4 
+SENT:info score cp 44800 depth 5 nodes 474519161 time 14266 pv Qe1b4  a3a4 Ra8a4 Ka2a1 Ra4a1 
+25823:SENT:b:evalPW[-44800],Depth[6],Nodes[483635830],Time[15162],Moves[Qe1b4 a3a4 Ra8a4 Ka2a1 Ra4a1 ]
+SENT:info score cp 44800 depth 6 nodes 483635830 time 15162 multipv 1 pv Qe1b4 a3a4 Ra8a4 Ka2a1 Ra4a1 
+SENT:bestmove Qe1b4
+25823:GOT:position fen 3q1b1r/3kp1p1/5p2/rN1P2Bp/pnB3bP/P4N2/1PPR2PQ/1K5n b - - 0 18 moves b4c2 d2c2 g4f3 g5f4 e7e5 d5e6 d7c6 c2d2 f3e4 b1a1 d8a8 b5c7 a8a7 d2d7 a7f2 h2h1 e4g2 c4b5 a5b5 h1b1 b5b7 e6e7 f8e7 d7e7 f2f4 c7e6 f4c4 e7g7 g2e4 b1d1 c4e6 d1a4 c6c5 g7g3 c5d6 g3e3 e6e5 e3e2 f6f5 e2d2 d6e6 a4a6 e6e7 a6f1 f5f4 f1c4 f4f3 a1a2 e4d5 c4d5 b7b2 a2a1 e5d5 d2d5 f3f2 d5d1 b2e2 d1c1 e2e1 c1e1 f2e1q a1a2 h8a8 a2b3 e7d6 b3a2 e1b4 a3a4
+
+25823:GOT:go wtime 2388 winc 0 btime 2388 binc 0
+
+SENT:info score cp 44800 depth 5 nodes 66692763 time 2315 pv Kd6c5  a4a5 Ra8a5 Ka2a1 Ra5a1 
+SENT:info score cp 44800 depth 5 nodes 80007146 time 2044 pv Kd6e7  a4a5 Ra8a5 Ka2a1 Ra5a1 
+SENT:info score cp 44800 depth 5 nodes 82325555 time 2112 pv Kd6d7  a4a5 Ra8a5 Ka2a1 Ra5a1 
+SENT:info score cp 44800 depth 5 nodes 83685276 time 2152 pv Kd6e5  a4a5 Ra8a5 Ka2a1 Ra5a1 
+SENT:info score cp 44800 depth 5 nodes 105404182 time 3131 pv Kd6c7  a4a5 Ra8a5 Ka2a1 Ra5a1 
+SENT:info score cp 44800 depth 5 nodes 106580013 time 3079 pv Kd6c6  a4a5 Ra8a5 Ka2a1 Ra5a1 
+SENT:info score cp 44800 depth 5 nodes 108240899 time 3024 pv Kd6d5  a4a5 Ra8a5 Ka2a1 Ra5a1 
+SENT:info score cp 44800 depth 5 nodes 108712498 time 3084 pv Kd6e6  a4a5 Ra8a5 Ka2a1 Ra5a1 
+SENT:info score cp 89600 depth 5 nodes 191522281 time 5264 pv Ra8a4  Ka2a1 Ra4a1 
+25823:SENT:b:evalPW[-89600],Depth[6],Nodes[498654398],Time[15214],Moves[Ra8a4 Ka2a1 Ra4a1 ]
+SENT:info score cp 89600 depth 6 nodes 498654398 time 15214 multipv 1 pv Ra8a4 Ka2a1 Ra4a1 
+SENT:bestmove Ra8a4
+25823:GOT:stop
+
+25823:GOT:quit
+
