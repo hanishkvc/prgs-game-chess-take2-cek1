@@ -426,6 +426,26 @@ a proper fast hash based cross check logic to avoid re-evaluation of already
 evald positions.
 
 
+NOTE: the uci depth is in terms of plies, i.e each sides' move is a ply.
+And my engine is using it correctly.
+
+******************** 20181018
+
+After increasing the thread count to 8, I just realised that the current
+logic of having thread only at the 0th level, may make the multithreaded
+logic inefficient from AB/minmax based pruning perspective. As a proper
+the currently best value to check against for search space pruning wont
+be available for the 1st set of moves being parallely checked.
+
+Have to think thro this a bit more and decide how to use threading
+efficiently in the AB pruning context.
+
+NOTE: I might have thought about the same and experimented 5 to 6
+years back, when I had initially implemented multi-threading and
+AB pruning logic. But have forgotten about the details of what and
+all I tested and the conclusions I drew at that time. Have to check
+the git log and this NOTES file to see if I have documented it
+here in a useful way.
 
 
 
